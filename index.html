@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Yous Webtoon Viewer</title>
+    <link rel="stylesheet" type="text/css" href="/webtoon/style.css"/>
+    <script type="text/javascript" src="/webtoon/jquery-1.6.3.js"></script>
+    <script type="text/javascript" src="/webtoon/css_browser_selector.js"></script>
+    <script type="text/javascript" src="/webtoon/script.js"></script>
+    <script>
+      $(document).ready(function() {
+        $(window).resize(function() { resizeWidth(); });
+        resizeWidth();
+        toonlist_area_init();
+        $(this).bind("keydown", function(e) { bodyKeyDown(e, true); });
+        $("#login_area").bind("focusin", function() { $(document).unbind("keydown");  });
+        $("#login_area").bind("focusout", function() { $(document).bind("keydown", function(e) { bodyKeyDown(e, true); }); });
+        $("#login").bind("click", function() { login(); });
+        $("#join").bind("click", function() { join(); });
+        $("#user_id").focus();
+        $(window).bind("beforeunload", function() { logout(); });
+      });
+    </script>
+  </head>
+  <body>
+    <div id="main_area">
+      <big><b>Yous</b> Webtoon Viewer</big><span id="loading" style="display: none;"><big><b> Loading</b></big></span>
+      <div id="toonlist_area"></div>
+      <div id="display_area"></div>
+    </div>
+    <div id="login_area">
+      ID <input type="text" id="user_id" size="10"/><br/>
+      PW <input type="password" id="user_pw" size="10"/><br/>
+      <input type="button" id="login" value="Login"/><input type="button" id="join" value="Join"/>
+    </div>
+    <table id="remote">
+      <tr>
+        <td colspan="2"><b>북마크</b></td>
+      </tr>
+      <tr>
+        <td><input type="button" id="saveBM" value="저장" onclick="add_bookmark();"; disabled="true"/><br/><small>(E)</small></td>
+        <td><input type="button" id="moveBM" value="이동" onclick="go_to(3);" disabled="true"/><br/><small>(R)</small></td>
+      </tr>
+      <tr>
+        <td colspan="2"><a id="url" target="_blank">주소 링크</a><hr/></td>
+      </tr>
+      <tr>
+        <td><input type="button" id="firstBtn" value="첫화" onclick="go_to(-2);" disabled="true"/><br/><small>(^←)</small></td>
+        <td><input type="button" id="lastBtn" value="마지막화" onclick="go_to(2);" disabled="true"/><br/><small>(^→)</small></td>
+      </tr>
+      <tr>
+        <td><input type="button" id="prevBtn" value="이전화" onclick="go_to(-1);" disabled="true"/></td>
+				<td><input type="button" id="nextBtn" value="다음화" onclick="go_to(1);" disabled="true"/></td>
+			</tr>
+			<tr>
+				<td><input type="text" id="inputNum"/>화</td>
+				<td><input type="button" id="dirBtn" value="이동" onclick="go_to(0);" disabled="true"/></td>
+			</tr>
+			<tr>
+				<td><input type="button" value="위로" onclick="location.replace('#title_area');"/><br/><small>(^↑ or Q)</small></td>
+				<td><input type="button" value="아래로" onclick="window.scrollTo('0', document.body.clientHeight);"/><br/><small>(^↓ or Z)</small></td>
+			</tr>
+			<tr>
+				<td colspan="2"><hr/><small>↑(W)<br/>←(A) ↓(S) →(D)</small></td>
+			</tr>
+		</table>
+  </body>
+</html>

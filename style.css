@@ -1,0 +1,85 @@
+body {
+  overflow-y: scroll;
+  overflow: -moz-scrollbars-vertical;
+	font-family: "맑은 고딕", "함초롬돋움", "Dotum", sans-serif;
+	font-size: 15px;
+  text-align: center;
+  cursor: default;
+}
+input {
+	font-family: "맑은 고딕", "함초롬돋움", "Dotum", sans-serif;
+	font-size: 13px;
+	text-align: center;
+}
+#main_area {
+  text-align: center;
+	margin: 5px;
+}
+#title_area {
+	font-size: 17px;
+	text-align: center;
+}
+#content_area {
+	text-align: center;
+  clear: both;
+}
+#login_area {
+  position: absolute;
+  top: 10px;
+  right: 30px;
+}
+#login_area input[type=text], #login_area input[type=password] {
+  width: 50px;
+  height: 15px;
+  font-size: 12px;
+}
+#login_area input[type=button] {
+  font-size: 12px;
+}
+#remote {
+	width: 140px;
+	text-align: center;
+	position: fixed;
+	right: 10px;
+}
+#remote input {
+	width: 65px;
+	height: 25px;
+}
+#remote input[type=text] {
+	width: 40px;
+	height: 20px;
+	font-size: 14px;
+}
+small {
+	color: gray;
+}
+img {
+	display: block;
+	margin: 0 auto;
+}
+.current_toon, .finished_toon {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+  position: relative;
+}
+.current_toon:hover, .finished_toon:hover {
+  -moz-box-shadow: 0px 0px 2px 2px #3399FF;
+  -webkit-box-shadow: 0px 0px 2px 2px #3399FF;
+  box-shadow: 0px 0px 2px 2px #3399FF;
+  z-index: 1;
+}
+.ie .current_toon:hover, .ie .finished_toon:hover {
+  color: #3399FF;
+}
+#artist_blog {
+  text-align: center;
+}
+#artist_other {
+  text-align: center;
+}
+#artist_otherlist {
+  text-align: center;
+  display: none;
+}
