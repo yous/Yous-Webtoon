@@ -12,12 +12,12 @@ id = put.params["id"][0]
 a = Mechanize.new
 
 # Naver 웹툰
-if site == "naver" then
+if site == "naver"
   resp = a.get "http://comic.naver.com/webtoon/detail.nhn?titleId=#{id}"
 
   resp.search('//div[@class="btn_area"]').each {|v|
     v.search('span[@class="pre"]/a').each {|e|
-      if e.attributes["href"].value =~ /\/webtoon\/detail\.nhn\?titleId=\d+&seq=(\d+)/ then
+      if e.attributes["href"].value =~ /\/webtoon\/detail\.nhn\?titleId=\d+&seq=(\d+)/
         puts $1.to_i + 1
         exit
       end
@@ -25,7 +25,7 @@ if site == "naver" then
     puts 1
   }
 # Daum 웹툰
-elsif site == "daum" then
+elsif site == "daum"
   str = []
   resp = a.get "http://cartoon.media.daum.net/webtoon/view/#{id}"
 

@@ -32,19 +32,19 @@ btnColor = {
 }
 
 # Naver 웹툰
-if site == "naver" then
+if site == "naver"
   toonBM = Hash.new
   lastNum = Hash.new
   finishToon = []
   reqList = Hash.new
 
   tmpList = []
-  db.execute("SELECT toon_id FROM naver_tmpList;") do |_toon_id|
+  db.execute("SELECT toon_id FROM naver_tmpList ORDER BY toon_id;") do |_toon_id|
     tmpList.push(_toon_id[0])
   end
 
   if session["user_id"] != nil and session["user_id"] != ""
-    db.execute("SELECT toon_id, toon_num FROM naver_bm WHERE id=?;", session["user_id"]) do |_toon_id, _toon_num|
+    db.execute("SELECT toon_id, toon_num FROM naver_bm WHERE id=? ORDER BY toon_id;", session["user_id"]) do |_toon_id, _toon_num|
       toonBM[_toon_id] = _toon_num
       db.execute("SELECT toon_num FROM naver_lastNum WHERE toon_id=?;", _toon_id) do |_lastNum|
         lastNum[_toon_id] = _lastNum[0]
@@ -103,7 +103,7 @@ if site == "naver" then
 
         reqList[_titleId] = 1 if tmpList.index(_titleId) == nil
 
-        if toonBM[_titleId] then
+        if toonBM[_titleId]
           _color = (toonBM[_titleId] == lastNum[_titleId]) ? btnColor["saved"] : btnColor["saved_up"]
         else
           _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
@@ -133,7 +133,7 @@ if site == "naver" then
 
     reqList[_titleId] = 1 if tmpList.index(_titleId) == nil
 
-    if toonBM[_titleId] != nil then
+    if toonBM[_titleId] != nil
       _color = (toonBM[_titleId] == lastNum[_titleId]) ? btnColor["saved_finish"] : btnColor["saved_up"]
     else
       _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
@@ -148,24 +148,19 @@ if site == "naver" then
   }
   str += '</tr></table><br/><br/>'
 
+  # reqList 처리
   str += '<script>'
   reqList.keys.each do |v|
     str += "$.get(\"/cgi-bin/webtoon/displayToon.cgi?site=naver&id=#{v}&num=#{reqList[v]}\");"
-    if reqList[v] == 1 then
-      check = true
-      db.execute("SELECT toon_id FROM naver_tmpList WHERE toon_id=?;", v) do |_toon_id|
-        check = false
-      end
-      if check
-        db.execute("INSERT INTO naver_tmpList (toon_id) VALUES (?);", v)
-      end
+    if reqList[v] == 1 # tmpList.index(v) == nil
+      db.execute("INSERT INTO naver_tmpList (toon_id) SELECT ? WHERE NOT EXISTS (SELECT 1 FROM naver_tmpList WHERE toon_id=?);", v, v)
     end
   end
   str += 'resizeWidth();</script>'
 
   puts str
 # Daum 웹툰
-elsif site == "daum" then
+elsif site == "daum"
   toonBM = Hash.new
   numList = Hash.new
   lastNum = Hash.new
@@ -178,7 +173,7 @@ elsif site == "daum" then
   end
 
   if session["user_id"] != nil and session["user_id"] != ""
-    db.execute("SELECT toon_id, toon_num FROM daum_bm WHERE id=?;", session["user_id"]) do |_toon_id, _toon_num|
+    db.execute("SELECT toon_id, toon_num FROM daum_bm WHERE id=? ORDER BY toon_id;", session["user_id"]) do |_toon_id, _toon_num|
       toonBM[_toon_id] = _toon_num
       db.execute("SELECT toon_num FROM daum_lastNum WHERE toon_id=?;", _toon_id) do |_lastNum|
         lastNum[_toon_id] = _lastNum[0]
@@ -245,7 +240,7 @@ elsif site == "daum" then
 
         reqList[_titleId] = 0 if numList[_titleId] == nil
 
-        if toonBM[_titleId] then
+        if toonBM[_titleId]
           _color = (toonBM[_titleId] == lastNum[_titleId]) ? btnColor["saved"] : btnColor["saved_up"]
         else
           _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
@@ -275,7 +270,7 @@ elsif site == "daum" then
 
     reqList[_titleId] = -1 if numList[_titleId] == nil
 
-    if toonBM[_titleId] != nil then
+    if toonBM[_titleId] != nil
       _color = (toonBM[_titleId] == lastNum[_titleId]) ? btnColor["saved_finish"] : btnColor["saved_up"]
     else
       _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
@@ -290,35 +285,21 @@ elsif site == "daum" then
   }
   str += '</tr></table><br/><br/>'
 
+  # reqList 처리
   str += '<script>'
   reqList.keys.each do |v|
-    if reqList[v] <= 0 then
+    if reqList[v] <= 0 # numList[v] == nil
       _numList = a.get("http://192.168.92.128/cgi-bin/webtoon/getNum.cgi?site=daum&id=#{v}").body.split().map(&:to_i)
       str += "numList['#{v}']=[#{_numList.join(',')}];"
       (0..._numList.length).each {|i|
         check = true
-        db.execute("SELECT toon_num FROM daum_numList WHERE toon_id=? AND toon_num_idx=?;", v, i) do |_toon_num|
-          if _toon_num[0] != numList[i]
-            db.execute("UPDATE daum_numList SET toon_num=? WHERE toon_id=? AND toon_num_idx=?;", numList[i], v, i)
-          end
-          check = false
-        end
-        if check
-          db.execute("INSERT INTO daum_numList (toon_id, toon_num_idx, toon_num) VALUES (?, ?, ?);", v, i, numList[i])
-        end
+        db.execute("UPDATE daum_numList SET toon_num=? WHERE toon_id=? AND toon_num_idx=?;", numList[i], v, i)
+        db.execute("INSERT INTO daum_numList (toon_id, toon_num_idx, toon_num) SELECT ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_numList WHERE toon_id=? AND toon_num_idx=?;", v, i, numList[i], v, i)
       }
-      if reqList[v] == -1
+      if reqList[v] == -1 # 완결
         str += "finishToon.push('#{v}');"
-        db.execute("SELECT toon_num FROM daum_lastNum WHERE toon_id=?;", v) do |_toon_num|
-          check = true
-          if _toon_num[0] != numList[-1]
-            db.execute("UPDATE daum_lastNum SET toon_num=? WHERE toon_id=?;", numList[-1], v)
-            check = false
-          end
-          if check
-            db.execute("INSERT INTO daum_lastNum (toon_id, toon_num) VALUES (?, ?);", v, numList[-1])
-          end
-        end
+        db.execute("UPDATE daum_lastNum SET toon_num=? WHERE toon_id=?;", numList[-1], v)
+        db.execute("INSERT INTO daum_lastNum (toon_id, toon_num) SELECT ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_lastNum WHERE toon_id=?;", v, numList[-1], v)
       end
       str += "$.get(\"/cgi-bin/webtoon/displayToon.cgi?site=daum&id=#{v}&num=#{_numList[0]}\");"
     else
