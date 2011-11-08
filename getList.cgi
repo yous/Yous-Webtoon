@@ -76,7 +76,7 @@ if site == "naver"
   resp = a.get "http://comic.naver.com/webtoon/weekday.nhn"
 
   str += '<span id="table_toggle_button" style="float: left; cursor: pointer; text-decoration: underline; color: ' + btnColor["link"] + ';" onclick="show_table();">완결 웹툰</span>'
-  str += '<span id="site_button" style="float: right; cursor: pointer; text-decoration: underline; color: ' + btnColor["link"] + ';" onclick="site_change(\'daum\');">Daum</span><br/>'
+  str += '<span id="site_button" style="float: right; cursor: pointer; color: ' + btnColor["link"] + ';" onclick="site_change(\'daum\');"><u>D</u>aum</span><br/>'
   str += '<table id="current_toonlist">'
   str += '<tr style="font-weight: bold;">'
   str += '<td>월</td>'
@@ -216,7 +216,7 @@ elsif site == "daum"
   resp = a.get "http://cartoon.media.daum.net/webtoon/week"
 
   str += '<span id="table_toggle_button" style="float: left; cursor: pointer; text-decoration: underline; color: ' + btnColor["link"] + ';" onclick="show_table();">완결 웹툰</span>'
-  str += '<span id="site_button" style="float: right; cursor: pointer; text-decoration: underline; color: ' + btnColor["link"] + ';" onclick="site_change(\'naver\');">Naver</span><br/>'
+  str += '<span id="site_button" style="float: right; cursor: pointer; color: ' + btnColor["link"] + ';" onclick="site_change(\'naver\');"><u>N</u>aver</span><br/>'
   str += '<table id="current_toonlist">'
   str += '<tr style="font-weight: bold;">'
   str += '<td>월</td>'
