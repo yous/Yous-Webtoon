@@ -70,8 +70,8 @@ function site_change(_site)
 function toonlist_area_init()
 {
   var str = "<br/>";
-  str += '<input type="button" value="Naver" onclick="site_change(\'naver\');"/>';
-  str += '<input type="button" value="Daum" onclick="site_change(\'daum\');"/>';
+  str += '<span id="Naver" style="color: ' + btnColor["link"] + '; cursor: pointer; margin: 10px;" onclick="site_change(\'naver\');"><u>N</u>aver</span>';
+  str += '<span id="Daum" style="color: ' + btnColor["link"] + '; cursor: pointer; margin: 10px;" onclick="site_change(\'daum\');"><u>D</u>aum</span>';
   $("#toonlist_area").html(str);
 }
 
@@ -607,6 +607,23 @@ function bodyKeyDown(e, lr_arrow)
       window.scrollTo('0', '0');
     else if (event.keyCode == 40) // ^↓
       window.scrollTo('0', document.body.clientHeight);
+  }
+  else if (event.shiftKey)
+  {
+    if (event.keyCode == 78) // Shift + N
+    {
+      if (document.getElementById("Naver"))
+        $("#Naver").trigger("click");
+      else if (site != "naver")
+        $("#site_button").trigger("click");
+    }
+    else if (event.keyCode == 68) // Shift + D
+    {
+      if (document.getElementById("Daum"))
+        $("#Daum").trigger("click");
+      else if (site != "daum")
+        $("#site_button").trigger("click");
+    }
   }
   else
   {
