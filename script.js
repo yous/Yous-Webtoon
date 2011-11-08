@@ -18,9 +18,9 @@ function resizeWidth()
     toon1 = document.getElementById("current_toonlist").getElementsByTagName("div");
     toon2 = document.getElementById("finished_toonlist").getElementsByTagName("div");
     for (i = 0; i < toon1.length; i++)
-      toon1[i].style.width = parseInt(parseInt(main_area.style.width) / 7 - 4) + "px";
+      toon1[i].style.width = parseInt(parseInt(main_area.style.width) / 7 - 2) + "px";
     for (i = 0; i < toon2.length; i++)
-      toon2[i].style.width = parseInt(parseInt(main_area.style.width) / 7 - 4) + "px";
+      toon2[i].style.width = parseInt(parseInt(main_area.style.width) / 7 - 2) + "px";
   }
 
   try {

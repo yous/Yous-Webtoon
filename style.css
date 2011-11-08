@@ -58,6 +58,9 @@ img {
 	display: block;
 	margin: 0 auto;
 }
+#current_toonlist, #finished_toonlist {
+  border-spacing: 0px;
+}
 .current_toon, .finished_toon {
 	white-space: nowrap;
 	overflow: hidden;
