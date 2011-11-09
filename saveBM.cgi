@@ -31,29 +31,29 @@ if session["user_id"] != nil and session["user_id"] != "" and add != nil and too
   if site == "naver"
     if add == "yes"
       db.execute("UPDATE naver_bm SET toon_num=? WHERE id=? AND toon_id=?;", toon_num, session["user_id"], toon_id.to_i)
-      db.execute("INSERT INTO naver_bm (id, toon_id, toon_num) SELECT ?, ?, ? WHERE NOT EXISTS (SELECT * FROM naver_bm WHERE id=? AND toon_id=?);", session["user_id"], toon_id.to_i, toon_num, session["user_id"], toon_id.to_i)
+      db.execute("INSERT INTO naver_bm (id, toon_id, toon_num) SELECT ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM naver_bm WHERE id=? AND toon_id=?);", session["user_id"], toon_id.to_i, toon_num, session["user_id"], toon_id.to_i)
     else
       db.execute("DELETE FROM naver_bm WHERE id=? AND toon_id=?;", session["user_id"], toon_id.to_i)
     end
     if finish != "no"
       db.execute("UPDATE naver_lastNum SET toon_num=? WHERE toon_id=?;", finish.to_i, toon_id.to_i)
-      db.execute("INSERT INTO naver_lastNum (toon_id, toon_num) SELECT ?, ? WHERE NOT EXISTS (SELECT * FROM naver_lastNum WHERE toon_id=?);", toon_id.to_i, finish.to_i, toon_id.to_i)
+      db.execute("INSERT INTO naver_lastNum (toon_id, toon_num) SELECT ?, ? WHERE NOT EXISTS (SELECT 1 FROM naver_lastNum WHERE toon_id=?);", toon_id.to_i, finish.to_i, toon_id.to_i)
     end
   # Daum 웹툰
   elsif site == "daum" and numList != nil
     (0...numList.length).each {|i|
       db.execute("UPDATE daum_numList SET toon_num=? WHERE toon_id=? AND toon_num_idx=?;", numList[i], toon_id, i)
-      db.execute("INSERT INTO daum_numList (toon_id, toon_num_idx, toon_num) SELECT ?, ?, ? WHERE NOT EXISTS (SELECT * FROM daum_numList WHERE toon_id=? AND toon_num_idx=?);", toon_id, i, numList[i], toon_id, i)
+      db.execute("INSERT INTO daum_numList (toon_id, toon_num_idx, toon_num) SELECT ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_numList WHERE toon_id=? AND toon_num_idx=?);", toon_id, i, numList[i], toon_id, i)
     }
     if add == "yes"
       db.execute("UPDATE daum_bm SET toon_num=? WHERE id=? AND toon_id=?;", toon_num, session["user_id"], toon_id)
-      db.execute("INSERT INTO daum_bm (id, toon_id, toon_num) SELECT ?, ?, ? WHERE NOT EXISTS (SELECT * FROM daum_bm WHERE id=? AND toon_id=?));", session["user_id"], toon_id, toon_num, session["user_id"], toon_id)
+      db.execute("INSERT INTO daum_bm (id, toon_id, toon_num) SELECT ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_bm WHERE id=? AND toon_id=?);", session["user_id"], toon_id, toon_num, session["user_id"], toon_id)
     else
-      db.execute("DELETE FROM daum_bm WHERE EXISTS (SELECT * FROM daum_bm WHERE id=? AND toon_id=?);", session["user_id"], toon_id)
+      db.execute("DELETE FROM daum_bm WHERE id=? AND toon_id=?;", session["user_id"], toon_id)
     end
     if finish != "no"
       db.execute("UPDATE daum_lastNum SET toon_num=? WHERE toon_id=?;", finish.to_i, toon_id)
-      db.execute("INSERT INTO daum_lastNum (toon_id, toon_num) SELECT ?, ? WHERE NOT EXISTS (SELECT * FROM daum_lastNum WHERE toon_id=?);", toon_id, finish.to_i, toon_id)
+      db.execute("INSERT INTO daum_lastNum (toon_id, toon_num) SELECT ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_lastNum WHERE toon_id=?);", toon_id, finish.to_i, toon_id)
     end
   end
 end
