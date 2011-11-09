@@ -4,17 +4,17 @@ require 'mechanize'
 require 'cgi'
 require 'json'
 
-def flashObj(_url, _flashID, _width, _height, _wmode)
+def flashObj(_url, _flashID, _width, _height, _wmode = "transparent", _flashVars = "", _bgColor = "#FFFFFF", _allowFullScreen = true)
   s = "<object width=\"#{_width}\" height=\"#{_height}\" id=\"#{_flashID}\" classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" codebase=\"http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0\">"
   s += '<param name="allowScriptAccess" value="always"/>'
   s += '<param name="quality" value="high"/>'
   s += '<param name="menu" value="false"/>'
   s += "<param name=\"movie\" value=\"/webtoon/tmp/#{_url.gsub(/\//, "@")}\"/>"
   s += "<param name=\"wmode\" value=\"#{_wmode}\"/>"
-  s += '<param name="bgcolor" value="#FFFFFF"/>'
-  s += '<param name="FlashVars" value=""/>'
-  s += '<param name="allowFullScreen" value="true"/>'
-  s += "<embed src=\"/webtoon/tmp/#{_url.gsub(/\//, "@")}\" quality=\"high\" wmode=\"#{_wmode}\" menu=\"false\" FlashVars=\"\" bgcolor=\"#FFFFFF\" width=\"#{_width}\" height=\"#{_height}\" name=\"#{_flashID}\" allowFullScreen=\"true\" align=\"middle\" allowScriptAccess=\"always\" type=\"application/x-shockwave-flash\" pluginspage=\"http://www.macromedia.com/go/getflashplayer\"/>"
+  s += "<param name=\"bgcolor\" value=\"#{_bgColor}\"/>"
+  s += "<param name=\"FlashVars\" value=\"#{_flashVars}\"/>"
+  s += "<param name=\"allowFullScreen\" value=\"#{_allowFullScreen}\"/>"
+  s += "<embed src=\"/webtoon/tmp/#{_url.gsub(/\//, "@")}\" quality=\"high\" wmode=\"#{_wmode}\" menu=\"false\" FlashVars=\"#{_flashVars}\" bgcolor=\"#{_bgColor}\" width=\"#{_width}\" height=\"#{_height}\" name=\"#{_flashID}\" allowFullScreen=\"#{_allowFullScreen}\" align=\"middle\" allowScriptAccess=\"always\" type=\"application/x-shockwave-flash\" pluginspage=\"http://www.macromedia.com/go/getflashplayer\"/>"
   s += '</object>'
 end
 
@@ -103,6 +103,7 @@ if site == "naver"
   resp.search('//div[@class="wt_viewer"]').each {|r|
     count = 0
     r.element_children.each {|v|
+      puts 1
       if v.name == "img"
         url = $1 if v.attributes["src"].to_s =~ /http:\/\/(.*)/
         if not File::exists?("/var/www/webtoon/tmp/#{url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}")
@@ -121,7 +122,10 @@ if site == "naver"
         end
       elsif v.name == "script"
         _content += '<script>alert("Flash Object Exists!");document.getElementById("toonlist_area").style.height=parseInt(document.getElementById(\'toonlist_area\').clientHeight-(document.getElementById(\'content_area\').offsetTop-437))+\'px\';document.getElementById("toonlist_area").style.overflow="scroll";$(document).unbind("keydown");$(document).bind("keydown",function(e){bodyKeyDown(e,false);});location.replace("#title_area");</script>'
-        _url, _flashID, _width, _height, _wmode = $1, $2, $3, $4, $5 if v.inner_html =~ /showFlash\('http:\/\/(.*)',\s*'(.*)',\s*'(.*)',\s*'(.*)',\s*'(.*)'\);/
+        _s = $1.split(',').map {|v| $1 if v.strip =~ /^'([\w\W]*)'$/} if v.inner_html =~ /showFlash\(([\w\W]*)\);/
+        (1..(8 - _s.length)).each {|i| _s.push("")}
+        _url, _flashID, _width, _height, _wmode, _flashVars, _bgColor, _allowFullScreen = _s
+        _url = $1 if _url =~ /http:\/\/([\w\W]*)/
         if not File::exists?("/var/www/webtoon/tmp/#{_url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}")
           _data = a.get("http://#{_url}").body
           if _data != nil
@@ -130,7 +134,7 @@ if site == "naver"
             end
           end
         end
-        _content += flashObj(_url, _flashID, _width, _height, _wmode)
+        _content += flashObj(_url, _flashID, _width, _height, _wmode, _flashVars, _bgColor, _allowFullScreen)
       elsif v.name == "a"
         _content += "<a target=\"_blank\" href=\"#{v.attributes["href"]}\">"
         v.search('img').each {|e|
