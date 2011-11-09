@@ -128,7 +128,6 @@ function leave()
 // Login
 function login()
 {
-  add_bookmark();
   $.post(
     "/cgi-bin/webtoon/login.cgi",
     {user_id: $("#user_id").val(), user_pw: $("#user_pw").val()},
@@ -139,6 +138,7 @@ function login()
 // Logout
 function logout()
 {
+  add_bookmark();
   $.post(
     "/cgi-bin/webtoon/logout.cgi",
     function (data) { $("#display_area").html(data); }
