@@ -102,6 +102,7 @@ if site == "naver"
   # 만화책 형식이 아닌 웹툰
   resp.search('//div[@class="wt_viewer"]').each {|r|
     count = 0
+    f_exist = true
     r.element_children.each {|v|
       if v.name == "img"
         url = $1 if v.attributes["src"].to_s =~ /http:\/\/(.*)/
@@ -120,7 +121,10 @@ if site == "naver"
           _content << "<img src=\"/webtoon/tmp/#{url.gsub(/\//, "@")}\">"
         end
       elsif v.name == "script"
-        _content << '<script>alert("Flash Object Exists!");document.getElementById("toonlist_area").style.height=parseInt(document.getElementById(\'toonlist_area\').clientHeight-(document.getElementById(\'content_area\').offsetTop-437))+\'px\';document.getElementById("toonlist_area").style.overflow="scroll";$(document).unbind("keydown");$(document).bind("keydown",function(e){bodyKeyDown(e,false);});location.replace("#title_area");</script>'
+        if f_exist
+          _content << '<script>alert("Flash Object Exists!");document.getElementById("toonlist_area").style.height=parseInt(document.getElementById(\'toonlist_area\').clientHeight-(document.getElementById(\'content_area\').offsetTop-437))+\'px\';document.getElementById("toonlist_area").style.overflow="scroll";$(document).unbind("keydown");$(document).bind("keydown",function(e){bodyKeyDown(e,false);});location.replace("#title_area");</script>'
+          f_exist = false
+        end
         _s = $1.split(',').map {|v| $1 if v.strip =~ /^'([\w\W]*)'$/} if v.inner_html =~ /showFlash\(([\w\W]*)\);/
         (1..(8 - _s.length)).each {|i| _s.push("")}
         _url, _flashID, _width, _height, _wmode, _flashVars, _bgColor, _allowFullScreen = _s
