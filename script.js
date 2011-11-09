@@ -88,6 +88,7 @@ function toggle_login(log)
     $("#join").unbind("click");
     $("#login").bind("click", function() { logout(); });
     $("#join").bind("click", function() { leave(); });
+    $("#login").blur();
   }
   else
   {
