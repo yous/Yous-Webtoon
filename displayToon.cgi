@@ -103,7 +103,6 @@ if site == "naver"
   resp.search('//div[@class="wt_viewer"]').each {|r|
     count = 0
     r.element_children.each {|v|
-      puts 1
       if v.name == "img"
         url = $1 if v.attributes["src"].to_s =~ /http:\/\/(.*)/
         if not File::exists?("/var/www/webtoon/tmp/#{url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}")
