@@ -502,6 +502,11 @@ function viewToon(_id, _num)
 
 function go_to(opt)
 {
+  if (!id || !num)
+  {
+    alert("웹툰을 선택해 주세요!");
+    return;
+  }
   // 첫 화
   if (opt == -2)
   {
@@ -644,7 +649,12 @@ function bodyKeyDown(e, lr_arrow)
       for (i = 0; i < 10; i++)
         window.scrollBy('0', '9');
     else if (event.keyCode == 81) // Q
-      location.replace('#title_area');
+    {
+      if (document.getElementById("title_area"))
+        location.replace('#title_area');
+      else
+        window.scrollTo('0', '0');
+    }
     else if (event.keyCode == 90) // Z
       window.scrollTo('0', document.body.clientHeight);
   }
