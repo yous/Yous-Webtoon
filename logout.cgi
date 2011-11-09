@@ -13,9 +13,9 @@ session = CGI::Session.new(cgi, "session_key" => "SSID", "prefix" => "rubysess."
 if session["user_id"] != nil and session["user_id"] != ""
   session["user_id"] = nil
   str = "<script>"
-  str += "toggle_login(false);"
-  str += "toonlist_area_init();"
-  str += "</script>"
+  str << "toggle_login(false);"
+  str << "toonlist_area_init();"
+  str << "</script>"
   puts str
 else
   session["user_id"] = nil
