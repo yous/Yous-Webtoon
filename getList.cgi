@@ -109,7 +109,10 @@ if site == "naver"
 
   # toonlist background-color 처리
   if session["user_id"] != nil and session["user_id"] != ""
-    str << "$.get(\"/cgi-bin/webtoon/putToonColor.cgi?site=naver\", function (data) { $(\"#display_area\").html(data); });"
+    str << '$("#loading").html("<big><b> Loading</b></big>");'
+    str << '$("#loading").css("display", "inline");'
+    str << 'loading(10);'
+    str << '$.get("/cgi-bin/webtoon/putToonColor.cgi", {site: "naver"}, function (data) { $("#loading").css("display", "none");$("#display_area").html(data); });'
   end
 
   str << '</script>'
@@ -207,7 +210,10 @@ elsif site == "daum"
   
   # toon background-color 처리
   if session["user_id"] != nil and session["user_id"] != ""
-    str << "$.get(\"/cgi-bin/webtoon/putToonColor.cgi?site=daum\", function (data) { $(\"#display_area\").html(data); });"
+    str << '$("#loading").html("<big><b> Loading</b></big>");'
+    str << '$("#loading").css("display", "inline");'
+    str << 'loading(10);'
+    str << '$.get("/cgi-bin/webtoon/putToonColor.cgi", {site: "daum"}, function (data) { $("#loading").css("display", "none");$("#display_area").html(data); });'
   end
 
   str << '</script>'
