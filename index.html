@@ -35,33 +35,31 @@
     </div>
     <table id="remote">
       <tr>
-        <td colspan="2"><b>북마크</b></td>
+        <td colspan="4"><b>북마크</b></td>
       </tr>
       <tr>
-        <td><input type="button" id="saveBM" value="저장" onclick="add_bookmark();" disabled="true"/><br/><small>(E)</small></td>
-        <td><input type="button" id="moveBM" value="이동" onclick="go_to(3);" disabled="true"/><br/><small>(R)</small></td>
+        <td colspan="2"><input type="button" id="saveBM" value="저장" onclick="add_bookmark();" disabled="true"/><br/><small>(E)</small></td>
+        <td colspan="2"><input type="button" id="moveBM" value="이동" onclick="go_to(3);" disabled="true"/><br/><small>(R)</small></td>
       </tr>
       <tr>
-        <td colspan="2"><a id="url" target="_blank">주소 링크</a><hr/></td>
+        <td colspan="4"><a id="url" target="_blank">주소 링크</a><hr/></td>
       </tr>
       <tr>
-        <td><input type="button" id="firstBtn" value="첫화" onclick="go_to(-2);" disabled="true"/><br/><small>(^←)</small></td>
-        <td><input type="button" id="lastBtn" value="마지막화" onclick="go_to(2);" disabled="true"/><br/><small>(^→)</small></td>
+        <td><input type="button" id="firstBtn" class="arrowBtn" value="&lt;&lt;" onclick="go_to(-2);" disabled="true"/></td>
+        <td><input type="button" id="prevBtn" class="arrowBtn" value="&lt;" onclick="go_to(-1);" disabled="true"/></td>
+        <td><input type="button" id="nextBtn" class="arrowBtn" value="&gt;" onclick="go_to(1);" disabled="true"/></td>
+        <td><input type="button" id="lastBtn" class="arrowBtn" value="&gt;&gt;" onclick="go_to(2);" disabled="true"/></td>
       </tr>
       <tr>
-        <td><input type="button" id="prevBtn" value="이전화" onclick="go_to(-1);" disabled="true"/></td>
-        <td><input type="button" id="nextBtn" value="다음화" onclick="go_to(1);" disabled="true"/></td>
+        <td colspan="2"><input type="text" id="inputNum"/>화</td>
+        <td colspan="2"><input type="button" id="dirBtn" value="이동" onclick="go_to(0);" disabled="true"/></td>
       </tr>
       <tr>
-        <td><input type="text" id="inputNum"/>화</td>
-        <td><input type="button" id="dirBtn" value="이동" onclick="go_to(0);" disabled="true"/></td>
+        <td colspan="2"><input type="button" value="↑" onclick="location.replace('#title_area');"/><br/><small>(^↑ or Q)</small></td>
+        <td colspan="2"><input type="button" value="↓" onclick="window.scrollTo('0', document.body.clientHeight);"/><br/><small>(^↓ or Z)</small></td>
       </tr>
       <tr>
-        <td><input type="button" value="위로" onclick="location.replace('#title_area');"/><br/><small>(^↑ or Q)</small></td>
-        <td><input type="button" value="아래로" onclick="window.scrollTo('0', document.body.clientHeight);"/><br/><small>(^↓ or Z)</small></td>
-      </tr>
-      <tr>
-        <td colspan="2"><hr/><small>↑(W)<br/>←(A) ↓(S) →(D)</small></td>
+        <td colspan="4"><hr/><small>(^←) ↑(W) (^→)<br/>←(A) ↓(S) →(D)</small></td>
       </tr>
     </table>
   </body>

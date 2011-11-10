@@ -62,6 +62,9 @@ input::-moz-focus-inner {
   height: 15px;
   font-size: 13px;
 }
+#remote .arrowBtn {
+  width: 25px;
+}
 #remote small {
   font-size: 12px;
 }
