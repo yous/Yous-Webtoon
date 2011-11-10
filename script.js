@@ -52,15 +52,11 @@ function site_change(_site)
   finishToon = [];
 
   $("#display_area").html("");
-  $("#loading").html("<big><b> Loading</b></big>");
-  $("#loading").css("display", "inline");
-  loading(10);
   $.get(
     "/cgi-bin/webtoon/getList.cgi",
     {site: _site},
     function (data) {
       site = _site;
-      $("#loading").css("display", "none");
       $("#toonlist_area").html(data);
     }
   );
