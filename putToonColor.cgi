@@ -66,6 +66,7 @@ if site == "naver"
 
   str << "lastNum={#{lastNum.keys.map {|v| "#{v}:#{lastNum[v]}"}.join(",")}};"
   str << "finishToon=[#{finishToon.join(",")}];"
+  str << "id=null;num=null;"
 
   # reqList 처리
   reqList.keys.each do |v|
@@ -119,6 +120,7 @@ elsif site == "daum"
   str << numList.keys.map {|v| "numList['#{v}']=[#{numList[v].join(",")}];"}.join()
   str << lastNum.keys.map {|v| "lastNum['#{v}']=#{lastNum[v]};"}.join()
   str << finishToon.map {|v| "finishToon.push('#{v}');"}.join()
+  str << "id=null;num=null;"
 
   # reqList 처리
   reqList.keys.each do |v|
