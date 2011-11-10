@@ -1,32 +1,38 @@
 body {
   overflow-y: scroll;
   overflow: -moz-scrollbars-vertical;
-	font-family: "맑은 고딕", "함초롬돋움", "Dotum", sans-serif;
-	font-size: 15px;
+  font-family: "맑은 고딕", "함초롬돋움", "Dotum", sans-serif;
+  font-size: 15px;
   text-align: center;
   cursor: default;
 }
 input {
-	font-family: "맑은 고딕", "함초롬돋움", "Dotum", sans-serif;
-	font-size: 13px;
-	text-align: center;
+  font-family: "맑은 고딕", "함초롬돋움", "Dotum", sans-serif;
+  font-size: 13px;
+  text-align: center;
+  overflow: visible;
+}
+input::-moz-focus-inner {
+  border: 0px;
+  padding: 0px;
+}
+.ie input {
+  padding-top: 0px;
+  padding-bottom: 0px;
 }
 #main_area {
-  text-align: center;
-	margin: 5px;
+  margin: 5px;
 }
 #title_area {
-	font-size: 17px;
-	text-align: center;
+  font-size: 17px;
 }
 #content_area {
-	text-align: center;
   clear: both;
 }
 #login_area {
   position: absolute;
   top: 10px;
-  right: 30px;
+  right: 15px;
 }
 #login_area input[type=text], #login_area input[type=password] {
   width: 50px;
@@ -37,44 +43,56 @@ input {
   font-size: 12px;
 }
 #remote {
-	width: 140px;
-	text-align: center;
-	position: fixed;
-	right: 10px;
+  border-spacing: 1px;
+  position: fixed;
+  right: 5px;
+  font-size: 14px;
 }
 #remote input {
-	width: 65px;
-	height: 25px;
+  padding: 0px;
+  width: 55px;
+  height: 20px;
+  font-size: 12px;
+}
+.ie #remote input {
+  height: 22px;
 }
 #remote input[type=text] {
-	width: 40px;
-	height: 20px;
-	font-size: 14px;
+  width: 30px;
+  height: 15px;
+  font-size: 13px;
+}
+#remote small {
+  font-size: 12px;
+}
+#remote hr {
+  margin: 3px;
 }
 small {
-	color: gray;
+  color: gray;
 }
 img {
-	display: block;
-	margin: 0 auto;
+  display: block;
+  margin: 0 auto;
 }
 #current_toonlist, #finished_toonlist {
   border-spacing: 0px;
 }
 .current_toon, .finished_toon {
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   position: relative;
 }
 .current_toon:hover, .finished_toon:hover {
-  -moz-box-shadow: 0px 0px 2px 2px #3399FF;
-  -webkit-box-shadow: 0px 0px 2px 2px #3399FF;
   box-shadow: 0px 0px 2px 2px #3399FF;
   z-index: 1;
 }
 .ie .current_toon:hover, .ie .finished_toon:hover {
   color: #3399FF;
+}
+.ie9 .current_toon:hover, .ie9 .finished_toon:hover {
+  color: #000000;
 }
 #artist_blog {
   text-align: center;

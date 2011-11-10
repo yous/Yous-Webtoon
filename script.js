@@ -5,9 +5,9 @@ function resizeWidth()
 {
   var main_area = document.getElementById("main_area");
   try {
-    main_area.style.width = parseInt(window.innerWidth - 185) + "px";
+    main_area.style.width = parseInt(window.innerWidth - 155) + "px";
   } catch (e) {
-    main_area.style.width = parseInt(document.documentElement.clientWidth - 168) + "px";
+    main_area.style.width = parseInt(document.documentElement.clientWidth - 138) + "px";
   }
 
   var current_toonlist = document.getElementById("current_toonlist");
