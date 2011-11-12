@@ -122,7 +122,7 @@ if site == "naver"
         end
       elsif v.name == "script"
         if f_exist
-          _content << '<script>alert("Flash Object Exists!");document.getElementById("toonlist_area").style.height=parseInt(document.getElementById(\'toonlist_area\').clientHeight-(document.getElementById(\'content_area\').offsetTop-437))+\'px\';document.getElementById("toonlist_area").style.overflow="scroll";$(document).unbind("keydown");$(document).bind("keydown",function(e){bodyKeyDown(e,false);});location.replace("#title_area");</script>'
+          _content << '<script>alert("Flash가 있습니다!\n잘 동작하지 않는 것 같다면 주소 링크로 들어가주세요.");document.getElementById("toonlist_area").style.height=parseInt(document.getElementById(\'toonlist_area\').clientHeight-(document.getElementById(\'content_area\').offsetTop-437))+\'px\';document.getElementById("toonlist_area").style.overflow="scroll";$(document).unbind("keydown");$(document).bind("keydown",function(e){bodyKeyDown(e,false);});location.replace("#title_area");</script>'
           f_exist = false
         end
         _s = $1.split(',').map {|v| $1 if v.strip =~ /^'([\w\W]*)'$/} if v.inner_html =~ /showFlash\(([\w\W]*)\);/
@@ -155,8 +155,9 @@ if site == "naver"
         _content << '</a>'
       elsif v.name == "br"
         _content << "<br/>"
+      # 예외 alert
       else
-        _content << "<script>alert(\"#{v.name}\");</script>"
+        _content << "<script>alert(\"예상하지 못한 태그(#{v.name})가 있습니다!\n관리자에게 알려주세요.\");</script>"
       end
     }
   }
