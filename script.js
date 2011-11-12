@@ -377,6 +377,7 @@ function viewToon(_id, _num)
   toonlist_area.style.overflow = "";
   $(document).unbind("keydown");
   $(document).bind("keydown", function (e) { bodyKeyDown(e, true); });
+  $("#largeFlashDiv").remove();
 
   if (_id != id)
     add_bookmark();
