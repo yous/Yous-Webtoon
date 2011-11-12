@@ -193,7 +193,7 @@ elsif site == "daum"
     str << "$.get(\"/cgi-bin/webtoon/displayToon.cgi?site=daum&id=#{v}&num=#{numList[v][0]}\");"
     (0...numList[v].length).each {|i|
       db.execute("UPDATE daum_numList SET toon_num=? WHERE toon_id=? AND toon_num_idx=?;", numList[v][i], v, i)
-      db.execute("INSERT INTO daum_numList (toon_id, toon_num_idx, toon_num) SELECT ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_numList WHERE toon_id=? AND toon_num_idx=?;", v, i, numList[v][i], v, i)
+      db.execute("INSERT INTO daum_numList (toon_id, toon_num_idx, toon_num) SELECT ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_numList WHERE toon_id=? AND toon_num_idx=?);", v, i, numList[v][i], v, i)
     }
     if reqList[v] == -1 # 완결
       lastNum[v] = numList[v][-1]
