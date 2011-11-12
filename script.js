@@ -504,92 +504,85 @@ function go_to(opt)
     alert("웹툰을 선택해 주세요!");
     return;
   }
-  // 첫 화
-  if (opt == -2)
-  {
-    if (site == "naver")
-      viewToon(id, 1);
-    else if (site == "daum")
-      viewToon(id, numList[id][0]);
-  }
-  // 마지막 화
-  else if (opt == 2)
-    viewToon(id, lastNum[id]);
-  // 이전 화
-  else if (opt == -1)
-  {
-    if (site == "naver")
-      if (num == 1)
-        alert("첫 화입니다!");
-      else
-        viewToon(id, num - 1);
-    else if (site == "daum")
-    {
-      if (num == numList[id][0])
-        alert("첫 화입니다!");
-      else
+  switch (opt) {
+    case -2: // 첫 화
+      if (site == "naver")
+        viewToon(id, 1);
+      else if (site == "daum")
+        viewToon(id, numList[id][0]);
+      break;
+    case 2: // 마지막 화
+      viewToon(id, lastNum[id]);
+      break;
+    case -1: // 이전 화
+      if (site == "naver")
+      {
+        if (num == 1)
+          alert("첫 화입니다!");
+        else
+          viewToon(id, num - 1);
+      }
+      else if (site == "daum")
+      {
+        if (num == numList[id][0])
+          alert("첫 화입니다!");
+        else
+        {
+          for (i = 0; i < numList[id].length; i++)
+            if (numList[id][i] == num)
+            {
+              viewToon(id, numList[id][i - 1]);
+              return;
+            }
+        }
+      }
+      break;
+    case 1: // 다음 화
+      if (num == lastNum[id])
+        alert("마지막 화입니다!");
+      else if (site == "naver")
+        viewToon(id, num + 1);
+      else if (site == "daum")
       {
         for (i = 0; i < numList[id].length; i++)
           if (numList[id][i] == num)
           {
-            viewToon(id, numList[id][i - 1]);
+            viewToon(id, numList[id][i + 1]);
             return;
           }
       }
-    }
-  }
-  // 다음 화
-  else if (opt == 1)
-  {
-    if (num == lastNum[id])
-      alert("마지막 화입니다!");
-    else if (site == "naver")
-      viewToon(id, num + 1);
-    else if (site == "daum")
-    {
-      for (i = 0; i < numList[id].length; i++)
-        if (numList[id][i] == num)
-        {
-          viewToon(id, numList[id][i + 1]);
-          return;
-        }
-    }
-  }
-  // 직접 이동
-  else if (opt == 0)
-  {
-    var inputNum = parseInt($("#inputNum").val());
-    if (isNaN(inputNum))
-    {
-      alert("잘못 입력하셨습니다!");
-      return;
-    }
+      break;
+    case 0: // 직접 이동
+      var inputNum = parseInt($("#inputNum").val());
+      if (isNaN(inputNum))
+      {
+        alert("잘못 입력하셨습니다!");
+        return;
+      }
+      if (inputNum < 1)
+        inputNum = 1;
 
-    if (inputNum < 1)
-      inputNum = 1;
+      if (site == "naver")
+      {
+        if (inputNum > lastNum[id])
+          inputNum = lastNum[id];
+      }
+      else if (site == "daum")
+      {
+        inputNum -= 1;
+        if (inputNum >= numList[id].length)
+          inputNum = numList[id].length - 1;
+        inputNum = numList[id][inputNum];
+      }
 
-    if (site == "naver")
-    {
-      if (inputNum > lastNum[id])
-        inputNum = lastNum[id];
-    }
-    else if (site == "daum")
-    {
-      inputNum -= 1;
-      if (inputNum >= numList[id].length)
-        inputNum = numList[id].length - 1;
-      inputNum = numList[id][inputNum];
-    }
-
-    viewToon(id, inputNum);
-  }
-  // 북마크 이동
-  else if (opt == 3)
-  {
-    if (toonBM[id])
-      viewToon(id, toonBM[id]);
-    else
-      alert("저장된 북마크가 없습니다!");
+      viewToon(id, inputNum);
+      break;
+    case 3: // 북마크 이동
+      if (toonBM[id])
+        viewToon(id, toonBM[id]);
+      else
+        alert("저장된 북마크가 없습니다!");
+      break;
   }
 }
 
@@ -601,59 +594,50 @@ function bodyKeyDown(e, lr_arrow)
 
   if (event.ctrlKey)
   {
-    if (event.keyCode == 37) // ^←
-      $("#firstBtn").trigger("click");
-    else if (event.keyCode == 39) // ^→
-      $("#lastBtn").trigger("click");
-    else if (event.keyCode == 38) // ^↑
-      window.scrollTo('0', '0');
-    else if (event.keyCode == 40) // ^↓
-      window.scrollTo('0', document.body.clientHeight);
+    switch (event.keyCode) {
+      case 37: $("#firstBtn").trigger("click"); break; // ^←
+      case 39: $("#lastBtn").trigger("click"); break; // ^→
+      case 38: window.scrollTo('0', '0'); break; // ^↑
+      case 40: window.scrollTo('0', document.body.clientHeight); break; // ^↓
+    }
   }
   else if (event.shiftKey)
   {
-    if (event.keyCode == 78) // Shift + N
-    {
-      if (document.getElementById("Naver"))
-        $("#Naver").trigger("click");
-      else if (site != "naver")
-        $("#site_button").trigger("click");
-    }
-    else if (event.keyCode == 68) // Shift + D
-    {
-      if (document.getElementById("Daum"))
-        $("#Daum").trigger("click");
-      else if (site != "daum")
-        $("#site_button").trigger("click");
+    switch (event.keyCode) {
+      case 78: // Shift + N
+        if (document.getElementById("Naver"))
+          $("#Naver").trigger("click");
+        else if (site != "naver")
+          $("#site_button").trigger("click");
+        break;
+      case 68: // Shift + D
+        if (document.getElementById("Daum"))
+          $("#Daum").trigger("click");
+        else if (site != "daum")
+          $("#site_button").trigger("click");
+        break;
     }
   }
   else
   {
-    if (event.keyCode == 69) // E
-      $("#saveBM").trigger("click");
-    else if (event.keyCode == 82) // R
-      $("#moveBM").trigger("click");
-    else if (event.keyCode == 13) // Enter
-      $("#dirBtn").trigger("click");
-    else if ((event.keyCode == 37 && lr_arrow == true) || event.keyCode == 65) // ← or A
-      $("#prevBtn").trigger("click");
-    else if ((event.keyCode == 39 && lr_arrow == true) || event.keyCode == 68) // → or D
-      $("#nextBtn").trigger("click");
-    else if (event.keyCode == 87) // W
-      for (i = 0; i < 10; i++)
-        window.scrollBy('0', '-9');
-    else if (event.keyCode == 83) // S
-      for (i = 0; i < 10; i++)
-        window.scrollBy('0', '9');
-    else if (event.keyCode == 81) // Q
-    {
-      if (document.getElementById("title_area"))
-        location.replace('#title_area');
-      else
-        window.scrollTo('0', '0');
+    switch (event.keyCode) {
+      case 69: $("#saveBM").trigger("click"); break; // E
+      case 82: $("#moveBM").trigger("click"); break; // R
+      case 13: $("#dirBtn").trigger("click"); break; // Enter
+      case 37: if (lr_arrow) { $("#prevBtn").trigger("click"); } break; // ←
+      case 39: if (lr_arrow) { $("#nextBtn").trigger("click"); } break; // →
+      case 65: $("#prevBtn").trigger("click"); break; // A
+      case 68: $("#nextBtn").trigger("click"); break; // D
+      case 87: for (i = 0; i < 10; i++) { window.scrollBy('0', '-9'); } break; // W
+      case 83: for (i = 0; i < 10; i++) { window.scrollBy('0', '9'); } break; // S
+      case 81: // Q
+        if (document.getElementById("title_area"))
+          location.replace("#title_area");
+        else
+          window.scrollTo('0' ,'0');
+        break;
+      case 90: window.scrollTo('0', document.body.clientHeight); break; // Z
     }
-    else if (event.keyCode == 90) // Z
-      window.scrollTo('0', document.body.clientHeight);
   }
 }
 
