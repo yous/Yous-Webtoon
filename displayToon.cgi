@@ -178,11 +178,11 @@ if site == "naver"
             end
           end
           if count <= 1
-            _content << "<hr id=\"anchor_0\" style=\"width: 80%; border: 0px;\"/><br/>" if count == 0
+            _content << "<hr id=\"anchor_0\" style=\"width: 80%; height: 1px; border: 0px;\"/>" if count == 0
             _content << "<img src=\"/webtoon/tmp/#{url.gsub(/\//, "@")}\" style=\"display: inline; width: 470px; height: 670px;\" onload=\"location.replace('#title_area');\">"
             count += 1
           else
-            _content << ((count % 2 == 0) ? "<br/><br/><hr id=\"anchor_#{count / 2}\" style=\"width: 80%; border: 0px;\"/><br/>" : "")
+            _content << ((count % 2 == 0) ? "<hr id=\"anchor_#{count / 2}\" style=\"width: 80%; height: 1px; border: 0px;\"/>" : "")
             _content << "<img src=\"/webtoon/tmp/#{url.gsub(/\//, "@")}\" style=\"display: inline; width: 470px; height: 670px;\">"
             count += 1
           end
