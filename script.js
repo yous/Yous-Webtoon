@@ -177,7 +177,7 @@ function add_bookmark()
         }
       }
 
-      window.scrollTo('0', '0');
+      location.replace("#");
     }
     else if (!toonBM[id] && (site == "naver" && num != 1 || site == "daum" && num != numList[id][0]) || toonBM[id] && toonBM[id] != num)
     {
@@ -216,7 +216,7 @@ function add_bookmark()
               same_td[j].style.backgroundColor = (toonBM[id] == lastNum[id]) ? btnColor["saved_finish"] : btnColor["saved_up"];
             }
 
-            window.scrollTo('0', '0');
+            location.replace("#");
           }
         }
       }
@@ -598,8 +598,8 @@ function bodyKeyDown(e, lr_arrow)
     switch (event.keyCode) {
       case 37: $("#firstBtn").trigger("click"); break; // ^←
       case 39: $("#lastBtn").trigger("click"); break; // ^→
-      case 38: window.scrollTo('0', '0'); break; // ^↑
-      case 40: window.scrollTo('0', document.body.clientHeight); break; // ^↓
+      case 38: location.replace("#title_area"); break; // ^↑
+      case 40: location.replace("#bottom"); break; // ^↓
     }
   }
   else if (event.shiftKey)
@@ -629,15 +629,53 @@ function bodyKeyDown(e, lr_arrow)
       case 39: if (lr_arrow) { $("#nextBtn").trigger("click"); } break; // →
       case 65: $("#prevBtn").trigger("click"); break; // A
       case 68: $("#nextBtn").trigger("click"); break; // D
-      case 87: for (i = 0; i < 10; i++) { window.scrollBy('0', '-9'); } break; // W
-      case 83: for (i = 0; i < 10; i++) { window.scrollBy('0', '9'); } break; // S
+      case 87: // W
+        if ($("#display_area hr").length == 0)
+        {
+          for (i = 0; i < 10; i++)
+            window.scrollBy('0', '-9');
+        }
+        else
+        {
+          var hrs = $("#display_area hr");
+          switch (location.hash) {
+            case "#bottom": location.replace("#anchor_" + String(hrs.length - 1)); break;
+            case "#anchor_0": location.replace("#title_area"); break;
+            case "#title_area": location.replace("#"); break;
+            default:
+              if (location.hash.substring(0, 8) == "#anchor_")
+                location.replace("#anchor_" + String(parseInt(location.hash.substring(8)) - 1));
+              break;
+          }
+        }
+        break;
+      case 83: // S
+        if ($("#display_area hr").length == 0)
+        {
+          for (i = 0; i < 10; i++)
+            window.scrollBy('0', '9');
+        }
+        else
+        {
+          var hrs = $("#display_area hr");
+          switch (location.hash) {
+            case "": location.replace("#title_area"); break;
+            case "#title_area": location.replace("#anchor_0"); break;
+            case "#anchor_" + String(hrs.length - 1): location.replace("#bottom"); break;
+            default:
+              if (location.hash.substring(0, 8) == "#anchor_")
+                location.replace("#anchor_" + String(parseInt(location.hash.substring(8)) + 1));
+              break;
+          }
+        }
+        break;
       case 81: // Q
         if (document.getElementById("title_area"))
           location.replace("#title_area");
         else
-          window.scrollTo('0' ,'0');
+          location.replace("#");
         break;
-      case 90: window.scrollTo('0', document.body.clientHeight); break; // Z
+      case 90: location.replace("#bottom"); break; // Z
     }
   }
 }
