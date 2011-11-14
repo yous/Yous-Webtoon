@@ -181,7 +181,7 @@ if site == "naver"
             _content << "<img src=\"/webtoon/tmp/#{url.gsub(/\//, "@")}\" style=\"display: inline; width: 470px; height: 670px;\" onload=\"location.replace('#title_area');\">"
             count += 1
           else
-            _content << (count % 2 == 0) ? "<br/><br/><hr style=\"width: 900px;\"/><br/>" : ""
+            _content << ((count % 2 == 0) ? "<br/><br/><hr style=\"width: 900px;\"/><br/>" : "")
             _content << "<img src=\"/webtoon/tmp/#{url.gsub(/\//, "@")}\" style=\"display: inline; width: 470px; height: 670px;\">"
             count += 1
           end
