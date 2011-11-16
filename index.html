@@ -13,8 +13,13 @@
         resizeWidth();
         toonlist_area_init();
         $(this).bind("keydown", function(e) { bodyKeyDown(e, true); });
-        $("#login_area").bind("focusin", function() { $(document).unbind("keydown");  });
+        $("#login_area").bind("focusin", function() { $(document).unbind("keydown"); });
         $("#login_area").bind("focusout", function() { $(document).bind("keydown", function(e) { bodyKeyDown(e, true); }); });
+        if (navigator.appVersion.indexOf("MSIE") != -1)
+        {
+          $("#ID").css("display", "inline");
+          $("#PW").css("display", "inline");
+        }
         $("#login").bind("click", function() { login(); });
         $("#join").bind("click", function() { join(); });
         $("#user_id").focus();
@@ -29,8 +34,8 @@
       <div id="display_area"></div>
     </div>
     <div id="login_area">
-      ID <input type="text" id="user_id" size="10"/><br/>
-      PW <input type="password" id="user_pw" size="10"/><br/>
+      <span id="ID" style="display: none;">ID </span><input type="text" id="user_id" placeholder="ID"/><br/>
+      <span id="PW" style="display: none;">PW </span><input type="password" id="user_pw" placeholder="Password"/><br/>
       <input type="button" id="login" value="Login"/><input type="button" id="join" value="Join"/>
     </div>
     <table id="remote">
