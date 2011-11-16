@@ -48,6 +48,7 @@ function site_change(_site)
   num = null;
   toonBM = new Object();
   numList = new Object();
+  dateList = new Object();
   lastNum = new Object();
   finishToon = [];
 
@@ -161,7 +162,8 @@ function add_bookmark()
       else if (site == "daum")
       {
         req_numList = numList[id].join(" ");
-        $.post("/cgi-bin/webtoon/saveBM.cgi", {site: site, add: "no", toon_id: id, toon_num: num, numList: req_numList, finish: _finish});
+        req_dateList = dateList[id].join(" ");
+        $.post("/cgi-bin/webtoon/saveBM.cgi", {site: site, add: "no", toon_id: id, toon_num: num, numList: req_numList, dateList: req_dateList, finish: _finish});
       }
       alert("북마크가 저장되었습니다!");
       $("#moveBM").attr("disabled", true);
@@ -194,7 +196,8 @@ function add_bookmark()
       else if (site == "daum")
       {
         req_numList = numList[id].join(" ");
-        $.post("/cgi-bin/webtoon/saveBM.cgi", {site: site, add: "yes", toon_id: id, toon_num: num, numList: req_numList, finish: _finish});
+        req_dateList = dateList[id].join(" ");
+        $.post("/cgi-bin/webtoon/saveBM.cgi", {site: site, add: "yes", toon_id: id, toon_num: num, numList: req_numList, dateList: req_dateList, finish: _finish});
       }
       alert("북마크가 저장되었습니다!");
       $("#saveBM").attr("disabled", true);
@@ -692,5 +695,6 @@ btnColor = {
   "link" : "#0066CC"};
 toonBM = new Object();
 numList = new Object();
+dateList = new Object();
 lastNum = new Object();
 finishToon = [];

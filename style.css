@@ -29,6 +29,9 @@ input::-moz-focus-inner {
 #content_area {
   clear: both;
 }
+#toon_date {
+  float: right;
+}
 #login_area {
   position: absolute;
   top: 10px;
