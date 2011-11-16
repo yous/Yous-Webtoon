@@ -57,7 +57,7 @@ if site == "naver"
   resp.search('//div[@class="tit_area"]').each {|r|
     title = r.search('div[@class="view"]/h3')[0].inner_html
     date = r.search('div[@class="vote_lst"]/dl[@class="rt"]/dd[@class="date"]')[0].inner_html
-    _title << "<b>#{title}</b></div><small style=\"float: right;\">#{date}</small>"
+    _title << "<b>#{title}</b></div><small id=\"toon_date\">#{date}</small>"
   }
 
   # BGM 출력
@@ -250,7 +250,8 @@ elsif site == "daum"
   }
   # 웹툰 회, 날짜 출력
   title = resp.search('//div[@class="others"]/span/span[@class="episode_title"]')[0].inner_html
-  _title << "<b>#{title}</b></div>"
+  _title << "<b>#{title}</b></div><small id=\"toon_date\"></small>"
+  _title << "<script>$('#toon_date').html(dateList['#{id}'][numList['#{id}'].indexOf(#{num})]);</script>"
 
   # 만화책 형식이 아닌 웹툰
   if resp.search('//div[@class="img_list_wrap"]').length > 0

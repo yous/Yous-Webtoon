@@ -15,6 +15,7 @@ toon_num = (cgi.has_key?("toon_num")) ? cgi.params["toon_num"][0].to_i : nil
 finish = (cgi.has_key?("finish")) ? cgi.params["finish"][0] : nil
 # only for Daum 웹툰
 numList = (cgi.has_key?("numList")) ? cgi.params["numList"][0].split.map(&:to_i) : nil
+dateList = (cgi.has_key?("dateList")) ? cgi.params["dateList"][0].split : nil
 
 session = CGI::Session.new(cgi, "session_key" => "SSID", "prefix" => "rubysess.", "tmpdir" => "sess")
 
@@ -24,7 +25,7 @@ db.execute("CREATE TABLE IF NOT EXISTS naver_bm (id INTEGER, toon_id INTEGER, to
 db.execute("CREATE TABLE IF NOT EXISTS naver_lastNum (toon_id INTEGER PRIMARY KEY, toon_num INTEGER);")
 db.execute("CREATE TABLE IF NOT EXISTS daum_bm (id INTEGER, toon_id VARCHAR(255), toon_num INTEGER);")
 db.execute("CREATE TABLE IF NOT EXISTS daum_lastNum (toon_id VARCHAR(255), toon_num INTEGER);")
-db.execute("CREATE TABLE IF NOT EXISTS daum_numList (toon_id VARCHAR(255), toon_num_idx INTEGER, toon_num INTEGER);")
+db.execute("CREATE TABLE IF NOT EXISTS daum_numList (toon_id VARCHAR(255), toon_num_idx INTEGER, toon_num INTEGER, toon_date VARCHAR(10));")
 
 if session["user_id"] != nil and session["user_id"] != "" and add != nil and toon_id != nil and toon_num != nil and finish != nil
   # Naver 웹툰
@@ -42,8 +43,8 @@ if session["user_id"] != nil and session["user_id"] != "" and add != nil and too
   # Daum 웹툰
   elsif site == "daum" and numList != nil
     (0...numList.length).each {|i|
-      db.execute("UPDATE daum_numList SET toon_num=? WHERE toon_id=? AND toon_num_idx=?;", numList[i], toon_id, i)
-      db.execute("INSERT INTO daum_numList (toon_id, toon_num_idx, toon_num) SELECT ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_numList WHERE toon_id=? AND toon_num_idx=?);", toon_id, i, numList[i], toon_id, i)
+      db.execute("UPDATE daum_numList SET toon_num=?, toon_date=? WHERE toon_id=? AND toon_num_idx=?;", numList[i], dateList[i], toon_id, i)
+      db.execute("INSERT INTO daum_numList (toon_id, toon_num_idx, toon_num, toon_date) SELECT ?, ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_numList WHERE toon_id=? AND toon_num_idx=?);", toon_id, i, numList[i], dateList[i], toon_id, i)
     }
     if add == "yes"
       db.execute("UPDATE daum_bm SET toon_num=? WHERE id=? AND toon_id=?;", toon_num, session["user_id"], toon_id)

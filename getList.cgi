@@ -18,7 +18,7 @@ db.execute("CREATE TABLE IF NOT EXISTS naver_lastNum (toon_id INTEGER PRIMARY KE
 db.execute("CREATE TABLE IF NOT EXISTS naver_tmpList (toon_id INTEGER PRIMARY KEY);")
 db.execute("CREATE TABLE IF NOT EXISTS daum_bm (id INTEGER, toon_id VARCHAR(255), toon_num INTEGER);")
 db.execute("CREATE TABLE IF NOT EXISTS daum_lastNum (toon_id VARCHAR(255), toon_num INTEGER);")
-db.execute("CREATE TABLE IF NOT EXISTS daum_numList (toon_id VARCHAR(255), toon_num_idx INTEGER, toon_num INTEGER);")
+db.execute("CREATE TABLE IF NOT EXISTS daum_numList (toon_id VARCHAR(255), toon_num_idx INTEGER, toon_num INTEGER, toon_date VARCHAR(10));")
 
 a = Mechanize.new
 
@@ -121,13 +121,16 @@ if site == "naver"
 # Daum 웹툰
 elsif site == "daum"
   numList = Hash.new
+  dateList = Hash.new
   lastNum = Hash.new
   finishToon = []
   reqList = Hash.new
 
-  db.execute("SELECT toon_id, toon_num FROM daum_numList ORDER BY toon_num_idx;") do |_toon_id, _toon_num|
+  db.execute("SELECT toon_id, toon_num, toon_date FROM daum_numList ORDER BY toon_num_idx;") do |_toon_id, _toon_num, _toon_date|
     numList[_toon_id] = [] if numList[_toon_id] == nil
     numList[_toon_id].push(_toon_num)
+    dateList[_toon_id] = [] if dateList[_toon_id] == nil
+    dateList[_toon_id].push(_toon_date)
   end
 
   # 연재
@@ -151,7 +154,7 @@ elsif site == "daum"
         _title = v1.attributes["title"].value
         _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
-        reqList[_titleId] = 0 if numList[_titleId] == nil
+        reqList[_titleId] = 0 if numList[_titleId] == nil or dateList[_titleId] == nil or dateList[_titleId].include?(nil)
 
         str << "<div id=\"#{_titleId}\" name=\"#{_titleId}\" class=\"current_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon('#{_titleId}');\">#{_title}</div>"
         count += 1
@@ -176,7 +179,7 @@ elsif site == "daum"
     _title = r.search('p')[0].attributes["title"].value
     _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
-    reqList[_titleId] = -1 if numList[_titleId] == nil
+    reqList[_titleId] = -1 if numList[_titleId] == nil or dateList[_titleId] == nil or dateList[_titleId].include?(nil)
 
     str_td[count % 7] << "<div id=\"#{_titleId}\" name=\"#{_titleId}\" class=\"finished_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon('#{_titleId}');\">#{_title}</div>"
     count += 1
@@ -189,22 +192,29 @@ elsif site == "daum"
   # reqList 처리
   str << '<script>'
   reqList.keys.each do |v|
-    numList[v] = a.get("http://192.168.92.128/cgi-bin/webtoon/getNum.cgi?site=daum&id=#{v}").body.split().map(&:to_i)
+    numList[v] = []
+    dateList[v] = []
+    a.get("http://192.168.92.128/cgi-bin/webtoon/getNum.cgi?site=daum&id=#{v}").body.split().map {|item|
+      numList[v].push(item.split(",")[0].to_i)
+      dateList[v].push(item.split(",")[1])
+    }
+
     str << "$.get(\"/cgi-bin/webtoon/displayToon.cgi?site=daum&id=#{v}&num=#{numList[v][0]}\");"
     (0...numList[v].length).each {|i|
-      db.execute("UPDATE daum_numList SET toon_num=? WHERE toon_id=? AND toon_num_idx=?;", numList[v][i], v, i)
-      db.execute("INSERT INTO daum_numList (toon_id, toon_num_idx, toon_num) SELECT ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_numList WHERE toon_id=? AND toon_num_idx=?);", v, i, numList[v][i], v, i)
+      db.execute("UPDATE daum_numList SET toon_num=?, toon_date=? WHERE toon_id=? AND toon_num_idx=?;", numList[v][i], dateList[v][i], v, i)
+      db.execute("INSERT INTO daum_numList (toon_id, toon_num_idx, toon_num, toon_date) SELECT ?, ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_numList WHERE toon_id=? AND toon_num_idx=?);", v, i, numList[v][i], dateList[v][i], v, i)
     }
     if reqList[v] == -1 # 완결
       lastNum[v] = numList[v][-1]
       finishToon.push(v)
       db.execute("UPDATE daum_lastNum SET toon_num=? WHERE toon_id=?;", numList[v][-1], v)
-      db.execute("INSERT INTO daum_lastNum (toon_id, toon_num) SELECT ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_lastNum WHERE toon_id=?;", v, numList[v][-1], v)
+      db.execute("INSERT INTO daum_lastNum (toon_id, toon_num) SELECT ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_lastNum WHERE toon_id=?);", v, numList[v][-1], v)
     end
   end
   str << 'resizeWidth();'
 
   str << "numList={#{numList.keys.map {|v| "'#{v}':[#{numList[v].join(",")}]"}.join(",")}};"
+  str << "dateList={#{dateList.keys.map {|v| "'#{v}':['#{dateList[v].join("','")}']"}.join(",")}};"
   str << "lastNum={#{lastNum.keys.map {|v| "'#{v}':#{lastNum[v]}"}.join(",")}};"
   str << "finishToon=[#{finishToon.map {|v| "'#{v}'"}.join(",")}];"
   

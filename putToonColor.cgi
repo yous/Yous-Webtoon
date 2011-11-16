@@ -17,7 +17,7 @@ db.execute("CREATE TABLE IF NOT EXISTS naver_bm (id INTEGER, toon_id INTEGER, to
 db.execute("CREATE TABLE IF NOT EXISTS naver_lastNum (toon_id INTEGER PRIMARY KEY, toon_num INTEGER);")
 db.execute("CREATE TABLE IF NOT EXISTS daum_bm (id INTEGER, toon_id VARCHAR(255), toon_num INTEGER);")
 db.execute("CREATE TABLE IF NOT EXISTS daum_lastNum (toon_id VARCHAR(255), toon_num INTEGER);")
-db.execute("CREATE TABLE IF NOT EXISTS daum_numList (toon_id VARCHAR(255), toon_num_idx INTEGER, toon_num INTEGER);")
+db.execute("CREATE TABLE IF NOT EXISTS daum_numList (toon_id VARCHAR(255), toon_num_idx INTEGER, toon_num INTEGER, toon_date VARCHAR(10));")
 
 a = Mechanize.new
 
@@ -80,13 +80,16 @@ if site == "naver"
 elsif site == "daum"
   toonBM = Hash.new
   numList = Hash.new
+  dateList = Hash.new
   lastNum = Hash.new
   finishToon = []
   reqList = Hash.new
 
-  db.execute("SELECT toon_id, toon_num FROM daum_numList ORDER BY toon_num_idx;") do |_toon_id, _toon_num|
+  db.execute("SELECT toon_id, toon_num, toon_date FROM daum_numList ORDER BY toon_num_idx;") do |_toon_id, _toon_num, _toon_date|
     numList[_toon_id] = [] if numList[_toon_id] == nil
     numList[_toon_id].push(_toon_num)
+    dateList[_toon_id] = [] if dateList[_toon_id] == nil
+    dateList[_toon_id].push(_toon_date)
   end
 
   db.execute("SELECT toon_id, toon_num FROM daum_bm WHERE id=? ORDER BY toon_id;", session["user_id"]) do |_toon_id, _toon_num|
@@ -118,6 +121,7 @@ elsif site == "daum"
   str << col_str
 
   str << numList.keys.map {|v| "numList['#{v}']=[#{numList[v].join(",")}];"}.join()
+  str << dateList.keys.map {|v| "dateList['#{v}']=['#{dateList[v].join("','")}'];"}.join()
   str << lastNum.keys.map {|v| "lastNum['#{v}']=#{lastNum[v]};"}.join()
   str << finishToon.map {|v| "finishToon.push('#{v}');"}.join()
   str << "id=null;num=null;"

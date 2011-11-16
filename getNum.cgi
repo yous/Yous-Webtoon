@@ -26,13 +26,20 @@ if site == "naver"
   }
 # Daum 웹툰
 elsif site == "daum"
-  str = []
+  str = ""
   resp = a.get "http://cartoon.media.daum.net/webtoon/view/#{id}"
 
-  num_resp = a.get "http://cartoon.media.daum.net/webtoon/viewer/#{$1 if resp.search('//div[@class="webtoon"]/script').inner_html =~ /url:"\/webtoon\/viewer\/(\d+)"/}"
+  resp.
+    search('//div[@id="daumContent"]/div/div[@class="webtoon"]/script')[0].
+    inner_html.strip.split(";").map(&:strip).
+    find_all {|v| v =~ /data1\.push\([\w\W]*\)/}.
+    map {|v|
+      {"num" => $1, "date" => $2} if v =~ /data1\.push\(\s*\{\s*img\s*:\s*"[\w\W]*"\s*,\s*title\s*:\s*"[\w\W]*"\s*,\s*shortTitle\s*:\s*"[\w\W]*"\s*,\s*url\s*:\s*"\/webtoon\/viewer\/(\d+)"\s*,\s*date\s*:\s*"([\w\W]*)"\s*,\s*price\s*:\s*"[\w\W]*"\s*,\s*finishYn\s*:\s*"[\w\W]*"\s*,\s*payYn\s*:\s*"[\w\W]*"\s*\}\s*\)/
+    }.
+    reverse.
+    each {|v|
+      str << "#{v["num"]},#{v["date"]} "
+    }
 
-  num_resp.search('//div[@class="episode_list"]/div/div[@class="scroll_wrap"]/ul/li').each {|r|
-    str.push($1) if r.search('a')[0].attributes["href"].value =~ /\/webtoon\/viewer\/(\d+)/
-  }
-  puts str.join(" ")
+  puts str[0...-1]
 end
