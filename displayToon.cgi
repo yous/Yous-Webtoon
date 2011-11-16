@@ -46,11 +46,11 @@ if site == "naver"
   resp.search('//div[@class="dsc"]').each {|r|
     comic_title, writer = $1, $2 if r.search('h2')[0].inner_html =~ /([\w\W]*)<em>([\w\W]*)<\/em>/
     if resp.body =~ /<p class="txt">([\w\W]*)<\/p>[\w\W]*<ul class="btn_group">[\w\W]*<div class="tit_area">/
-      comic_text = $1.gsub(/^<br\/?>/, "").gsub(/<br\/?>$/, "").gsub(/<br\/?>/, " ").gsub("<", "&lt;").gsub(">", "&gt;")
+      comic_text = $1.gsub(/^<br\/?>/i, "").gsub(/<br\/?>$/i, "").gsub(/<br\/?>/i, " ").gsub("<", "&lt;").gsub(">", "&gt;")
     end
-    #comic_text = r.search('p[@class="txt"]')[0].inner_html.strip().gsub(/^<br\/?>/, "").gsub(/<br\/?>$/, "").gsub(/<br\/?>/, " ")
+    #comic_text = r.search('p[@class="txt"]')[0].inner_html.strip().gsub(/^<br\/?>/i, "").gsub(/<br\/?>$/i, "").gsub(/<br\/?>/i, " ")
     comic_title = comic_title.strip()
-    writer = writer.strip().gsub(/^<span>\s*/, "").gsub(/\s*<\/span>/, "")
+    writer = writer.strip().gsub(/^<span>\s*/i, "").gsub(/\s*<\/span>/i, "")
     _title << "<div style=\"padding: 15px 0px 15px 0px; background-color: #{btnColor["buttonB"]};\">#{comic_title} - #{writer}<br/><small style=\"font-size: 12px;\">#{comic_text}</small><br/><br/>"
   }
   # 웹툰 회, 날짜 출력
