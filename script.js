@@ -286,55 +286,99 @@ function show_table()
 // 작가 정보 table 토글
 function show_artist_table(opt)
 {
-  $("#artist_otherlist").attr("name", "");
-  $("#artist_otherlist").html("");
-  $("#artist_otherlist").css("display", "none");
-
-  if (opt == 0)
-  {
-    $("#artist_other").css("display", "none");
-    if ($("#artist_blog").css("display") == "none")
-    {
-      $("#artist_blog").css("display", "block");
-      location.replace("#artist_info");
-    }
-    else
-      $("#artist_blog").css("display", "none");
-  }
-  else
-  {
-    $("#artist_blog").css("display", "none");
-    if ($("#artist_other").css("display") == "none")
-    {
-      $("#artist_other").css("display", "block");
-      location.replace("#artist_info");
-    }
-    else
-      $("#artist_other").css("display", "none");
-  }
-}
-
-// 작가의 다른 작품 출력
-function getOtherToon(_artistId)
-{
-  if ($("#artist_otherlist").attr("name") != _artistId)
-  {
-    $("#artist_otherlist").attr("name", _artistId);
-    $("#artist_otherlist").css("display", "block");
-    $.get(
-      "/cgi-bin/webtoon/getOtherToon.cgi",
-      {artistId : _artistId},
-      function (data) {
-        $("#artist_otherlist").html(data + "<br/>");
-        location.replace("#artist_otherlist");
-      }
-    );
-  }
-  else
+  if (site == "naver")
   {
     $("#artist_otherlist").attr("name", "");
     $("#artist_otherlist").html("");
     $("#artist_otherlist").css("display", "none");
+
+    if (opt == 0)
+    {
+      $("#artist_other").css("display", "none");
+      if ($("#artist_blog").css("display") == "none")
+      {
+        $("#artist_blog").css("display", "block");
+        location.replace("#artist_info");
+      }
+      else
+        $("#artist_blog").css("display", "none");
+    }
+    else
+    {
+      $("#artist_blog").css("display", "none");
+      if ($("#artist_other").css("display") == "none")
+      {
+        $("#artist_other").css("display", "block");
+        location.replace("#artist_info");
+      }
+      else
+        $("#artist_other").css("display", "none");
+    }
+  }
+  else if (site == "daum")
+  {
+    if (opt == 0)
+      getOtherToon(id);
+    else
+      getOtherToon(id, false);
+  }
+}
+
+// 작가의 다른 작품 출력
+function getOtherToon(_id, /* Daum 웹툰용 */ check_other)
+{
+  if (check_other == null)
+    check_other = true;
+
+  if (site == "naver")
+  {
+    if ($("#artist_otherlist").attr("name") != _id)
+    {
+      $("#artist_otherlist").attr("name", _id);
+      $("#artist_otherlist").css("display", "block");
+      $.get(
+        "/cgi-bin/webtoon/getOtherToon.cgi",
+        {site: site, id: _id},
+        function (data) {
+          $("#artist_otherlist").html(data + "<br/>");
+          location.replace("#artist_otherlist");
+        }
+      );
+    }
+    else
+    {
+      $("#artist_otherlist").attr("name", "");
+      $("#artist_otherlist").html("");
+      $("#artist_otherlist").css("display", "none");
+    }
+  }
+  else if (site == "daum")
+  {
+    if (check_other)
+      var _name = "other";
+    else
+      var _name = "gall";
+    check_other = (check_other) ? "y" : "n";
+
+    if ($("#artist_otherlist").attr("name") != _name)
+    {
+      $("#artist_otherlist").attr("name", _name);
+      $("#artist_otherlist").css("display", "block");
+      $.get(
+        "/cgi-bin/webtoon/getOtherToon.cgi",
+        {site: site, id: _id, other: check_other},
+        function (data) {
+          $("#artist_otherlist").html(data + "<br/>");
+          location.replace("#artist_otherlist");
+        }
+      );
+    }
+    else
+    {
+      $("#artist_otherlist").attr("name", "");
+      $("#artist_otherlist").html("");
+      $("#artist_otherlist").css("display", "none");
+    }
   }
 }
 
