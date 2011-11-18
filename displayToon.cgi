@@ -64,10 +64,10 @@ if site == "naver"
   resp.search('//div[@id="bgm_player"]').each {|r|
     r.search('script').each {|e|
       bgmURL = $1 if e.inner_html =~ /showMusicPlayer\("http:\/\/(.*)"\);/
-      if not File::exists?("/var/www/webtoon/tmp/#{bgmURL.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}")
+      if not File::exists?("/var/www/webtoon/tmp/#{bgmURL.gsub(/\//, "@")}")
         _data = a.get("http://#{bgmURL}").body
         if _data != nil
-          File.open("/var/www/webtoon/tmp/#{bgmURL.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}", "w") do |f|
+          File.open("/var/www/webtoon/tmp/#{bgmURL.gsub(/\//, "@")}", "w") do |f|
             f.write(_data)
           end
         end
@@ -106,10 +106,10 @@ if site == "naver"
     r.element_children.each {|v|
       if v.name == "img"
         url = $1 if v.attributes["src"].to_s =~ /http:\/\/(.*)/
-        if not File::exists?("/var/www/webtoon/tmp/#{url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}")
+        if not File::exists?("/var/www/webtoon/tmp/#{url.gsub(/\//, "@")}")
           _data = a.get("http://#{url}").body
           if _data != nil
-            File.open("/var/www/webtoon/tmp/#{url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}", "w") do |f|
+            File.open("/var/www/webtoon/tmp/#{url.gsub(/\//, "@")}", "w") do |f|
               f.write(_data)
             end
           end
@@ -130,7 +130,7 @@ if site == "naver"
         _url, _flashID, _width, _height, _wmode, _flashVars, _bgColor, _allowFullScreen = _s
         _url = $1 if _url =~ /http:\/\/([\w\W]*)/
         if not File::exists?("/var/www/webtoon/tmp/#{_url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}")
-          _data = a.get("http://#{_url}").body
+          _data = a.get("http://#{_url.gsub(/\?[\w\W]*$/, "")}").body
           if _data != nil
             File.open("/var/www/webtoon/tmp/#{_url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}", "w") do |f|
               f.write(_data)
@@ -142,10 +142,10 @@ if site == "naver"
         _content << "<a target=\"_blank\" href=\"#{v.attributes["href"]}\">"
         v.search('img').each {|e|
           url = $1 if e.attributes["src"].to_s =~ /http:\/\/(.*)/
-          if not File::exists?("/var/www/webtoon/tmp/#{url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}")
+          if not File::exists?("/var/www/webtoon/tmp/#{url.gsub(/\//, "@")}")
             _data = a.get("http://#{url}").body
             if _data != nil
-              File.open("/var/www/webtoon/tmp/#{url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}", "w") do |f|
+              File.open("/var/www/webtoon/tmp/#{url.gsub(/\//, "@")}", "w") do |f|
                 f.write(_data)
               end
             end
@@ -169,10 +169,10 @@ if site == "naver"
       v.search('img').each {|e|
         if e.attributes["class"].to_s =~ /real_url\(http:\/\/(.*)\)/
           url = $1
-          if not File::exists?("/var/www/webtoon/tmp/#{url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}")
+          if not File::exists?("/var/www/webtoon/tmp/#{url.gsub(/\//, "@")}")
             _data = a.get("http://#{url}").body
             if _data != nil
-              File.open("/var/www/webtoon/tmp/#{url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}", "w") do |f|
+              File.open("/var/www/webtoon/tmp/#{url.gsub(/\//, "@")}", "w") do |f|
                 f.write(_data)
               end
             end
@@ -261,10 +261,10 @@ elsif site == "daum"
       url = $1 if r["url"] =~ /http:\/\/(.+)/
 
       if r["mediaType"] == "image"
-        if not File::exists?("/var/www/webtoon/tmp/#{url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}")
+        if not File::exists?("/var/www/webtoon/tmp/#{url.gsub(/\//, "@")}")
           _data = a.get("http://#{url}").body
           if _data != nil
-            File.open("/var/www/webtoon/tmp/#{url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}", "w") do |f|
+            File.open("/var/www/webtoon/tmp/#{url.gsub(/\//, "@")}", "w") do |f|
               f.write(_data)
             end
           end
@@ -277,7 +277,7 @@ elsif site == "daum"
       else
         daum_tvpot = (url =~ /flvs\.daum\.net\/flvPlayer\.swf/) ? true : false
         if not daum_tvpot and not File::exists?("/var/www/webtoon/tmp/#{url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}")
-          _data = a.get("http://#{url}").body
+          _data = a.get("http://#{url.gsub(/\?[\w\W]*$/, "")}").body
           if _data != nil
             File.open("/var/www/webtoon/tmp/#{url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}", "w") do |f|
               f.write(_data)
@@ -311,15 +311,15 @@ elsif site == "daum"
     _content << '<br/>'
     resp.search('//div[@class="img_list"]/div[@class="by_daum"]').each {|r|
       url = "photo-section.daum-img.net/-cartoon10/img/published.png"
-      if not File::exists?("/var/www/webtoon/tmp/#{url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}")
+      if not File::exists?("/var/www/webtoon/tmp/#{url.gsub(/\//, "@")}")
         _data = a.get("http://#{url}").body
         if _data != nil
-          File.open("/var/www/webtoon/tmp/#{url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}", "w") do |f|
+          File.open("/var/www/webtoon/tmp/#{url.gsub(/\//, "@")}", "w") do |f|
             f.write(_data)
           end
         end
       end
-      _content << "<img src=\"/webtoon/tmp/#{url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}\"/>"
+      _content << "<img src=\"/webtoon/tmp/#{url.gsub(/\//, "@")}\"/>"
     }
   # 만화책 형식의 웹툰
   else
@@ -328,7 +328,7 @@ elsif site == "daum"
     _ids, _recentId, _nick = $1, $2, $3 if resp.search('//div[@class="img_list"]/script')[0].inner_html =~ /Webtoon\.EmbedViewer\.init\('([\d,]*)','(\d+)','(.*)'\);/
     _url = "photo-section.daum-img.net/-cartoon10/swf/webtoon/GaroViewer2011.swf"
     if not File::exists?("/var/www/webtoon/tmp/#{_url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}")
-      _data = a.get("http://#{_url}").body
+      _data = a.get("http://#{_url.gsub(/\?[\w\W]*$/, "")}").body
       if _data != nil
         File.open("/var/www/webtoon/tmp/#{_url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}", "w") do |f|
           f.write(_data)
@@ -338,6 +338,16 @@ elsif site == "daum"
     _content << flashObj(_url.gsub(/\//, "@") + "?v=21&episode_ids=#{_ids}&recent_id=#{_recentId}&img_cnt=&page_no=1", 'viewerFla', 940, 700, 'transparent');
 =end
   end
+
+  # 작가 블로그, 다른 작품 출력
+  _content << "<br/><br/>"
+  _content << '<div id="artist_area" style="width: 85%; clear: both; margin: 0 auto;">'
+  _content << '<table id="artist_info" align="right"><tr>'
+  _content << "<td><div style=\"text-align: center; width: 100px; margin: 0px 10px 0px 10px; cursor: pointer; background-color: #{btnColor["buttonB"]};\" onclick=\"show_artist_table(0);\">다른 작품</div></td>"
+  _content << "<td><div style=\"text-align: center; width: 100px; margin: 0px 10px 0px 10px; cursor: pointer; background-color: #{btnColor["buttonB"]};\" onclick=\"show_artist_table(1);\">갤러리</div></td>"
+  _content << "</tr><tr>"
+  _content << '<td colspan="2"><div id="artist_otherlist"></div></td>'
+  _content << '</tr></table></div>'
 
   _title << '</div>'
   _content << '</div>'

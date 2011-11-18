@@ -30,7 +30,7 @@ elsif site == "daum"
   resp = a.get "http://cartoon.media.daum.net/webtoon/view/#{id}"
 
   resp.
-    search('//div[@id="daumContent"]/div/div[@class="webtoon"]/script')[0].
+    search('//div[@id="daumContent"]/div/div[@id="mCenter"]/script')[0].
     inner_html.strip.split(";").map(&:strip).
     find_all {|v| v =~ /data1\.push\([\w\W]*\)/}.
     map {|v|
