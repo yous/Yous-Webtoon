@@ -107,9 +107,9 @@ if site == "naver"
     if v =~ /imageList\s*=\s*\[([\w\W]*)\]/
       imageList = $1.split(/\s*,\s*/).map {|item| $1 if item =~ /"http:\/\/(.*)"/}
     elsif v =~ /var\s*imageWidth\s*=\s*\[([\w\W]*)\]/
-      imageWidth = $1.split(/\s*,\s*/).map {|item| $1 if item =~ /"(.*)"/}
+      imageWidth = $1.split(/\s*,\s*/).map(&:strip)
     elsif v =~ /var\s*imageHeight\s*=\s*\[([\w\W]*)\]/
-      imageHeight = $1.split(/\s*,\s*/).map {|item| $1 if item =~ /"(.*)"/}
+      imageHeight = $1.split(/\s*,\s*/).map(&:strip)
     end
   }
   count = 0
