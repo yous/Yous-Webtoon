@@ -41,6 +41,36 @@ function loading(n)
   setTimeout("loading(" + (n - 1) + ");", 1000);
 }
 
+// remote 버튼 정리
+function change_remote()
+{
+  $("#saveBM").attr("disabled", (!id || (site == "naver" && num == 1 || site == "daum" && numList[id] && num == numList[id][0]) || num == toonBM[id]) ? true : false);
+  $("#moveBM").attr("disabled", (!id || !toonBM[id] || num == toonBM[id]) ? true : false);
+  $("#firstBtn").attr("disabled", (!id || (site == "naver" && num == 1 || site == "daum" && numList[id] && num == numList[id][0])) ? true : false);
+  $("#lastBtn").attr("disabled", (!id || num == lastNum[id]) ? true : false);
+  $("#prevBtn").attr("disabled", (!id || (site == "naver" && num == 1 || site == "daum" && numList[id] && num == numList[id][0])) ? true : false);
+  $("#nextBtn").attr("disabled", (!id || num == lastNum[id]) ? true : false);
+  $("#dirBtn").attr("disabled", (!id) ? true : false);
+
+  var src = "";
+  if (site == "naver")
+  {
+    src = "http://comic.naver.com/webtoon/detail.nhn?titleId=" + id + "&seq=" + num;
+    $("#inputNum").val(num);
+  }
+  else if (site == "daum")
+  {
+    src = "http://cartoon.media.daum.net/webtoon/viewer/" + num;
+    for (i = 0; i < numList[id].length; i++)
+    {
+      if (numList[id][i] == num)
+        $("#inputNum").val(i + 1);
+    }
+  }
+
+  $("#url").attr("href", src);
+}
+
 // 웹툰 사이트 변경
 function site_change(_site)
 {
@@ -51,6 +81,7 @@ function site_change(_site)
   dateList = new Object();
   lastNum = new Object();
   finishToon = [];
+  change_remote();
 
   $("#display_area").html("");
   $.get(
@@ -69,6 +100,7 @@ function toonlist_area_init()
   var str = "<br/>";
   str += '<span id="Naver" style="color: ' + btnColor["link"] + '; cursor: pointer; margin: 10px;" onclick="site_change(\'naver\');"><u>N</u>aver</span>';
   str += '<span id="Daum" style="color: ' + btnColor["link"] + '; cursor: pointer; margin: 10px;" onclick="site_change(\'daum\');"><u>D</u>aum</span>';
+  str += "<script>id=null;num=null;site=null;change_remote();</script>"
   $("#toonlist_area").html(str);
 }
 
@@ -380,35 +412,6 @@ function getOtherToon(_id, /* Daum 웹툰용 */ check_other)
       $("#artist_otherlist").css("display", "none");
     }
   }
-}
-
-// remote 버튼 정리
-function change_remote()
-{
-  $("#saveBM").attr("disabled", (!id || (site == "naver" && num == 1 || site == "daum" && numList[id] && num == numList[id][0]) || num == toonBM[id]) ? true : false);
-  $("#moveBM").attr("disabled", (!id || !toonBM[id] || num == toonBM[id]) ? true : false);
-  $("#firstBtn").attr("disabled", (!id || (site == "naver" && num == 1 || site == "daum" && numList[id] && num == numList[id][0])) ? true : false);
-  $("#lastBtn").attr("disabled", (!id || num == lastNum[id]) ? true : false);
-  $("#prevBtn").attr("disabled", (!id || (site == "naver" && num == 1 || site == "daum" && numList[id] && num == numList[id][0])) ? true : false);
-  $("#nextBtn").attr("disabled", (!id || num == lastNum[id]) ? true : false);
-  $("#dirBtn").attr("disabled", (!id) ? true : false);
-
-  if (site == "naver")
-  {
-    src = "http://comic.naver.com/webtoon/detail.nhn?titleId=" + id + "&seq=" + num;
-    $("#inputNum").val(num);
-  }
-  else if (site == "daum")
-  {
-    src = "http://cartoon.media.daum.net/webtoon/viewer/" + num;
-    for (i = 0; i < numList[id].length; i++)
-    {
-      if (numList[id][i] == num)
-        $("#inputNum").val(i + 1);
-    }
-  }
-
-  $("#url").attr("href", src);
 }
 
 // 웹툰 출력
