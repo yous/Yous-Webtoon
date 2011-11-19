@@ -104,7 +104,7 @@ elsif site == "daum"
   str = "<script>"
 
   str << "toonBM={#{toonBM.keys.map {|v|
-    numList[v] = a.get("http://192.168.92.128/cgi-bin/webtoon/getNum.cgi?site=daum&id=#{v}").body.split().map(&:to_i) if not finishToon.include?(v)
+    numList[v] = a.get("http://192.168.92.128/cgi-bin/webtoon/getNum.cgi?site=daum&id=#{v}").body.strip.split("\n")[0].split().map(&:to_i) if not finishToon.include?(v)
     lastNum[v] = numList[v][-1]
     if toonBM[v] < lastNum[v]
       reqList[v] = numList[v][numList[v].index(toonBM[v]) + 1]

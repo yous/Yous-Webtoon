@@ -17,8 +17,6 @@ if session["user_id"] != nil and session["user_id"] != ""
   str << "toonlist_area_init();"
   str << "</script>"
   puts str
-else
-  session["user_id"] = nil
 end
 
 session.delete

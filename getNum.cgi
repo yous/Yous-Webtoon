@@ -30,7 +30,7 @@ elsif site == "daum"
   str_writer = []
   resp = a.get "http://cartoon.media.daum.net/webtoon/view/#{id}"
 
-  resp.search('//div[@id="daumContent"]/div').each {|r|
+  resp.search('//div[@id="daumContent"]/div[@id="cMain"]').each {|r|
     r.search('div[@id="mCenter"]/div[@class="area_toon_info"]/div[@class="wrap_cont"]/dl[1]/dd/a').each {|v|
       str_writer.push(v.inner_html.strip)
     }
