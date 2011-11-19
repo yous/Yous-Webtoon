@@ -80,7 +80,7 @@ function site_change(_site)
   toonBM = new Object();
   numList = new Object();
   dateList = new Object();
-  writer = new Object();
+  toonInfo = new Object();
   lastNum = new Object();
   finishToon = [];
   change_remote();
