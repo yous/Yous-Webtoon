@@ -484,7 +484,8 @@ function viewToon(_id, _num)
             alert("접속할 수 없습니다!");
             return;
           }
-          numList[id] = data.split(" ");
+          numList[id] = data.split("\n")[0].split(" ");
+          writer = data.split("\n")[1];
           for (i = 0; i < numList[id].length; i++)
             numList[id][i] = parseInt(numList[id][i]);
           lastNum[id] = numList[id][numList[id].length - 1];
