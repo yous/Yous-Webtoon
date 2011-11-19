@@ -100,68 +100,67 @@ if site == "naver"
   }
 
   # 만화책 형식이 아닌 웹툰
-  imageList = nil
-  imageWidth = nil
-  imageHeight = nil
-  resp.search('//head/script[last()]')[0].inner_html.strip.split(';').map(&:strip).each {|v|
-    if v =~ /imageList\s*=\s*\[([\w\W]*)\]/
-      imageList = $1.split(/\s*,\s*/).map {|item| $1 if item =~ /"http:\/\/(.*)"/}
-    elsif v =~ /var\s*imageWidth\s*=\s*\[([\w\W]*)\]/
-      imageWidth = $1.split(/\s*,\s*/).map(&:strip)
-    elsif v =~ /var\s*imageHeight\s*=\s*\[([\w\W]*)\]/
-      imageHeight = $1.split(/\s*,\s*/).map(&:strip)
-    end
-  }
-  count = 0
-  f_exist = true
-  (0..imageList.length - 1).each {|i|
-    if imageList[i].downcase.index(".swf") != nil
-      if f_exist
-        _content << '<script>alert("Flash가 있습니다!\n잘 동작하지 않는 것 같다면 주소 링크로 들어가주세요.");document.getElementById("toonlist_area").style.height=parseInt(document.getElementById(\'toonlist_area\').clientHeight-(document.getElementById(\'content_area\').offsetTop-437))+\'px\';document.getElementById("toonlist_area").style.overflow="scroll";$(document).unbind("keydown");$(document).bind("keydown",function(e){bodyKeyDown(e,false);});location.replace("#title_area");</script>'
-        f_exist = false
-      end
-      if not File::exists?("/var/www/webtoon/tmp/#{imageList[i].gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}")
-        _data = a.get("http://#{imageList[i].gsub(/\?[\w\W]*$/, "")}").body
-        if _data != nil
-          File.open("/var/www/webtoon/tmp/#{imageList[i].gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}", "w") do |f|
-            f.write(_data)
-          end
-        end
-      end
-      _content << flashObj(imageList[i].gsub(/\//, "@"), id, imageWidth[i], imageHeight[i], "transparent", "", "", "")
-    elsif imageList[i].downcase.index(".flv") != nil
-      if f_exist
-        _content << '<script>alert("Flash가 있습니다!\n잘 동작하지 않는 것 같다면 주소 링크로 들어가주세요.");document.getElementById("toonlist_area").style.height=parseInt(document.getElementById(\'toonlist_area\').clientHeight-(document.getElementById(\'content_area\').offsetTop-437))+\'px\';document.getElementById("toonlist_area").style.overflow="scroll";$(document).unbind("keydown");$(document).bind("keydown",function(e){bodyKeyDown(e,false);});location.replace("#title_area");</script>'
-        f_exist = false
-      end
-      if not File::exists?("/var/www/webtoon/tmp/#{imageList[i].gsub(/\//, "@")}")
-        _data = a.get("http://flash.comic.naver.com/webtoon/flvPlayer.swf").body
-        if _data != nil
-          File.open("/var/www/webtoon/tmp/#{"flash.comic.naver.com/webtoon/flvPlayer.swf".gsub(/\//, "@")}", "w") do |f|
-            f.write(_data)
-          end
-        end
-      end
-      _content << flashObj("/webtoon/tmp/#{"flash.comic.naver.com/webtoon/flvPlayer.swf".gsub(/\//, "@")}", "flvPlayer", "640", "395", "transparent", "flvURL=#{imageList[i]}&imgURL=http://static.comic.naver.com/staticImages/COMICWEB/NAVER/images/flash/#{id}/flv.jpg&autoPlay=true&defaultVolume=0.5&flvWidth=640&flvHeight=360", "#FFFFFF", true)
-    else
-      if not File::exists?("/var/www/webtoon/tmp/#{imageList[i].gsub(/\//, "@")}")
-        _data = a.get("http://#{imageList[i]}").body
-        if _data != nil
-          File.open("/var/www/webtoon/tmp/#{imageList[i].gsub(/\//, "@")}", "w") do |f|
-            f.write(_data)
-          end
-        end
-      end
-      if count == 0
-        _content << "<img src=\"/webtoon/tmp/#{imageList[i].gsub(/\//, "@")}\" onload=\"location.replace('#title_area');\">"
-        count += 1
-      else
-        _content << "<img src=\"/webtoon/tmp/#{imageList[i].gsub(/\//, "@")}\">"
-      end
-    end
-  }
-
   resp.search('//div[@class="wt_viewer"]').each {|r|
+    imageList = nil
+    imageWidth = nil
+    imageHeight = nil
+    resp.search('//head/script[last()]')[0].inner_html.strip.split(';').map(&:strip).each {|v|
+      if v =~ /imageList\s*=\s*\[([\w\W]*)\]/
+        imageList = $1.split(/\s*,\s*/).map {|item| $1 if item =~ /"http:\/\/(.*)"/}
+      elsif v =~ /var\s*imageWidth\s*=\s*\[([\w\W]*)\]/
+        imageWidth = $1.split(/\s*,\s*/).map(&:strip)
+      elsif v =~ /var\s*imageHeight\s*=\s*\[([\w\W]*)\]/
+        imageHeight = $1.split(/\s*,\s*/).map(&:strip)
+      end
+    }
+    count = 0
+    f_exist = true
+    (0..imageList.length - 1).each {|i|
+      if imageList[i].downcase.index(".swf") != nil
+        if f_exist
+          _content << '<script>alert("Flash가 있습니다!\n잘 동작하지 않는 것 같다면 주소 링크로 들어가주세요.");document.getElementById("toonlist_area").style.height=parseInt(document.getElementById(\'toonlist_area\').clientHeight-(document.getElementById(\'content_area\').offsetTop-437))+\'px\';document.getElementById("toonlist_area").style.overflow="scroll";$(document).unbind("keydown");$(document).bind("keydown",function(e){bodyKeyDown(e,false);});location.replace("#title_area");</script>'
+          f_exist = false
+        end
+        if not File::exists?("/var/www/webtoon/tmp/#{imageList[i].gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}")
+          _data = a.get("http://#{imageList[i].gsub(/\?[\w\W]*$/, "")}").body
+          if _data != nil
+            File.open("/var/www/webtoon/tmp/#{imageList[i].gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}", "w") do |f|
+              f.write(_data)
+            end
+          end
+        end
+        _content << flashObj(imageList[i].gsub(/\//, "@"), id, imageWidth[i], imageHeight[i], "transparent", "", "", "")
+      elsif imageList[i].downcase.index(".flv") != nil
+        if f_exist
+          _content << '<script>alert("Flash가 있습니다!\n잘 동작하지 않는 것 같다면 주소 링크로 들어가주세요.");document.getElementById("toonlist_area").style.height=parseInt(document.getElementById(\'toonlist_area\').clientHeight-(document.getElementById(\'content_area\').offsetTop-437))+\'px\';document.getElementById("toonlist_area").style.overflow="scroll";$(document).unbind("keydown");$(document).bind("keydown",function(e){bodyKeyDown(e,false);});location.replace("#title_area");</script>'
+          f_exist = false
+        end
+        if not File::exists?("/var/www/webtoon/tmp/#{imageList[i].gsub(/\//, "@")}")
+          _data = a.get("http://flash.comic.naver.com/webtoon/flvPlayer.swf").body
+          if _data != nil
+            File.open("/var/www/webtoon/tmp/#{"flash.comic.naver.com/webtoon/flvPlayer.swf".gsub(/\//, "@")}", "w") do |f|
+              f.write(_data)
+            end
+          end
+        end
+        _content << flashObj("/webtoon/tmp/#{"flash.comic.naver.com/webtoon/flvPlayer.swf".gsub(/\//, "@")}", "flvPlayer", "640", "395", "transparent", "flvURL=#{imageList[i]}&imgURL=http://static.comic.naver.com/staticImages/COMICWEB/NAVER/images/flash/#{id}/flv.jpg&autoPlay=true&defaultVolume=0.5&flvWidth=640&flvHeight=360", "#FFFFFF", true)
+      else
+        if not File::exists?("/var/www/webtoon/tmp/#{imageList[i].gsub(/\//, "@")}")
+          _data = a.get("http://#{imageList[i]}").body
+          if _data != nil
+            File.open("/var/www/webtoon/tmp/#{imageList[i].gsub(/\//, "@")}", "w") do |f|
+              f.write(_data)
+            end
+          end
+        end
+        if count == 0
+          _content << "<img src=\"/webtoon/tmp/#{imageList[i].gsub(/\//, "@")}\" onload=\"location.replace('#title_area');\">"
+          count += 1
+        else
+          _content << "<img src=\"/webtoon/tmp/#{imageList[i].gsub(/\//, "@")}\">"
+        end
+      end
+    }
     r.element_children.each {|v|
       if v.name == "a"
         _content << "<a target=\"_blank\" href=\"#{v.attributes["href"]}\">"
@@ -268,15 +267,15 @@ elsif site == "daum"
   _content = '<div id="content_area">'
 
   # 웹툰 제목, 작가, 설명 출력
+  comic_title = ""
   resp.search('//div[@class="episode_info"]').each {|r|
     comic_title = r.search('a[@class="title"]')[0].inner_html.strip()
-    writer = r.search('span[@class="writer"]')[0].inner_html.strip()
-    _title << "<div style=\"padding: 15px 0px 15px 0px; background-color: #{btnColor["buttonB"]};\">#{comic_title} - #{writer}<br/><br/>"
+    _title << "<div style=\"padding: 15px 0px 15px 0px; background-color: #{btnColor["buttonB"]};\"></div>"
   }
   # 웹툰 회, 날짜 출력
   title = resp.search('//div[@class="others"]/span/span[@class="episode_title"]')[0].inner_html
-  _title << "<b>#{title}</b></div><small id=\"toon_date\"></small>"
-  _title << "<script>$('#toon_date').html(dateList['#{id}'][numList['#{id}'].indexOf(#{num})]);</script>"
+  _title << "<small id=\"toon_date\"></small>"
+  _title << "<script>$('#title_area div').append('#{comic_title} - ' + writer + '<br/><br/><b>#{title}</b>');$('#toon_date').html(dateList['#{id}'][numList['#{id}'].indexOf(#{num})]);</script>"
 
   # 만화책 형식이 아닌 웹툰
   if resp.search('//div[@class="img_list_wrap"]').length > 0
