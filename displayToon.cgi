@@ -46,7 +46,7 @@ if site == "naver"
   resp.search('//div[@class="dsc"]').each {|r|
     comic_title, writer = $1, $2 if r.search('h2')[0].inner_html =~ /([\w\W]*)<em>([\w\W]*)<\/em>/
     if resp.body =~ /<p class="txt">([\w\W]*)<\/p>[\w\W]*<ul class="btn_group">[\w\W]*<div class="tit_area">/
-      comic_text = $1.gsub(/^<br\/?>/i, "").gsub(/<br\/?>$/i, "").gsub(/<br\/?>/i, " ").gsub("<", "&lt;").gsub(">", "&gt;")
+      comic_text = $1.gsub(/^<br\/?>/i, "").gsub(/<br\/?>$/i, "").gsub(/<br\/?>/i, " ").gsub("<", "&lt;").gsub(">", "&gt;").gsub('"', "&quot;").gsub("'", "&#39;")
     end
     #comic_text = r.search('p[@class="txt"]')[0].inner_html.strip().gsub(/^<br\/?>/i, "").gsub(/<br\/?>$/i, "").gsub(/<br\/?>/i, " ")
     comic_title = comic_title.strip()

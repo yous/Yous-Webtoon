@@ -204,7 +204,7 @@ elsif site == "daum"
       numList[v].push(item.split(",")[0].to_i)
       dateList[v].push(item.split(",")[1])
     }
-    toonInfo[v] = [num_resp[1], num_resp[2].gsub('"', "&quot;").gsub("'", "&#39;")]
+    toonInfo[v] = [num_resp[1], num_resp[2].gsub('"', "&quot;").gsub("'", "&#39;").gsub("<", "&lt;").gsub(">", "&gt;")]
 
     str << "$.get(\"/cgi-bin/webtoon/displayToon.cgi?site=daum&id=#{v}&num=#{numList[v][0]}\");"
     (0...numList[v].length).each {|i|
