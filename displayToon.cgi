@@ -275,7 +275,7 @@ elsif site == "daum"
   # 웹툰 회, 날짜 출력
   title = resp.search('//div[@class="others"]/span/span[@class="episode_title"]')[0].inner_html
   _title << "<small id=\"toon_date\"></small>"
-  _title << "<script>$('#title_area div').append('#{comic_title} - ' + writer['#{id}'] + '<br/><br/><b>#{title}</b>');$('#toon_date').html(dateList['#{id}'][numList['#{id}'].indexOf(#{num})]);</script>"
+  _title << "<script>$('#title_area div').append('#{comic_title} - ' + toonInfo['#{id}'][0] + '<br/><small style=\"font-size: 12px;\">' + toonInfo['#{id}'][1] + '</small><br/><br/><b>#{title}</b>');$('#toon_date').html(dateList['#{id}'][numList['#{id}'].indexOf(#{num})]);</script>"
 
   # 만화책 형식이 아닌 웹툰
   if resp.search('//div[@class="img_list_wrap"]').length > 0

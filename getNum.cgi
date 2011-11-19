@@ -28,11 +28,17 @@ if site == "naver"
 elsif site == "daum"
   str = ""
   str_writer = []
+  str_toonInfo = ""
   resp = a.get "http://cartoon.media.daum.net/webtoon/view/#{id}"
 
   resp.search('//div[@id="daumContent"]/div[@id="cMain"]').each {|r|
-    r.search('div[@id="mCenter"]/div[@class="area_toon_info"]/div[@class="wrap_cont"]/dl[1]/dd/a').each {|v|
-      str_writer.push(v.inner_html.strip)
+    r.search('div[@id="mCenter"]/div[@class="area_toon_info"]').each {|v|
+      v.search('div[@class="wrap_cont"]/dl[1]/dd/a').each {|v1|
+        str_writer.push(v1.inner_html.strip)
+      }
+      v.search('div[@class="wrap_more"]/dl[@class="list_intro"]/dd').each {|v1|
+        str_toonInfo = v1.inner_html.strip
+      }
     }
     r.search('div[@id="mCenter"]/script')[0].inner_html.strip.split(";").map(&:strip).
       find_all {|v| v =~ /data1\.push\([\w\W]*\)/}.
@@ -45,5 +51,5 @@ elsif site == "daum"
       }
   }
 
-  puts str[0...-1] + "\n" + str_writer.join(" / ")
+  puts str[0...-1] + "\n" + str_writer.join(" / ") + "\n" + str_toonInfo
 end
