@@ -80,6 +80,7 @@ function site_change(_site)
   toonBM = new Object();
   numList = new Object();
   dateList = new Object();
+  writer = new Object();
   lastNum = new Object();
   finishToon = [];
   change_remote();
@@ -484,8 +485,9 @@ function viewToon(_id, _num)
             alert("접속할 수 없습니다!");
             return;
           }
+      alert(1);
           numList[id] = data.split("\n")[0].split(" ");
-          writer = data.split("\n")[1];
+          writer[id] = data.split("\n")[1];
           for (i = 0; i < numList[id].length; i++)
             numList[id][i] = parseInt(numList[id][i]);
           lastNum[id] = numList[id][numList[id].length - 1];
@@ -748,5 +750,6 @@ btnColor = {
 toonBM = new Object();
 numList = new Object();
 dateList = new Object();
+writer = new Object();
 lastNum = new Object();
 finishToon = [];
