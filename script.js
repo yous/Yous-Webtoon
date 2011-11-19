@@ -74,6 +74,7 @@ function change_remote()
 // 웹툰 사이트 변경
 function site_change(_site)
 {
+  site = null;
   id = null;
   num = null;
   toonBM = new Object();
@@ -182,12 +183,7 @@ function add_bookmark()
     if (toonBM[id] && (site == "naver" && num == 1 || site == "daum" && num == numList[id][0]))
     {
       delete toonBM[id];
-      var check = -1;
-      for (i = 0; i < finishToon.length; i++)
-      {
-        if (finishToon[i] == id)
-          check = i;
-      }
+      var check = finishToon.indexOf(id)
       var _finish = (check == -1) ? "no" : lastNum[id];
       if (site == "naver")
         $.post("/cgi-bin/webtoon/saveBM.cgi", {site: site, add: "no", toon_id: id, toon_num: num, finish: _finish});
@@ -210,6 +206,10 @@ function add_bookmark()
             same_td[j].style.backgroundColor = (j % 2) ? btnColor["buttonA"] : btnColor["buttonB"];
         }
       }
+      if (same_toon[0].className == "current_toon" && $("#current_toonlist").css("display") == "none")
+        show_table();
+      else if (same_toon[0].className == "finished_toon" && $("#finished_toonlist").css("display") == "none")
+        show_table();
 
       location.replace("#");
     }
@@ -250,11 +250,15 @@ function add_bookmark()
               finishToon.push(id);
               same_td[j].style.backgroundColor = (toonBM[id] == lastNum[id]) ? btnColor["saved_finish"] : btnColor["saved_up"];
             }
-
-            location.replace("#");
           }
         }
       }
+      if (same_toon[0].className == "current_toon" && $("#current_toonlist").css("display") == "none")
+        show_table();
+      else if (same_toon[0].className == "finished_toon" && $("#finished_toonlist").css("display") == "none")
+        show_table();
+
+      location.replace("#");
     }
   }
 }
