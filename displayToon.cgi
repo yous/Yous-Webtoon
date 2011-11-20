@@ -276,7 +276,7 @@ elsif site == "daum"
     _title << "<div style=\"padding: 15px 0px 15px 0px; background-color: #{btnColor["buttonB"]};\"></div>"
   }
   # 웹툰 회, 날짜 출력
-  title = resp.search('//div[@class="others"]/span/span[@class="episode_title"]')[0].inner_html
+  title = resp.search('//div[@class="others"]/span/span[@class="episode_title"]')[0].inner_html.gsub("<", "&lt;").gsub(">", "&gt;").gsub('"', "&quot;").gsub("'", "&#39;")
   _title << "<small id=\"toon_date\"></small>"
   _title << "<script>$('#title_area div').append('#{comic_title} - ' + toonInfo['#{id}'][0] + '<br/><small style=\"font-size: 12px;\">' + toonInfo['#{id}'][1] + '</small><br/><br/><b>#{title}</b>');$('#toon_date').html(dateList['#{id}'][numList['#{id}'].indexOf(#{num})]);</script>"
 
