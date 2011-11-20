@@ -250,7 +250,7 @@ if site == "naver"
   }
 
   # 작가의 말, 별점 출력
-  _writerCmt = resp.search('//div[@class="writer_info"]/p')[0].inner_html
+  _writerCmt = $1.gsub("<", "&lt;").gsub(">", "&gt;").gsub(/&lt;br&gt;/i, "<br>") if resp.body =~ /<div\s+class="writer_info">[\w\W]*<p>([\w\W]*)<\/p>\s*<ul\s+class="btn_group">[\w\W]*<\/div>/
   _rating = resp.search('//span[@id="bottomPointTotalNumber"]/strong')[0].inner_html
   _ratingPerson = resp.search('//span[@class="pointTotalPerson"]/em')[0].inner_html
   _content << "<div id=\"writer_info\" style=\"width: 85%; text-align: left; clear: both; margin: 0 auto;\"><div style=\"background-color: #{btnColor["buttonB"]}; padding: 2px 15px 2px 15px;\"><b>작가의 말</b></div><p style=\"padding: 0px 20px 0px 20px;\">#{_writerCmt}</p><p style=\"padding: 0px 20px 0px 20px; text-align: right;\">별점 #{_rating} (#{_ratingPerson}명)</p></div></br>"
