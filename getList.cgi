@@ -23,6 +23,7 @@ db.execute("CREATE TABLE IF NOT EXISTS daum_toonInfo (toon_id VARCHAR(255), toon
 
 a = Mechanize.new
 
+localhost = "192.168.90.128"
 btnColor = {
   "buttonA" => "#FAFAFA",
   "buttonB" => "#EAEAEA",
@@ -199,7 +200,7 @@ elsif site == "daum"
   reqList.keys.each do |v|
     numList[v] = []
     dateList[v] = []
-    num_resp = a.get("http://192.168.92.128/cgi-bin/webtoon/getNum.cgi?site=daum&id=#{v}").body.strip.split("\n").map(&:strip)
+    num_resp = a.get("http://#{localhost}/cgi-bin/webtoon/getNum.cgi?site=daum&id=#{v}").body.strip.split("\n").map(&:strip)
     num_resp[0].split().map {|item|
       numList[v].push(item.split(",")[0].to_i)
       dateList[v].push(item.split(",")[1])

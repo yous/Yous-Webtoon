@@ -21,6 +21,7 @@ db.execute("CREATE TABLE IF NOT EXISTS daum_numList (toon_id VARCHAR(255), toon_
 
 a = Mechanize.new
 
+localhost = "192.168.90.128"
 btnColor = {
   "buttonA" => "#FAFAFA",
   "buttonB" => "#EAEAEA",
@@ -49,7 +50,7 @@ if site == "naver"
   str = "<script>"
 
   str << "toonBM={#{toonBM.keys.map {|v|
-    lastNum[v] = a.get("http://192.168.92.128/cgi-bin/webtoon/getNum.cgi?site=naver&id=#{v}").body.to_i if lastNum[v] == nil
+    lastNum[v] = a.get("http://#{localhost}/cgi-bin/webtoon/getNum.cgi?site=naver&id=#{v}").body.to_i if lastNum[v] == nil
     if toonBM[v] < lastNum[v]
       reqList[v] = toonBM[v] + 1
       col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
@@ -104,7 +105,7 @@ elsif site == "daum"
   str = "<script>"
 
   str << "toonBM={#{toonBM.keys.map {|v|
-    numList[v] = a.get("http://192.168.92.128/cgi-bin/webtoon/getNum.cgi?site=daum&id=#{v}").body.strip.split("\n")[0].split().map(&:to_i) if not finishToon.include?(v)
+    numList[v] = a.get("http://#{localhost}/cgi-bin/webtoon/getNum.cgi?site=daum&id=#{v}").body.strip.split("\n")[0].split().map(&:to_i) if not finishToon.include?(v)
     lastNum[v] = numList[v][-1]
     if toonBM[v] < lastNum[v]
       reqList[v] = numList[v][numList[v].index(toonBM[v]) + 1]
