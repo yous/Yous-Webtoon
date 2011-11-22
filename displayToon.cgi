@@ -18,6 +18,50 @@ def flashObj(_url, _flashID, _width, _height, _wmode = "transparent", _flashVars
   s << '</object>'
 end
 
+def naverPutObj(mechanObj, _imageURL, _imageWidth, _imageHeight, _first_img = false)
+  str = ""
+  # Flash
+  if _imageURL.downcase.index(".swf") != nil or _imageURL.downcase.index(".flv") != nil
+    if _imageURL.downcase.index(".swf") != nil
+      if not File::exists?("/var/www/webtoon/tmp/#{_imageURL.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}")
+        _data = mechanObj.get("http://#{_imageURL.gsub(/\?[\w\W]*$/, "")}").body
+        if _data != nil
+          File.open("/var/www/webtoon/tmp/#{_imageURL.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}", "w") do |f|
+            f.write(_data)
+          end
+        end
+      end
+      str << flashObj(_imageURL.gsub(/\//, "@"), id, _imageWidth, _imageHeight, "transparent", "", "", "")
+    else
+      if not File::exists?("/var/www/webtoon/tmp/#{_imageURL.gsub(/\//, "@")}")
+        _data = mechanObj.get("http://flash.comic.naver.com/webtoon/flvPlayer.swf").body
+        if _data != nil
+          File.open("/var/www/webtoon/tmp/#{"flash.comic.naver.com/webtoon/flvPlayer.swf".gsub(/\//, "@")}", "w") do |f|
+            f.write(_data)
+          end
+        end
+      end
+      str << flashObj("/webtoon/tmp/#{"flash.comic.naver.com/webtoon/flvPlayer.swf".gsub(/\//, "@")}", "flvPlayer", "640", "395", "transparent", "flvURL=#{_imageURL}&imgURL=http://static.comic.naver.com/staticImages/COMICWEB/NAVER/images/flash/#{id}/flv.jpg&autoPlay=true&defaultVolume=0.5&flvWidth=640&flvHeight=360", "#FFFFFF", true)
+    end
+  # Image
+  else
+    if not File::exists?("/var/www/webtoon/tmp/#{_imageURL.gsub(/\//, "@")}")
+      _data = mechanObj.get("http://#{_imageURL}").body
+      if _data != nil
+        File.open("/var/www/webtoon/tmp/#{_imageURL.gsub(/\//, "@")}", "w") do |f|
+          f.write(_data)
+        end
+      end
+    end
+    if _first_img
+      str << "<img src=\"/webtoon/tmp/#{_imageURL.gsub(/\//, "@")}\" onload=\"location.replace('#title_area');\">"
+    else
+      str << "<img src=\"/webtoon/tmp/#{_imageURL.gsub(/\//, "@")}\">"
+    end
+  end
+  str
+end
+
 puts "Content-Type: text/html; charset=utf-8\n\n"
 
 put = CGI.new
@@ -116,38 +160,34 @@ if site == "naver"
         check_link = ($1.strip == "Y") ? true : false
       end
     }
-    count = 0
+    first_img = true
     f_exist = true
-    (0..imageList.length - 1).each {|i|
+    i = 0
+    r.element_children.each {|v|
+      # Image
+      if v.name == "img"
+        if first_img
+          _content << naverPutObj(a, imageList[i], imageWidth[i], imageHeight[i], true)
+          first_img = false
+        else
+          _content << naverPutObj(a, imageList[i], imageWidth[i], imageHeight[i])
+        end
+        i += 1
       # Flash
-      if imageList[i].downcase.index(".swf") != nil or imageList[i].downcase.index(".flv") != nil
+      elsif v.name == "script"
         if f_exist
           _content << '<script>alert("Flash가 있습니다!\n잘 동작하지 않는 것 같다면 주소 링크로 들어가주세요.");document.getElementById("toonlist_area").style.height=parseInt(document.getElementById(\'toonlist_area\').clientHeight-(document.getElementById(\'content_area\').offsetTop-437))+\'px\';document.getElementById("toonlist_area").style.overflow="scroll";$(document).unbind("keydown");$(document).bind("keydown",function(e){bodyKeyDown(e,false);});location.replace("#title_area");</script>'
           f_exist = false
         end
-        if imageList[i].downcase.index(".swf") != nil
-          if not File::exists?("/var/www/webtoon/tmp/#{imageList[i].gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}")
-            _data = a.get("http://#{imageList[i].gsub(/\?[\w\W]*$/, "")}").body
-            if _data != nil
-              File.open("/var/www/webtoon/tmp/#{imageList[i].gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}", "w") do |f|
-                f.write(_data)
-              end
-            end
-          end
-          _content << flashObj(imageList[i].gsub(/\//, "@"), id, imageWidth[i], imageHeight[i], "transparent", "", "", "")
-        else
-          if not File::exists?("/var/www/webtoon/tmp/#{imageList[i].gsub(/\//, "@")}")
-            _data = a.get("http://flash.comic.naver.com/webtoon/flvPlayer.swf").body
-            if _data != nil
-              File.open("/var/www/webtoon/tmp/#{"flash.comic.naver.com/webtoon/flvPlayer.swf".gsub(/\//, "@")}", "w") do |f|
-                f.write(_data)
-              end
-            end
-          end
-          _content << flashObj("/webtoon/tmp/#{"flash.comic.naver.com/webtoon/flvPlayer.swf".gsub(/\//, "@")}", "flvPlayer", "640", "395", "transparent", "flvURL=#{imageList[i]}&imgURL=http://static.comic.naver.com/staticImages/COMICWEB/NAVER/images/flash/#{id}/flv.jpg&autoPlay=true&defaultVolume=0.5&flvWidth=640&flvHeight=360", "#FFFFFF", true)
-        end
-      # Image
-      else
+        _content << naverPutObj(a, imageList[i], imageWidth[i], imageHeight[i])
+        i += 1
+      # a tag
+      elsif v.name == "a"
+        (imageList.length - 1 - i).times {
+          _content << naverPutObj(a, imageList[i], imageWidth[i], imageHeight[i])
+          i += 1
+        }
+        _content << "<a target=\"_blank\" href=\"#{v.attributes["href"]}\">"
         if not File::exists?("/var/www/webtoon/tmp/#{imageList[i].gsub(/\//, "@")}")
           _data = a.get("http://#{imageList[i]}").body
           if _data != nil
@@ -156,37 +196,17 @@ if site == "naver"
             end
           end
         end
-        next if check_link == true and i == imageList.length - 1 # a tag는 뒤에서 처리
-        if count == 0
-          _content << "<img src=\"/webtoon/tmp/#{imageList[i].gsub(/\//, "@")}\" onload=\"location.replace('#title_area');\">"
-          count += 1
-        else
-          _content << "<img src=\"/webtoon/tmp/#{imageList[i].gsub(/\//, "@")}\">"
-        end
-      end
-    }
-    # a tag
-    r.element_children.each {|v|
-      if v.name == "a"
-        _content << "<a target=\"_blank\" href=\"#{v.attributes["href"]}\">"
-        v.search('img').each {|e|
-          url = $1 if e.attributes["src"].to_s =~ /http:\/\/(.*)/
-          if not File::exists?("/var/www/webtoon/tmp/#{url.gsub(/\//, "@")}")
-            _data = a.get("http://#{url}").body
-            if _data != nil
-              File.open("/var/www/webtoon/tmp/#{url.gsub(/\//, "@")}", "w") do |f|
-                f.write(_data)
-              end
-            end
-          end
-          _content << "<img src=\"/webtoon/tmp/#{url.gsub(/\//, "@")}\">"
-        }
-        _content << '</a>'
+        _content << "<img src=\"/webtoon/tmp/#{imageList[i].gsub(/\//, "@")}\"></a>"
+        i += 1
+      # br tag
+      elsif v.name == "br"
+        _content << "<br/>"
       # 예외 alert
-      elsif v.name != "img"
-        _content << "<script>alert(\"예상하지 못한 태그(#{v.name})가 있습니다!\n관리자에게 알려주세요.\");</script>"
+      else
+        _content << "<script>alert('예상하지 못한 태그 <#{v.name}>을 관리자에게 알려주세요.');</script>"
       end
     }
+    (i..imageList.length - 1).each {|idx| _content << naverPutObj(a, imageList[idx], imageWidth[idx], imageHeight[idx]) }
   }
 
   # 만화책 형식의 웹툰
