@@ -221,8 +221,9 @@ if site == "naver"
           end
         end
         _content << "<img src=\"/webtoon/tmp/#{imageList[imageList.length - 1].gsub(/\//, "@")}\"></a>"
+      else
+        _content << naverPutObj(a, imageList[idx], imageWidth[idx], imageHeight[idx])
       end
-      _content << naverPutObj(a, imageList[idx], imageWidth[idx], imageHeight[idx])
     }
   }
 
