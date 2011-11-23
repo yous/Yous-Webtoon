@@ -209,19 +209,21 @@ if site == "naver"
         _content << "<script>alert('예상하지 못한 태그 <#{v.name}>을 관리자에게 알려주세요.');</script>"
       end
     }
-    (i..imageList.length - 2).each {|idx| _content << naverPutObj(a, imageList[idx], imageWidth[idx], imageHeight[idx]) }
-    if check_link
-      _content << "<a target=\"_blank\" href=\"#{link_url}\">"
-      if not File::exists?("/var/www/webtoon/tmp/#{imageList[imageList.length - 1].gsub(/\//, "@")}")
-        _data = a.get("http://#{imageList[i]}").body
-        if _data != nil
-          File.open("/var/www/webtoon/tmp/#{imageList[imageList.length - 1].gsub(/\//, "@")}", "w") do |f|
-            f.write(_data)
+    (i..imageList.length - 1).each {|idx|
+      if check_link and idx == imageList.length - 1
+        _content << "<a target=\"_blank\" href=\"#{link_url}\">"
+        if not File::exists?("/var/www/webtoon/tmp/#{imageList[imageList.length - 1].gsub(/\//, "@")}")
+          _data = a.get("http://#{imageList[i]}").body
+          if _data != nil
+            File.open("/var/www/webtoon/tmp/#{imageList[imageList.length - 1].gsub(/\//, "@")}", "w") do |f|
+              f.write(_data)
+            end
           end
         end
+        _content << "<img src=\"/webtoon/tmp/#{imageList[imageList.length - 1].gsub(/\//, "@")}\"></a>"
       end
-      _content << "<img src=\"/webtoon/tmp/#{imageList[imageList.length - 1].gsub(/\//, "@")}\"></a>"
-    end
+      _content << naverPutObj(a, imageList[idx], imageWidth[idx], imageHeight[idx])
+    }
   }
 
   # 만화책 형식의 웹툰
