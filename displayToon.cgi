@@ -149,7 +149,8 @@ if site == "naver"
     imageWidth = nil
     imageHeight = nil
     check_link = nil
-    resp.search('//head/script[last()]')[0].inner_html.strip.split(';').map(&:strip).each {|v|
+    link_url = nil
+    resp.search('//head/script[last()]')[0].inner_html.strip.split(/;\s*\n/).map(&:strip).each {|v|
       if v =~ /imageList\s*=\s*\[([\w\W]*)\]/
         imageList = $1.split(/\s*,\s*/).map {|item| $1 if item =~ /"http:\/\/(.*)"/}
       elsif v =~ /var\s*imageWidth\s*=\s*\[([\w\W]*)\]/
@@ -158,6 +159,8 @@ if site == "naver"
         imageHeight = $1.split(/\s*,\s*/).map(&:strip)
       elsif v =~ /var\s*lastImageYN\s*=\s*"(.*)"/
         check_link = ($1.strip == "Y") ? true : false
+      elsif v =~ /aContent\.push\('<a\s+href="([\w\W]*)"\s*>\s*<[\w\W]*>\s*<\/a>\s*'\)/
+        link_url = $1
       end
     }
     first_img = true
@@ -187,7 +190,7 @@ if site == "naver"
           _content << naverPutObj(a, imageList[i], imageWidth[i], imageHeight[i])
           i += 1
         }
-        _content << "<a target=\"_blank\" href=\"#{v.attributes["href"]}\">"
+        _content << "<a target=\"_blank\" href=\"#{link_url}\">"
         if not File::exists?("/var/www/webtoon/tmp/#{imageList[i].gsub(/\//, "@")}")
           _data = a.get("http://#{imageList[i]}").body
           if _data != nil
@@ -206,7 +209,19 @@ if site == "naver"
         _content << "<script>alert('예상하지 못한 태그 <#{v.name}>을 관리자에게 알려주세요.');</script>"
       end
     }
-    (i..imageList.length - 1).each {|idx| _content << naverPutObj(a, imageList[idx], imageWidth[idx], imageHeight[idx]) }
+    (i..imageList.length - 2).each {|idx| _content << naverPutObj(a, imageList[idx], imageWidth[idx], imageHeight[idx]) }
+    if check_link
+      _content << "<a target=\"_blank\" href=\"#{link_url}\">"
+      if not File::exists?("/var/www/webtoon/tmp/#{imageList[imageList.length - 1].gsub(/\//, "@")}")
+        _data = a.get("http://#{imageList[i]}").body
+        if _data != nil
+          File.open("/var/www/webtoon/tmp/#{imageList[imageList.length - 1].gsub(/\//, "@")}", "w") do |f|
+            f.write(_data)
+          end
+        end
+      end
+      _content << "<img src=\"/webtoon/tmp/#{imageList[imageList.length - 1].gsub(/\//, "@")}\"></a>"
+    end
   }
 
   # 만화책 형식의 웹툰
