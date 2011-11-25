@@ -212,15 +212,15 @@ if site == "naver"
     (i..imageList.length - 1).each {|idx|
       if check_link and idx == imageList.length - 1
         _content << "<a target=\"_blank\" href=\"#{link_url}\">"
-        if not File::exists?("/var/www/webtoon/tmp/#{imageList[imageList.length - 1].gsub(/\//, "@")}")
-          _data = a.get("http://#{imageList[i]}").body
+        if not File::exists?("/var/www/webtoon/tmp/#{imageList[idx].gsub(/\//, "@")}")
+          _data = a.get("http://#{imageList[idx]}").body
           if _data != nil
-            File.open("/var/www/webtoon/tmp/#{imageList[imageList.length - 1].gsub(/\//, "@")}", "w") do |f|
+            File.open("/var/www/webtoon/tmp/#{imageList[idx].gsub(/\//, "@")}", "w") do |f|
               f.write(_data)
             end
           end
         end
-        _content << "<img src=\"/webtoon/tmp/#{imageList[imageList.length - 1].gsub(/\//, "@")}\"></a>"
+        _content << "<img src=\"/webtoon/tmp/#{imageList[idx].gsub(/\//, "@")}\"></a>"
       else
         _content << naverPutObj(a, imageList[idx], imageWidth[idx], imageHeight[idx])
       end
