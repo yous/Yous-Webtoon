@@ -50,7 +50,14 @@ if site == "naver"
   str = "<script>"
 
   str << "toonBM={#{toonBM.keys.map {|v|
-    lastNum[v] = a.get("http://#{localhost}/cgi-bin/webtoon/getNum.cgi?site=naver&id=#{v}").body.to_i if lastNum[v] == nil
+    if not finishToon.include?(v)
+      resp = a.get("http://#{localhost}/cgi-bin/webtoon/getNum.cgi?site=naver&id=#{v}").body.split(" ")
+      lastNum[v] = resp[1].to_i
+      if resp[0] == "y"
+        db.execute("INSERT INTO naver_lastNum (toon_id, toon_num) VALUES (?, ?);", v, lastNum[v])
+        finishToon.push(v)
+      end
+    end
     if toonBM[v] < lastNum[v]
       reqList[v] = toonBM[v] + 1
       col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
@@ -59,7 +66,6 @@ if site == "naver"
     else
       col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved"]}');"
     end
-    col_str << "if ($('##{v}').css('background-color') == 'rgb(136, 221, 136)' && $('##{v}').parent().parent().parent().parent().attr('id') == 'finished_toonlist') { $.post('/cgi-bin/webtoon/saveBM.cgi', {site: '#{site}', add: 'yes', toon_id: '#{v}', toon_num: '#{toonBM[v]}', finish: #{lastNum[v]}}); $('div[name=#{v}]').css('background-color', '#{btnColor["saved_finish"]}'); }"
     "#{v}:#{toonBM[v]}"
   }.join(",")}};"
 
@@ -105,8 +111,15 @@ elsif site == "daum"
   str = "<script>"
 
   str << "toonBM={#{toonBM.keys.map {|v|
-    numList[v] = a.get("http://#{localhost}/cgi-bin/webtoon/getNum.cgi?site=daum&id=#{v}").body.strip.split("\n")[0].split().map(&:to_i) if not finishToon.include?(v)
-    lastNum[v] = numList[v][-1]
+    if not finishToon.include?(v)
+      resp = a.get("http://#{localhost}/cgi-bin/webtoon/getNum.cgi?site=daum&id=#{v}").body.strip.split("\n")[0].split()
+      numList[v] = resp.drop(1).map(&:to_i)
+      lastNum[v] = numList[v][-1]
+      if resp[0] == "y"
+        db.execute("INSERT INTO daum_lastNum (toon_id, toon_num) VALUES (?, ?);", v, lastNum[v])
+        finishToon.push(v)
+      end
+    end
     if toonBM[v] < lastNum[v]
       reqList[v] = numList[v][numList[v].index(toonBM[v]) + 1]
       col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
@@ -115,7 +128,6 @@ elsif site == "daum"
     else
       col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved"]}');"
     end
-    col_str << "if ($('##{v}').css('background-color') == 'rgb(136, 221, 136)' && $('##{v}').parent().parent().parent().parent().attr('id') == 'finished_toonlist') { $.post('/cgi-bin/webtoon/saveBM.cgi', {site: '#{site}', add: 'yes', toon_id: '#{v}', toon_num: '#{toonBM[v]}', finish: #{lastNum[v]}, numList: '#{numList[v].join(" ")}'}); $('div[name=#{v}]').css('background-color', '#{btnColor["saved_finish"]}'); }"
     "'#{v}':#{toonBM[v]}"
   }.join(",")}};"
 

@@ -13,22 +13,33 @@ a = Mechanize.new
 
 # Naver 웹툰
 if site == "naver"
+  str = ""
   resp = a.get "http://comic.naver.com/webtoon/detail.nhn?titleId=#{id}"
 
+  resp.search('//div[@id="header"]/div[@id="submenu"]/ul[@class="submenu"]/li').each {|v|
+    v.search('a[@class="current"]').each {|e|
+      str << case e.attributes["href"].value
+      when "/webtoon/weekday.nhn" then "n "
+      when "/webtoon/finish.nhn" then "y "
+      else "x "
+      end
+    }
+  }
   resp.search('//div[@class="btn_area"]').each {|v|
     v.search('span[@class="pre"]/a').each {|e|
       if e.attributes["href"].value =~ /\/webtoon\/detail\.nhn\?titleId=\d+&seq=(\d+)/
-        puts $1.to_i + 1
+        puts str << "#{$1.to_i + 1}"
         exit
       end
     }
-    puts 1
+    puts str << "1"
   }
 # Daum 웹툰
 elsif site == "daum"
   str = ""
   str_writer = []
   str_toonInfo = ""
+  str_finish = ""
   resp = a.get "http://cartoon.media.daum.net/webtoon/view/#{id}"
 
   resp.search('//div[@id="daumContent"]/div[@id="cMain"]').each {|r|
@@ -43,7 +54,10 @@ elsif site == "daum"
     r.search('div[@id="mCenter"]/script')[0].inner_html.strip.split(";").map(&:strip).
       find_all {|v| v =~ /data1\.push\([\w\W]*\)/}.
       map {|v|
-        {"num" => $1, "date" => $2} if v =~ /data1\.push\(\s*\{\s*img\s*:\s*"[\w\W]*"\s*,\s*title\s*:\s*"[\w\W]*"\s*,\s*shortTitle\s*:\s*"[\w\W]*"\s*,\s*url\s*:\s*"\/webtoon\/viewer\/(\d+)"\s*,\s*date\s*:\s*"([\w\W]*)"\s*,\s*price\s*:\s*"[\w\W]*"\s*,\s*finishYn\s*:\s*"[\w\W]*"\s*,\s*payYn\s*:\s*"[\w\W]*"\s*\}\s*\)/
+        if v =~ /data1\.push\(\s*\{\s*img\s*:\s*"[\w\W]*"\s*,\s*title\s*:\s*"[\w\W]*"\s*,\s*shortTitle\s*:\s*"[\w\W]*"\s*,\s*url\s*:\s*"\/webtoon\/viewer\/(\d+)"\s*,\s*date\s*:\s*"([\w\W]*)"\s*,\s*price\s*:\s*"[\w\W]*"\s*,\s*finishYn\s*:\s*"([\w\W]*)"\s*,\s*payYn\s*:\s*"[\w\W]*"\s*\}\s*\)/
+          str_finish = "y " if $3 == "Y" and str_finish == ""
+          {"num" => $1, "date" => $2, "finish" => $3}
+        end
       }.
       reverse.
       each {|v|
@@ -51,5 +65,5 @@ elsif site == "daum"
       }
   }
 
-  puts str[0...-1] + "\n" + str_writer.join(" / ") + "\n" + str_toonInfo
+  puts ((str_finish == "") ? "n " : str_finish) + str[0...-1] + "\n" + str_writer.join(" / ") + "\n" + str_toonInfo
 end
