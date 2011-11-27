@@ -42,7 +42,7 @@ input::-moz-focus-inner {
   height: 15px;
   font-size: 12px;
 }
-#login_area input[type=button] {
+#login_area span {
   font-size: 12px;
 }
 #remote {

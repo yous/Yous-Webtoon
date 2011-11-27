@@ -113,8 +113,8 @@ function toggle_login(log)
   {
     document.getElementById("user_id").disabled = true;
     $("#user_pw").val("");
-    $("#login").val("Logout");
-    $("#join").val("Leave");
+    $("#login").html("Logout");
+    $("#join").html("Leave");
     $("#login").unbind("click");
     $("#join").unbind("click");
     $("#login").bind("click", function() { logout(); });
@@ -126,8 +126,8 @@ function toggle_login(log)
     document.getElementById("user_id").disabled = false;
     $("#user_id").val("");
     $("#user_pw").val("");
-    $("#login").val("Login");
-    $("#join").val("Join");
+    $("#login").html("Login");
+    $("#join").html("Join");
     $("#login").unbind("click");
     $("#join").unbind("click");
     $("#login").bind("click", function() { login(); });
@@ -641,6 +641,16 @@ function go_to(opt)
         alert("저장된 북마크가 없습니다!");
       break;
   }
+}
+
+// Login, Join 키 입력 처리
+function spanKeyDown(spanId, e)
+{
+  if (event == null)
+    var event = e;
+
+  if (event.keyCode == 13 || event.keyCode == 32) // Enter
+    $("#" + spanId).trigger("click");
 }
 
 // 단축키 입력 처리

@@ -20,8 +20,12 @@
           $("#ID").css("display", "inline");
           $("#PW").css("display", "inline");
         }
+        $("#login").css("color", btnColor["link"]);
+        $("#join").css("color", btnColor["link"]);
         $("#login").bind("click", function() { login(); });
         $("#join").bind("click", function() { join(); });
+        $("#login").bind("keydown", function(e) { spanKeyDown("login", e); });
+        $("#join").bind("keydown", function(e) { spanKeyDown("join", e); });
         $("#user_id").focus();
         $(window).bind("beforeunload", function() { logout(); });
       });
@@ -34,9 +38,9 @@
       <div id="display_area"></div>
     </div>
     <div id="login_area">
-      <span id="ID" style="display: none;">ID </span><input type="text" id="user_id" placeholder="ID"/><br/>
-      <span id="PW" style="display: none;">PW </span><input type="password" id="user_pw" placeholder="Password"/><br/>
-      <input type="button" id="login" value="Login"/><input type="button" id="join" value="Join"/>
+      <span id="ID" style="display: none;">ID </span><input type="text" id="user_id" tabindex="1" placeholder="ID"/><br/>
+      <span id="PW" style="display: none;">PW </span><input type="password" id="user_pw" tabindex="2" placeholder="Password"/><br/>
+      <span id="login" tabindex="3">Login</span> <span id="join" tabindex="4">Join</span>
     </div>
     <table id="remote">
       <tr>
