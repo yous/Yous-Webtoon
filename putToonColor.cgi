@@ -13,7 +13,7 @@ site = cgi.params["site"][0]
 
 session = CGI::Session.new(cgi, "session_key" => "SSID", "prefix" => "rubysess.", "tmpdir" => "sess")
 
-db = SQLite3::Database.new("/var/www/db/#{Digest::SHA1.hexdigest("webtoon.db")}")
+db = SQLite3::Database.new("/var/www/cgi-bin/db/#{Digest::SHA1.hexdigest("webtoon.db")}")
 db.execute("CREATE TABLE IF NOT EXISTS naver_bm (id INTEGER, toon_id INTEGER, toon_num INTEGER);")
 db.execute("CREATE TABLE IF NOT EXISTS naver_lastNum (toon_id INTEGER PRIMARY KEY, toon_num INTEGER);")
 db.execute("CREATE TABLE IF NOT EXISTS daum_bm (id INTEGER, toon_id VARCHAR(255), toon_num INTEGER);")
