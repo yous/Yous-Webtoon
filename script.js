@@ -68,7 +68,9 @@ function change_remote()
     }
   }
 
-  $("#url").attr("href", src);
+  $("#url").removeAttr("href");
+  if (src != "")
+    $("#url").attr("href", src);
 }
 
 // 웹툰 사이트 변경
@@ -86,6 +88,8 @@ function site_change(_site)
   change_remote();
 
   $("#display_area").html("");
+  $("#inputNum").val("");
+  $("#url").removeAttr("href");
   $.get(
     "/cgi-bin/webtoon/getList.cgi",
     {site: _site},
