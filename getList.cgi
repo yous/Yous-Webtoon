@@ -13,7 +13,7 @@ site = cgi.params["site"][0]
 
 session = CGI::Session.new(cgi, "session_key" => "SSID", "prefix" => "rubysess.", "tmpdir" => "sess")
 
-db = SQLite3::Database.new("/var/www/cgi-bin/db/#{Digest::SHA1.hexdigest("webtoon.db")}")
+db = SQLite3::Database.new("/var/db/#{Digest::SHA1.hexdigest("webtoon.db")}")
 db.execute("CREATE TABLE IF NOT EXISTS naver_bm (id INTEGER, toon_id INTEGER, toon_num INTEGER);")
 db.execute("CREATE TABLE IF NOT EXISTS naver_lastNum (toon_id INTEGER PRIMARY KEY, toon_num INTEGER);")
 db.execute("CREATE TABLE IF NOT EXISTS naver_tmpList (toon_id INTEGER PRIMARY KEY);")
@@ -36,7 +36,7 @@ btnColor = {
 
 # Naver 웹툰
 if site == "naver"
-  reqList = []
+  reqList = Hash.new
   tmpList = []
 
   db.execute("SELECT toon_id FROM naver_tmpList ORDER BY toon_id;") do |_toon_id|
@@ -104,7 +104,7 @@ if site == "naver"
 
   # reqList 처리
   str << '<script>'
-  reqList.each do |v|
+  reqList.keys.each do |v|
     str << "$.get(\"/cgi-bin/webtoon/displayToon.cgi?site=naver&id=#{v}&num=1\");"
     db.execute("INSERT INTO naver_tmpList (toon_id) SELECT ? WHERE NOT EXISTS (SELECT 1 FROM naver_tmpList WHERE toon_id=?);", v, v)
   end
@@ -202,7 +202,7 @@ elsif site == "daum"
     numList[v] = []
     dateList[v] = []
     num_resp = a.get("http://#{localhost}/cgi-bin/webtoon/getNum.cgi?site=daum&id=#{v}").body.strip.split("\n").map(&:strip)
-    num_resp[0].split().map {|item|
+    num_resp[0].split()[1].map {|item|
       numList[v].push(item.split(",")[0].to_i)
       dateList[v].push(item.split(",")[1])
     }
