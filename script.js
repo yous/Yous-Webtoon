@@ -82,7 +82,7 @@ function putToonColor(day)
     // getDay() -> 0 : 일, 1 : 월, 2 : 화, ... , 6 : 토
     // HTML td -> 0 : 월, 1 : 화, 2 : 수, ... , 6 : 일
     var day_BM = new Object();
-    for (i = 0; i < 7; i++)
+    for (i = 1; i <= 7; i++)
     {
       var day_toon = $("#day" + String((day + i) % 7) + " div");
       day_BM[i] = [];
@@ -94,7 +94,7 @@ function putToonColor(day)
     }
 
     var count = 0;
-    for (i = 0; i < 7; i++)
+    for (i = 7; i >= 1; i--)
     {
       $.post(
         "/cgi-bin/webtoon/putToonColor.cgi",
