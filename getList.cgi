@@ -50,15 +50,22 @@ if site == "naver"
   str << '<span id="site_button" style="float: right; cursor: pointer; color: ' + btnColor["link"] + ';" onclick="site_change(\'daum\');"><u>D</u>aum</span><br/>'
   str << '<table id="current_toonlist">'
   str << '<tr style="font-weight: bold;">'
-  str << '<td>월</td><td>화</td><td>수</td><td>목</td><td>금</td><td>토</td><td>일</td>'
+  str << '<td>월<span class="refreshBtn" onclick="putToonColor(0);">Re</span></td>'
+  str << '<td>화<span class="refreshBtn" onclick="putToonColor(1);">Re</span></td>'
+  str << '<td>수<span class="refreshBtn" onclick="putToonColor(2);">Re</span></td>'
+  str << '<td>목<span class="refreshBtn" onclick="putToonColor(3);">Re</span></td>'
+  str << '<td>금<span class="refreshBtn" onclick="putToonColor(4);">Re</span></td>'
+  str << '<td>토<span class="refreshBtn" onclick="putToonColor(5);">Re</span></td>'
+  str << '<td>일<span class="refreshBtn" onclick="putToonColor(6);">Re</span></td>'
   str << '</tr>'
   str << '<tr valign="top">'
 
   count = 0
 
   resp.search('//div[@class="list_area daily_all"]').each {|r|
+    day = 0
     r.search('div/div[@class="col_inner"]').each {|v|
-      str << '<td>'
+      str << "<td id=\"day#{day}\">"
       v.search('ul/li/div[@class="thumb"]').each {|v1|
         _a = v1.search('a')[0]
         _titleId = $1.to_i if _a.attributes["href"].value =~ /\/webtoon\/list\.nhn\?titleId=(\d+)/
@@ -74,6 +81,7 @@ if site == "naver"
       }
       count = 0
       str << '</td>'
+      day += 1
     }
     str << '</td></tr></table>'
   }
@@ -112,10 +120,26 @@ if site == "naver"
 
   # toonlist background-color 처리
   if session["user_id"] != nil and session["user_id"] != ""
+    toonBM = Hash.new
+    lastNum = Hash.new
+    finishToon = []
+
+    db.execute("SELECT toon_id, toon_num FROM naver_bm WHERE id=?;", session["user_id"]) do |_toon_id, _toon_num|
+      toonBM[_toon_id] = _toon_num
+      db.execute("SELECT toon_num FROM naver_lastNum WHERE toon_id=?;", _toon_id) do |_lastNum|
+        lastNum[_toon_id] = _lastNum[0]
+        finishToon.push(_toon_id)
+      end
+    end
+
+    str << "toonBM={#{toonBM.keys.map {|v| "#{v}:#{toonBM[v]}"}.join(",")}};"
+    str << "lastNum={#{lastNum.keys.map {|v| "#{v}:#{lastNum[v]}"}.join(",")}};"
+    str << "finishToon=[#{finishToon.join(",")}];"
+
     str << '$("#loading").html("<big><b> Loading</b></big>");'
     str << '$("#loading").css("display", "inline");'
     str << 'loading(10);'
-    str << '$.get("/cgi-bin/webtoon/putToonColor.cgi", {site: "naver"}, function (data) { $("#loading").css("display", "none");$("#display_area").html(data); });'
+    str << "putToonColor();"
   end
 
   str << '</script>'
@@ -123,21 +147,11 @@ if site == "naver"
   puts str
 # Daum 웹툰
 elsif site == "daum"
-  numList = Hash.new
-  dateList = Hash.new
-  toonInfo = Hash.new
-  lastNum = Hash.new
-  finishToon = []
   reqList = Hash.new
+  tmpList = []
 
-  db.execute("SELECT toon_id, toon_num, toon_date FROM daum_numList ORDER BY toon_num_idx;") do |_toon_id, _toon_num, _toon_date|
-    numList[_toon_id] = [] if numList[_toon_id] == nil
-    numList[_toon_id].push(_toon_num)
-    dateList[_toon_id] = [] if dateList[_toon_id] == nil
-    dateList[_toon_id].push(_toon_date)
-  end
-  db.execute("SELECT toon_id, toon_writer, toon_intro FROM daum_toonInfo;") do |_toon_id, _toon_writer, _toon_intro|
-    toonInfo[_toon_id] = [_toon_writer, _toon_intro]
+  db.execute("SELECT toon_id, toon_num, toon_date FROM daum_numList ORDER BY toon_num_idx;") do |_toon_id|
+    tmpList.push(_toon_id[0]) unless tmpList.include?(_toon_id[0])
   end
 
   # 연재
@@ -147,27 +161,35 @@ elsif site == "daum"
   str << '<span id="site_button" style="float: right; cursor: pointer; color: ' + btnColor["link"] + ';" onclick="site_change(\'naver\');"><u>N</u>aver</span><br/>'
   str << '<table id="current_toonlist">'
   str << '<tr style="font-weight: bold;">'
-  str << '<td>월</td><td>화</td><td>수</td><td>목</td><td>금</td><td>토</td><td>일</td>'
+  str << '<td>월<span class="refreshBtn" onclick="putToonColor(0);">Re</span></td>'
+  str << '<td>화<span class="refreshBtn" onclick="putToonColor(1);">Re</span></td>'
+  str << '<td>수<span class="refreshBtn" onclick="putToonColor(2);">Re</span></td>'
+  str << '<td>목<span class="refreshBtn" onclick="putToonColor(3);">Re</span></td>'
+  str << '<td>금<span class="refreshBtn" onclick="putToonColor(4);">Re</span></td>'
+  str << '<td>토<span class="refreshBtn" onclick="putToonColor(5);">Re</span></td>'
+  str << '<td>일<span class="refreshBtn" onclick="putToonColor(6);">Re</span></td>'
   str << '</tr>'
   str << '<tr valign="top">'
 
   count = 0
 
   resp.search('//div[@class="area_toonlist area_bg"]').each {|r|
+    day = 0
     r.search('div/div[@class="bg_line"]').each {|v|
-      str << '<td>'
+      str << "<td id=\"day#{day}\">"
       v.search('ul/li/a').each {|v1|
         _titleId = $1 if v1.attributes["href"].value =~ /\/webtoon\/view\/(.+)$/
         _title = v1.attributes["title"].value
         _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
-        reqList[_titleId] = 0 if numList[_titleId] == nil or dateList[_titleId] == nil or dateList[_titleId].include?(nil) or toonInfo[_titleId] == nil or toonInfo[_titleId].include?(nil)
+        reqList[_titleId] = 0 if tmpList.index(_titleId) == nil
 
         str << "<div id=\"#{_titleId}\" name=\"#{_titleId}\" class=\"current_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon('#{_titleId}');\">#{_title}</div>"
         count += 1
       }
       count = 0
       str << '</td>'
+      day += 1
     }
     str << '</td></tr></table>'
   }
@@ -186,7 +208,7 @@ elsif site == "daum"
     _title = r.search('p')[0].attributes["title"].value
     _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
-    reqList[_titleId] = -1 if numList[_titleId] == nil or dateList[_titleId] == nil or dateList[_titleId].include?(nil) or toonInfo[_titleId] == nil or toonInfo[_titleId].include?(nil)
+    reqList[_titleId] = -1 if tmpList.index(_titleId) == nil
 
     str_td[count % 7] << "<div id=\"#{_titleId}\" name=\"#{_titleId}\" class=\"finished_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon('#{_titleId}');\">#{_title}</div>"
     count += 1
@@ -199,42 +221,67 @@ elsif site == "daum"
   # reqList 처리
   str << '<script>'
   reqList.keys.each do |v|
-    numList[v] = []
-    dateList[v] = []
+    numList = []
+    dateList = []
     num_resp = a.get("http://#{localhost}/cgi-bin/webtoon/getNum.cgi?site=daum&id=#{v}").body.strip.split("\n").map(&:strip)
     num_resp[0].split()[1].map {|item|
-      numList[v].push(item.split(",")[0].to_i)
-      dateList[v].push(item.split(",")[1])
+      numList.push(item.split(",")[0].to_i)
+      dateList.push(item.split(",")[1])
     }
-    toonInfo[v] = [num_resp[1], num_resp[2].gsub('"', "&quot;").gsub("'", "&#39;").gsub("<", "&lt;").gsub(">", "&gt;")]
+    toonInfo = [num_resp[1], num_resp[2].gsub('"', "&quot;").gsub("'", "&#39;").gsub("<", "&lt;").gsub(">", "&gt;")]
 
-    str << "$.get(\"/cgi-bin/webtoon/displayToon.cgi?site=daum&id=#{v}&num=#{numList[v][0]}\");"
-    (0...numList[v].length).each {|i|
-      db.execute("UPDATE daum_numList SET toon_num=?, toon_date=? WHERE toon_id=? AND toon_num_idx=?;", numList[v][i], dateList[v][i], v, i)
-      db.execute("INSERT INTO daum_numList (toon_id, toon_num_idx, toon_num, toon_date) SELECT ?, ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_numList WHERE toon_id=? AND toon_num_idx=?);", v, i, numList[v][i], dateList[v][i], v, i)
-      db.execute("UPDATE daum_toonInfo SET toon_writer=?, toon_intro=? WHERE toon_id=?;", toonInfo[v][0], toonInfo[v][1], v)
-      db.execute("INSERT INTO daum_toonInfo (toon_id, toon_writer, toon_intro) SELECT ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_toonInfo WHERE toon_id=?);", v, toonInfo[v][0], toonInfo[v][1], v)
+    str << "$.get(\"/cgi-bin/webtoon/displayToon.cgi?site=daum&id=#{v}&num=#{numList[0]}\");"
+    (0...numList.length).each {|i|
+      db.execute("UPDATE daum_numList SET toon_num=?, toon_date=? WHERE toon_id=? AND toon_num_idx=?;", numList[i], dateList[i], v, i)
+      db.execute("INSERT INTO daum_numList (toon_id, toon_num_idx, toon_num, toon_date) SELECT ?, ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_numList WHERE toon_id=? AND toon_num_idx=?);", v, i, numList[i], dateList[i], v, i)
+      db.execute("UPDATE daum_toonInfo SET toon_writer=?, toon_intro=? WHERE toon_id=?;", toonInfo[0], toonInfo[1], v)
+      db.execute("INSERT INTO daum_toonInfo (toon_id, toon_writer, toon_intro) SELECT ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_toonInfo WHERE toon_id=?);", v, toonInfo[0], toonInfo[1], v)
     }
     if reqList[v] == -1 # 완결
-      lastNum[v] = numList[v][-1]
-      finishToon.push(v)
-      db.execute("UPDATE daum_lastNum SET toon_num=? WHERE toon_id=?;", numList[v][-1], v)
-      db.execute("INSERT INTO daum_lastNum (toon_id, toon_num) SELECT ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_lastNum WHERE toon_id=?);", v, numList[v][-1], v)
+      db.execute("UPDATE daum_lastNum SET toon_num=? WHERE toon_id=?;", numList[-1], v)
+      db.execute("INSERT INTO daum_lastNum (toon_id, toon_num) SELECT ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_lastNum WHERE toon_id=?);", v, numList[-1], v)
     end
   end
   str << 'resizeWidth();'
 
-  str << "numList={#{numList.keys.map {|v| "'#{v}':[#{numList[v].join(",")}]"}.join(",")}};"
-  str << "dateList={#{dateList.keys.map {|v| "'#{v}':['#{dateList[v].join("','")}']"}.join(",")}};"
-  str << "toonInfo={#{toonInfo.keys.map {|v| "'#{v}':['#{toonInfo[v].join("','")}']"}.join(",")}};"
-  str << "finishToon=[#{finishToon.map {|v| "'#{v}'"}.join(",")}];"
-  
   # toon background-color 처리
   if session["user_id"] != nil and session["user_id"] != ""
+    toonBM = Hash.new
+    numList = Hash.new
+    dateList = Hash.new
+    toonInfo = Hash.new
+    lastNum = Hash.new
+    finishToon = []
+
+    db.execute("SELECT toon_id, toon_num FROM daum_bm WHERE id=? ORDER BY toon_id;", session["user_id"]) do |_toon_id, _toon_num|
+      toonBM[_toon_id] = _toon_num
+      db.execute("SELECT toon_num FROM daum_lastNum WHERE toon_id=?;", _toon_id) do |_lastNum|
+        lastNum[_toon_id] = _lastNum[0]
+        finishToon.push(_toon_id)
+      end
+    end
+
+    db.execute("SELECT toon_id, toon_num, toon_date FROM daum_numList ORDER BY toon_num_idx;") do |_toon_id, _toon_num, _toon_date|
+      numList[_toon_id] = [] if numList[_toon_id] == nil
+      numList[_toon_id].push(_toon_num)
+      dateList[_toon_id] = [] if dateList[_toon_id] == nil
+      dateList[_toon_id].push(_toon_date)
+    end
+
+    db.execute("SELECT toon_id, toon_writer, toon_intro FROM daum_toonInfo;") do |_toon_id, _toon_writer, _toon_intro|
+      toonInfo[_toon_id] = [_toon_writer, _toon_intro]
+    end
+
+    str << "toonBM={#{toonBM.keys.map {|v| "'#{v}':#{toonBM[v]}"}.join(",")}};"
+    str << "numList={#{numList.keys.map {|v| "'#{v}':[#{numList[v].join(",")}]"}.join(",")}};"
+    str << "dateList={#{dateList.keys.map {|v| "'#{v}':['#{dateList[v].join("','")}']"}.join(",")}};"
+    str << "toonInfo={#{toonInfo.keys.map {|v| "'#{v}':['#{toonInfo[v].join("','")}']"}.join(",")}};"
+    str << "finishToon=[#{finishToon.map {|v| "'#{v}'"}.join(",")}];"
+  
     str << '$("#loading").html("<big><b> Loading</b></big>");'
     str << '$("#loading").css("display", "inline");'
     str << 'loading(10);'
-    str << '$.get("/cgi-bin/webtoon/putToonColor.cgi", {site: "daum"}, function (data) { $("#loading").css("display", "none");$("#display_area").html(data); });'
+    str << "putToonColor();"
   end
 
   str << '</script>'

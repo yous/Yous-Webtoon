@@ -10,6 +10,8 @@ puts "Content-Type: text/html; charset=utf-8\n\n"
 
 cgi = CGI.new
 site = cgi.params["site"][0]
+finish = cgi.params["finish"][0]
+day_BM = cgi.params["day_BM"][0].split(",")
 
 session = CGI::Session.new(cgi, "session_key" => "SSID", "prefix" => "rubysess.", "tmpdir" => "sess")
 
@@ -34,6 +36,7 @@ btnColor = {
 
 # Naver 웹툰
 if site == "naver"
+  day_BM = day_BM.map(&:to_i)
   toonBM = Hash.new
   lastNum = Hash.new
   finishToon = []
@@ -50,25 +53,33 @@ if site == "naver"
   col_str = ""
   str = "<script>"
 
-  str << "toonBM={#{toonBM.keys.map {|v|
-    if not finishToon.include?(v)
+  if finish == "n"
+    day_BM.each {|v|
       resp = a.get("http://#{localhost}/cgi-bin/webtoon/getNum.cgi?site=naver&id=#{v}").body.split(" ")
       lastNum[v] = resp[1].to_i
-      if resp[0] == "y"
+      if toonBM[v] < lastNum[v]
+        reqList[v] = toonBM[v] + 1
+        col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
+      else
+        col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved"]}');"
+      end
+    }
+  else
+    day_BM.each {|v|
+      unless finishToon.include?(v)
+        resp = a.get("http://#{localhost}/cgi-bin/webtoon/getNum.cgi?site=naver&id=#{v}").body.split(" ")
+        lastNum[v] = resp[1].to_i
         db.execute("INSERT INTO naver_lastNum (toon_id, toon_num) VALUES (?, ?);", v, lastNum[v])
         finishToon.push(v)
       end
-    end
-    if toonBM[v] < lastNum[v]
-      reqList[v] = toonBM[v] + 1
-      col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
-    elsif finishToon.include?(v)
-      col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_finish"]}');"
-    else
-      col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved"]}');"
-    end
-    "#{v}:#{toonBM[v]}"
-  }.join(",")}};"
+      if toonBM[v] < lastNum[v]
+        reqList[v] = toonBM[v] + 1
+        col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
+      else
+        col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_finish"]}');"
+      end
+    }
+  end
 
   str << col_str
 
@@ -111,26 +122,35 @@ elsif site == "daum"
   col_str = ""
   str = "<script>"
 
-  str << "toonBM={#{toonBM.keys.map {|v|
-    if not finishToon.include?(v)
+  if finish == "n"
+    day_BM.each {|v|
       resp = a.get("http://#{localhost}/cgi-bin/webtoon/getNum.cgi?site=daum&id=#{v}").body.strip.split("\n")[0].split()
       numList[v] = resp.drop(1).map(&:to_i)
       lastNum[v] = numList[v][-1]
-      if resp[0] == "y"
+      if toonBM[v] < lastNum[v]
+        reqList[v] = numList[v][numList[v].index(toonBM[v]) + 1]
+        col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
+      else
+        col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved"]}');"
+      end
+    }
+  else
+    day_BM.each {|v|
+      unless finishToon.include?(v)
+        resp = a.get("http://#{localhost}/cgi-bin/webtoon/getNum.cgi?site=daum&id=#{v}").body.strip.split("\n")[0].split()
+        numList[v] = resp.drop(1).map(&:to_i)
+        lastNum[v] = numList[v][-1]
         db.execute("INSERT INTO daum_lastNum (toon_id, toon_num) VALUES (?, ?);", v, lastNum[v])
         finishToon.push(v)
       end
-    end
-    if toonBM[v] < lastNum[v]
-      reqList[v] = numList[v][numList[v].index(toonBM[v]) + 1]
-      col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
-    elsif finishToon.include?(v)
-      col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_finish"]}');"
-    else
-      col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved"]}');"
-    end
-    "'#{v}':#{toonBM[v]}"
-  }.join(",")}};"
+      if toonBM[v] < lastNum[v]
+        reqList[v] = toonBM[v] + 1
+        col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
+      else
+        col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_finish"]}');"
+      end
+    }
+  end
 
   str << col_str
 
