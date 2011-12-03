@@ -73,6 +73,69 @@ function change_remote()
     $("#url").attr("href", src);
 }
 
+// toon div background color 변경
+function putToonColor(day)
+{
+  if (day == null)
+  {
+    var day = ((new Date()).getDay() + 6) % 7;
+    // getDay() -> 0 : 일, 1 : 월, 2 : 화, ... , 6 : 토
+    // HTML td -> 0 : 월, 1 : 화, 2 : 수, ... , 6 : 일
+    var day_BM = new Object();
+    for (i = 0; i < 7; i++)
+    {
+      var day_toon = $("#day" + String((day + i) % 7) + " div");
+      day_BM[i] = [];
+      for (j = 0; j < day_toon.length; j++)
+      {
+        if (toonBM[day_toon[j].id] != undefined)
+          day_BM[i].push(day_toon[j].id);
+      }
+    }
+
+    var count = 0;
+    for (i = 0; i < 7; i++)
+    {
+      $.post(
+        "/cgi-bin/webtoon/putToonColor.cgi",
+        {site: site, finish: "n", day_BM: day_BM[i].join(",")},
+        function (data) { count += 1; if (count == 8) { $("#loading").css("display", "none"); } $("#display_area").html(data); }
+      );
+    }
+
+    var finish_BM = [];
+    for (_id in toonBM)
+    {
+      if ($("#" + String(_id)).attr("class") == "finished_toon")
+        finish_BM.push(_id);
+    }
+    $.post(
+      "/cgi-bin/webtoon/putToonColor.cgi",
+      {site: site, finish: "y", day_BM: finish_BM.join(",")},
+      function (data) { count += 1; if (count == 8) { $("#loading").css("display", "none"); } $("#display_area").html(data); }
+    );
+  }
+  else
+  {
+    $("#loading").html("<big><b> Loading</b></big>");
+    $("#loading").css("display", "inline");
+    loading(5);
+    var day_toon = $("#day" + String(day) + " div");
+    var day_BM = [];
+    for (i = 0; i < day_toon.length; i++)
+    {
+      if (toonBM[day_toon[i].id] != undefined)
+        day_BM.push(day_toon[i].id);
+    }
+
+    $.post(
+      "/cgi-bin/webtoon/putToonColor.cgi",
+      {site: site, finish: "n", day_BM: day_BM.join(",")},
+      function (data) { $("#loading").css("display", "none"); $("#display_area").html(data); }
+    );
+  }
+}
+
 // 웹툰 사이트 변경
 function site_change(_site)
 {

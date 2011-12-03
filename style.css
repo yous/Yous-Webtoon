@@ -23,6 +23,12 @@ input::-moz-focus-inner {
 #main_area {
   margin: 5px;
 }
+.refreshBtn {
+  float: right;
+  font-weight: normal;
+  color: #0066CC;
+  cursor: pointer;
+}
 #title_area {
   font-size: 17px;
 }
