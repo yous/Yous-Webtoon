@@ -143,7 +143,7 @@ if site == "naver"
     }
   }
 
-  # 만화책 형식이 아닌 웹툰
+  # 스크롤 형식의 웹툰
   resp.search('//div[@class="wt_viewer"]').each {|r|
     imageList = nil
     imageWidth = nil
@@ -247,7 +247,7 @@ if site == "naver"
             _content << "<img src=\"/webtoon/tmp/#{url.gsub(/\//, "@")}\" style=\"display: inline; width: 470px; height: 670px;\" onload=\"location.replace('#title_area');\">"
             count += 1
           else
-            _content << ((count % 2 == 0) ? "<br/><br/><hr id=\"anchor_#{count / 2}\" style=\"width: 80%; height: 1px; border: 0px;\"/>" : "")
+            _content << ((count % 2 == 0) ? "<br/><br/><br/><hr id=\"anchor_#{count / 2}\" style=\"width: 80%; height: 1px; border: 0px;\"/>" : "")
             _content << "<img src=\"/webtoon/tmp/#{url.gsub(/\//, "@")}\" style=\"display: inline; width: 470px; height: 670px;\">"
             count += 1
           end
@@ -318,7 +318,7 @@ elsif site == "daum"
   _title << "<small id=\"toon_date\"></small>"
   _title << "<script>$('#title_area div').append('#{comic_title} - ' + toonInfo['#{id}'][0] + '<br/><small style=\"font-size: 12px;\">' + toonInfo['#{id}'][1] + '</small><br/><br/><b>#{title}</b>');$('#toon_date').html(dateList['#{id}'][numList['#{id}'].indexOf(#{num})]);</script>"
 
-  # 만화책 형식이 아닌 웹툰
+  # 스크롤 형식의 웹툰
   if resp.search('//div[@class="img_list_wrap"]').length > 0
     count = 1
     toon_resp = JSON.parse(a.post("http://cartoon.media.daum.net/webtoon/viewer_images.js?webtoon_episode_id=#{num}").body)
