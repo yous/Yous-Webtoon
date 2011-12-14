@@ -112,7 +112,7 @@ function putToonColor(day)
     $.post(
       "/cgi-bin/webtoon/putToonColor.cgi",
       {site: site, finish: "y", day_BM: finish_BM.join(",")},
-      function (data) { count += 1; if (count == 8) { $("#loading").css("display", "none"); } $("#display_area").html(data); }
+      function (data) { count += 1; if (count == 8) { $("#loading").css("display", "none"); } $("#display_area").append(data); }
     );
   }
   else
@@ -131,7 +131,7 @@ function putToonColor(day)
     $.post(
       "/cgi-bin/webtoon/putToonColor.cgi",
       {site: site, finish: "n", day_BM: day_BM.join(",")},
-      function (data) { $("#loading").css("display", "none"); $("#display_area").html(data); }
+      function (data) { $("#loading").css("display", "none"); $("#display_area").append(data); }
     );
   }
 }
