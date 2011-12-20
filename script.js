@@ -499,7 +499,8 @@ function viewToon(_id, _num)
   toonlist_area.style.overflow = "";
   $(document).unbind("keydown");
   $(document).bind("keydown", function (e) { bodyKeyDown(e, true); });
-  $("#largeFlashDiv").remove();
+  if (site == "naver")
+    $("#largeFlashDiv").remove();
 
   if (_id != id)
     add_bookmark();
@@ -573,8 +574,10 @@ function viewToon(_id, _num)
           );
           if (num < lastNum[id])
             for (i = 0; i < numList[id].length; i++)
+            {
               if (numList[id][i] == num)
                 $.get("/cgi-bin/webtoon/displayToon.cgi", {site: site, id: id, num: numList[id][i + 1]});
+            }
         }
       );
   }
