@@ -124,9 +124,16 @@ elsif site == "daum"
 
   if finish == "n"
     day_BM.each {|v|
+      if finishToon.include?(v)
+        finishToon.delete(v)
+        str << "finishToon.splice(finishToon.indexOf('#{v}'),1);"
+        db.execute("DELETE FROM daum_lastNum WHERE toon_id=?;", v)
+      end
       resp = a.get("http://#{localhost}/cgi-bin/webtoon/getNum.cgi?site=daum&id=#{v}").body.strip.split("\n")[0].split()
       numList[v] = resp.drop(1).map(&:to_i)
       lastNum[v] = numList[v][-1]
+      str << "numList['#{v}']=[#{numList[v].join(",")}];"
+      str << "lastNum['#{v}']=#{lastNum[v]};"
       if toonBM[v] < lastNum[v]
         reqList[v] = numList[v][numList[v].index(toonBM[v]) + 1]
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
@@ -140,8 +147,11 @@ elsif site == "daum"
         resp = a.get("http://#{localhost}/cgi-bin/webtoon/getNum.cgi?site=daum&id=#{v}").body.strip.split("\n")[0].split()
         numList[v] = resp.drop(1).map(&:to_i)
         lastNum[v] = numList[v][-1]
+        str << "numList['#{v}']=[#{numList[v].join(",")}];"
+        str << "lastNum['#{v}']=#{lastNum[v]};"
         db.execute("INSERT INTO daum_lastNum (toon_id, toon_num) VALUES (?, ?);", v, lastNum[v])
         finishToon.push(v)
+        str << "finishToon.push('#{v}');"
       end
       if toonBM[v] < lastNum[v]
         reqList[v] = toonBM[v] + 1
@@ -154,10 +164,6 @@ elsif site == "daum"
 
   str << col_str
 
-  str << numList.keys.map {|v| "numList['#{v}']=[#{numList[v].join(",")}];"}.join()
-  str << dateList.keys.map {|v| "dateList['#{v}']=['#{dateList[v].join("','")}'];"}.join()
-  str << lastNum.keys.map {|v| "lastNum['#{v}']=#{lastNum[v]};"}.join()
-  str << finishToon.map {|v| "finishToon.push('#{v}');"}.join()
   str << "id=null;num=null;"
 
   # reqList 처리

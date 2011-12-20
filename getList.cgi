@@ -150,7 +150,7 @@ elsif site == "daum"
   reqList = Hash.new
   tmpList = []
 
-  db.execute("SELECT toon_id, toon_num, toon_date FROM daum_numList ORDER BY toon_num_idx;") do |_toon_id|
+  db.execute("SELECT toon_id, toon_date FROM daum_numList ORDER BY toon_num_idx;") do |_toon_id|
     tmpList.push(_toon_id[0]) unless tmpList.include?(_toon_id[0])
   end
 
@@ -224,7 +224,7 @@ elsif site == "daum"
     numList = []
     dateList = []
     num_resp = a.get("http://#{localhost}/cgi-bin/webtoon/getNum.cgi?site=daum&id=#{v}").body.strip.split("\n").map(&:strip)
-    num_resp[0].split()[1].map {|item|
+    num_resp[0].split()[1..-1].map {|item|
       numList.push(item.split(",")[0].to_i)
       dateList.push(item.split(",")[1])
     }
