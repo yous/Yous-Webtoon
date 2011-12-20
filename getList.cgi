@@ -276,6 +276,7 @@ elsif site == "daum"
     str << "numList={#{numList.keys.map {|v| "'#{v}':[#{numList[v].join(",")}]"}.join(",")}};"
     str << "dateList={#{dateList.keys.map {|v| "'#{v}':['#{dateList[v].join("','")}']"}.join(",")}};"
     str << "toonInfo={#{toonInfo.keys.map {|v| "'#{v}':['#{toonInfo[v].join("','")}']"}.join(",")}};"
+    str << "lastNum={#{lastNum.keys.map {|v| "'#{v}':#{lastNum[v]}"}.join(",")}};"
     str << "finishToon=[#{finishToon.map {|v| "'#{v}'"}.join(",")}];"
   
     str << '$("#loading").html("<big><b> Loading</b></big>");'
