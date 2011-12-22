@@ -553,10 +553,14 @@ function viewToon(_id, _num)
             alert("접속할 수 없습니다!");
             return;
           }
-          numList[id] = data.split("\n")[0].split(" ").slice(1);
+          var tmp = data.split("\n")[0].split(" ").slice(1);
+          numList[id] = [];
+          dateList[id] = [];
+          for (i = 0; i < tmp.length; i++) {
+            numList[id].push(parseInt(tmp[i].split(",")[0]));
+            dateList[id].push(tmp[i].split(",")[1]);
+          }
           writer[id] = data.split("\n")[1];
-          for (i = 0; i < numList[id].length; i++)
-            numList[id][i] = parseInt(numList[id][i]);
           lastNum[id] = numList[id][numList[id].length - 1];
           num = numList[id][0];
           $.get(
