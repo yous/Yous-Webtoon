@@ -179,7 +179,7 @@ if site == "naver"
       # Flash
       elsif v.name == "script"
         if f_exist
-          _content << '<script>$("#title_area").append("<small style=\'float: left;\'>Flash Exist</small>");document.getElementById("toonlist_area").style.height=parseInt(document.getElementById(\'toonlist_area\').clientHeight-(document.getElementById(\'content_area\').offsetTop-437))+\'px\';document.getElementById("toonlist_area").style.overflow="scroll";$(document).unbind("keydown");$(document).bind("keydown",function(e){bodyKeyDown(e,false);});location.replace("#title_area");</script>'
+          _content << '<script>$("#title_area").append("<small style=\'float: left;\'>Flash Exist <span style=\'cursor: pointer;\' onclick=\'toggle_toonlist();\'>목록 접기/펼치기</span></small>");toggle_toonlist(true);location.replace("#title_area");</script>'
           f_exist = false
         end
         _content << naverPutObj(a, imageList[i], imageWidth[i], imageHeight[i])
