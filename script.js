@@ -173,6 +173,27 @@ function toonlist_area_init()
   $("#toonlist_area").html(str);
 }
 
+// Flash 있을 때 toonlist_area height 설정 토글
+function toggle_toonlist(_flash)
+{
+  if (_flash || (_flash == undefined && $("#toonlist_area").css("overflow") != "scroll"))
+  {
+    $("#toonlist_area").css("height", parseInt(document.getElementById("toonlist_area").clientHeight - (document.getElementById("content_area").offsetTop - 437)) + "px");
+    $("#toonlist_area").css("overflow", "scroll");
+    $(document).unbind("keydown");
+    $(document).bind("keydown", function(e) { bodyKeyDown(e, false); });
+  }
+  else
+  {
+    $("#toonlist_area").css("height", "");
+    $("#toonlist_area").css("overflow", "");
+    $(document).unbind("keydown");
+    $(document).bind("keydown", function (e) { bodyKeyDown(e, true); });
+    if (site == "naver")
+      $("#largeFlashDiv").remove();
+  }
+}
+
 // Login, Join 토글
 function toggle_login(log)
 {
@@ -494,13 +515,8 @@ function viewToon(_id, _num)
     alert("웹툰을 선택해 주세요!");
     return;
   }
-  var toonlist_area = document.getElementById("toonlist_area");
-  toonlist_area.style.height = "";
-  toonlist_area.style.overflow = "";
-  $(document).unbind("keydown");
-  $(document).bind("keydown", function (e) { bodyKeyDown(e, true); });
-  if (site == "naver")
-    $("#largeFlashDiv").remove();
+
+  toggle_toonlist(false);
 
   if (_id != id)
     add_bookmark();
