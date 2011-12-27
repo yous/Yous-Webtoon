@@ -159,8 +159,8 @@ if site == "naver"
         imageHeight = $1.split(/\s*,\s*/).map(&:strip)
       elsif v =~ /var\s*lastImageYN\s*=\s*"(.*)"/
         check_link = ($1.strip == "Y") ? true : false
-      elsif v =~ /aContent\.push\('<a\s+href="([\w\W]*)"\s*>\s*<[\w\W]*>\s*<\/a>\s*'\)/
-        link_url = $1
+      elsif v =~ /aContent\.push\('<a(\s+target="_blank")?\s+href="([\w\W]*)"\s*>\s*<[\w\W]*>\s*<\/a>\s*'\)/
+        link_url = $2
       end
     }
     first_img = true
