@@ -85,7 +85,6 @@ if site == "naver"
 
   str << "lastNum={#{lastNum.keys.map {|v| "#{v}:#{lastNum[v]}"}.join(",")}};"
   str << "finishToon=[#{finishToon.join(",")}];"
-  str << "id=null;num=null;"
 
   # reqList 처리
   reqList.keys.each do |v|
@@ -169,8 +168,6 @@ elsif site == "daum"
   end
 
   str << col_str
-
-  str << "id=null;num=null;"
 
   # reqList 처리
   reqList.keys.each do |v|
