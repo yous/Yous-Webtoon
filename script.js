@@ -512,6 +512,9 @@ function getOtherToon(_id, /* Daum 웹툰용 */ check_other)
 // 웹툰 출력
 function viewToon(_id, _num)
 {
+  var prev_id = id;
+  var prev_num = num;
+
   if (typeof(_id) == "undefined")
   {
     alert("웹툰을 선택해 주세요!");
@@ -546,6 +549,8 @@ function viewToon(_id, _num)
           if (data == "")
           {
             alert("접속할 수 없습니다!");
+            id = prev_id;
+            num = prev_num;
             return;
           }
           lastNum[id] = parseInt(data.split(" ")[1]);
@@ -569,6 +574,8 @@ function viewToon(_id, _num)
           if (data == "")
           {
             alert("접속할 수 없습니다!");
+            id = prev_id;
+            num = prev_num;
             return;
           }
           var tmp = data.split("\n")[0].split(" ").slice(1);
@@ -588,6 +595,8 @@ function viewToon(_id, _num)
               if (data == "")
               {
                 alert("접속할 수 없습니다!");
+                id = prev_id;
+                num = prev_num;
                 return;
               }
               $("#display_area").html(data);
@@ -621,6 +630,8 @@ function viewToon(_id, _num)
         if (data == "")
         {
           alert("접속할 수 없습니다!");
+          id = prev_id;
+          num = prev_num;
           return;
         }
         $("#display_area").html(data);
@@ -637,6 +648,8 @@ function viewToon(_id, _num)
         if (data == "")
         {
           alert("접속할 수 없습니다!");
+          id = prev_id;
+          num = prev_num;
           return;
         }
         $("#display_area").html(data);
