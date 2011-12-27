@@ -1,3 +1,8 @@
+<?php
+  if (strstr($_SERVER["HTTP_USER_AGENT"], "Mobile") && $_GET["pc"] != "y") {
+    header("Location: m");
+  }
+?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
   <head>
