@@ -208,6 +208,8 @@ function toggle_login(log)
     $("#login").bind("click", function() { logout(); });
     $("#join").bind("click", function() { leave(); });
     $("#login").blur();
+    $("#user_id").blur();
+    $("#user_pw").blur();
   }
   else
   {
@@ -834,6 +836,15 @@ function bodyKeyDown(e, lr_arrow)
       case 90: location.replace("#bottom"); break; // Z
     }
   }
+}
+
+// Login Form 단축키 입력 처리
+function loginKeyDown(e)
+{
+  if (event == null)
+    var event = e;
+  if (event.keyCode == 13) // Enter
+    $("#login").trigger("click");
 }
 
 site = null;

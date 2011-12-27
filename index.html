@@ -13,8 +13,8 @@
         resizeWidth();
         toonlist_area_init();
         $(this).bind("keydown", function(e) { bodyKeyDown(e, true); });
-        $("#login_area").bind("focusin", function() { $(document).unbind("keydown"); });
-        $("#login_area").bind("focusout", function() { $(document).bind("keydown", function(e) { bodyKeyDown(e, true); }); });
+        $("#login_area").bind("focusin", function() { $(document).unbind("keydown");$(document).bind("keydown", function(e) { loginKeyDown(e); }); });
+        $("#login_area").bind("focusout", function() { $(document).unbind("keydown");$(document).bind("keydown", function(e) { bodyKeyDown(e, true); }); });
         if (navigator.appVersion.indexOf("MSIE") != -1)
         {
           $("#ID").css("display", "inline");
