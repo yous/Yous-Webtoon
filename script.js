@@ -99,7 +99,7 @@ function putToonColor(day)
       $.post(
         "/cgi-bin/webtoon/putToonColor.cgi",
         {site: site, finish: "n", day_BM: day_BM[i].join(",")},
-        function (data) { count += 1; if (count == 8) { $("#loading").css("display", "none"); } $("#display_area").html(data); }
+        function (data) { count += 1; if (count == 8) { $("#loading").css("display", "none"); } $("#display_area").append(data); }
       );
     }
 
