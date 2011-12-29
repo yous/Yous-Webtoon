@@ -856,8 +856,15 @@ function loginKeyDown(e)
 {
   if (event == null)
     var event = e;
-  if (event.keyCode == 13) // Enter
-    $("#login").trigger("click");
+
+  if (event.keyCode == 13) { // Enter
+    if ($("#user_id").val() == "")
+      $("#user_id").focus();
+    else if ($("#user_pw").val() == "")
+      $("#user_pw").focus();
+    else
+      $("#login").trigger("click");
+  }
 }
 
 site = null;
