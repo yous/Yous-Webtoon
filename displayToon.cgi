@@ -97,12 +97,12 @@ if site == "naver"
     writer = writer.strip().gsub(/^<span>\s*/i, "").gsub(/\s*<\/span>/i, "")
     _title << "<div style=\"padding: 15px 0px 15px 0px; background-color: #{btnColor["buttonB"]};\">#{comic_title} - #{writer}<br/><small style=\"font-size: 12px;\">#{comic_text}</small><br/><br/>"
   }
-  # 웹툰 회, 날짜 출력
-  resp.search('//div[@class="tit_area"]').each {|r|
-    title = r.search('div[@class="view"]/h3')[0].inner_html
-    date = r.search('div[@class="vote_lst"]/dl[@class="rt"]/dd[@class="date"]')[0].inner_html
-    _title << "<b>#{title}</b></div><small id=\"toon_date\">#{date}</small>"
-  }
+  # 웹툰 회 제목, 날짜 출력
+  if resp.search('//div[@class="view_area"]/div[@class="btn_me"]/div[@class="pme2"]/script')[0].inner_html =~ /"title"\s*:\s*"([\w\W]*)"\s*,[\w\W]*"tag"/
+    title = $1.gsub("<", "&lt;").gsub(">", "&gt;").gsub('"', "&quot;").gsub("'", "&#39;") 
+  end
+  date = resp.search('//div[@class="tit_area"]/div[@class="vote_lst"]/dl[@class="rt"]/dd[@class="date"]')[0].inner_html
+  _title << "<b>#{title}</b></div><small id=\"toon_date\">#{date}</small>"
 
   # BGM 출력
   resp.search('//div[@id="bgm_player"]').each {|r|
