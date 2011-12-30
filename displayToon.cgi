@@ -98,11 +98,15 @@ if site == "naver"
     _title << "<div style=\"padding: 15px 0px 15px 0px; background-color: #{btnColor["buttonB"]};\">#{comic_title} - #{writer}<br/><small style=\"font-size: 12px;\">#{comic_text}</small><br/><br/>"
   }
   # 웹툰 회 제목, 날짜 출력
-  if resp.search('//div[@class="view_area"]/div[@class="btn_me"]/div[@class="pme2"]/script')[0].inner_html =~ /"title"\s*:\s*"([\w\W]*)"\s*,[\w\W]*"tag"/
-    title = $1.gsub("<", "&lt;").gsub(">", "&gt;").gsub('"', "&quot;").gsub("'", "&#39;") 
-  end
-  date = resp.search('//div[@class="tit_area"]/div[@class="vote_lst"]/dl[@class="rt"]/dd[@class="date"]')[0].inner_html
-  _title << "<b>#{title}</b></div><small id=\"toon_date\">#{date}</small>"
+  resp.search('//div[@class="view_area"]').each {|r|
+    r1 = r.search('div[@class="btn_me"]/div[@class="pme2"]/script')[0]
+    r1 = r.search('div[@class="btn_me2"]/div[@class="pme2"]/script')[0] if r1 == nil
+    if r1.inner_html =~ /"title"\s*:\s*"([\w\W]*)"\s*,[\w\W]*"tag"/
+      title = $1.gsub("<", "&lt;").gsub(">", "&gt;").gsub('"', "&quot;").gsub("'", "&#39;")
+    end
+    date = resp.search('//div[@class="tit_area"]/div[@class="vote_lst"]/dl[@class="rt"]/dd[@class="date"]')[0].inner_html
+    _title << "<b>#{title}</b></div><small id=\"toon_date\">#{date}</small>"
+  }
 
   # BGM 출력
   resp.search('//div[@id="bgm_player"]').each {|r|
