@@ -43,10 +43,10 @@ if session["user_id"] != nil and session["user_id"] != "" and add != nil and too
     end
   # Daum 웹툰
   elsif site == "daum" and numList != nil
-    (0...numList.length).each {|i|
+    (0...numList.length).each do |i|
       db.execute("UPDATE daum_numList SET toon_num=?, toon_date=? WHERE toon_id=? AND toon_num_idx=?;", numList[i], dateList[i], toon_id, i)
       db.execute("INSERT INTO daum_numList (toon_id, toon_num_idx, toon_num, toon_date) SELECT ?, ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_numList WHERE toon_id=? AND toon_num_idx=?);", toon_id, i, numList[i], dateList[i], toon_id, i)
-    }
+    end
     if add == "yes"
       db.execute("UPDATE daum_bm SET toon_num=? WHERE id=? AND toon_id=?;", toon_num, session["user_id"], toon_id)
       db.execute("INSERT INTO daum_bm (id, toon_id, toon_num) SELECT ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_bm WHERE id=? AND toon_id=?);", session["user_id"], toon_id, toon_num, session["user_id"], toon_id)

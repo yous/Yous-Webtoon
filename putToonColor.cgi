@@ -54,7 +54,7 @@ if site == "naver"
   str = "<script>"
 
   if finish == "n"
-    day_BM.each {|v|
+    day_BM.each do |v|
       resp = a.get("http://#{localhost}/cgi-bin/webtoon/getNum.cgi?site=naver&id=#{v}").body.split(" ")
       lastNum[v] = resp[1].to_i
       if toonBM[v] < lastNum[v]
@@ -63,9 +63,9 @@ if site == "naver"
       else
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved"]}');"
       end
-    }
+    end
   else
-    day_BM.each {|v|
+    day_BM.each do |v|
       unless finishToon.include?(v)
         resp = a.get("http://#{localhost}/cgi-bin/webtoon/getNum.cgi?site=naver&id=#{v}").body.split(" ")
         lastNum[v] = resp[1].to_i
@@ -78,7 +78,7 @@ if site == "naver"
       else
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_finish"]}');"
       end
-    }
+    end
   end
 
   str << col_str
@@ -94,6 +94,7 @@ if site == "naver"
   str << "</script>"
 
   puts str
+
 # Daum 웹툰
 elsif site == "daum"
   toonBM = Hash.new
@@ -122,7 +123,7 @@ elsif site == "daum"
   str = "<script>"
 
   if finish == "n"
-    day_BM.each {|v|
+    day_BM.each do |v|
       if finishToon.include?(v)
         finishToon.delete(v)
         str << "finishToon.splice(finishToon.indexOf('#{v}'),1);"
@@ -145,9 +146,9 @@ elsif site == "daum"
       else
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved"]}');"
       end
-    }
+    end
   else
-    day_BM.each {|v|
+    day_BM.each do |v|
       unless finishToon.include?(v)
         resp = a.get("http://#{localhost}/cgi-bin/webtoon/getNum.cgi?site=daum&id=#{v}").body.strip.split("\n")[0].split()
         numList[v] = resp.drop(1).map(&:to_i)
@@ -164,7 +165,7 @@ elsif site == "daum"
       else
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_finish"]}');"
       end
-    }
+    end
   end
 
   str << col_str

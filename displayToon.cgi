@@ -75,7 +75,8 @@ btnColor = {
   "saved" => "#88DD88",
   "saved_up" => "#DD8888",
   "saved_finish" => "#888888",
-  "link" => "#0066CC"}
+  "link" => "#0066CC"
+}
 
 a = Mechanize.new
 
@@ -87,7 +88,7 @@ if site == "naver"
   _content = '<div id="content_area">'
 
   # 웹툰 제목, 작가, 설명 출력
-  resp.search('//div[@class="dsc"]').each {|r|
+  resp.search('//div[@class="dsc"]').each do |r|
     comic_title, writer = $1, $2 if r.search('h2')[0].inner_html =~ /([\w\W]*)<em>([\w\W]*)<\/em>/
     if resp.body =~ /<p class="txt">([\w\W]*)<\/p>[\w\W]*<ul class="btn_group">[\w\W]*<div class="tit_area">/
       comic_text = $1.gsub(/^<br\/?>/i, "").gsub(/<br\/?>$/i, "").gsub("<", "&lt;").gsub(">", "&gt;").gsub('"', "&quot;").gsub("'", "&#39;").gsub(/&lt;br\/?&gt;/i, "<br/>")
@@ -96,9 +97,9 @@ if site == "naver"
     comic_title = comic_title.strip()
     writer = writer.strip().gsub(/^<span>\s*/i, "").gsub(/\s*<\/span>/i, "")
     _title << "<div style=\"padding: 15px 0px 15px 0px; background-color: #{btnColor["buttonB"]};\">#{comic_title} - #{writer}<br/><small style=\"font-size: 12px;\">#{comic_text}</small><br/><br/>"
-  }
+  end
   # 웹툰 회 제목, 날짜 출력
-  resp.search('//div[@class="view_area"]').each {|r|
+  resp.search('//div[@class="view_area"]').each do |r|
     r1 = r.search('div[@class="btn_me"]/div[@class="pme2"]/script')[0]
     r1 = r.search('div[@class="btn_me2"]/div[@class="pme2"]/script')[0] if r1 == nil
     if r1.inner_html =~ /"title"\s*:\s*"([\w\W]*)"\s*,[\w\W]*"tag"/
@@ -106,11 +107,11 @@ if site == "naver"
     end
     date = resp.search('//div[@class="tit_area"]/div[@class="vote_lst"]/dl[@class="rt"]/dd[@class="date"]')[0].inner_html
     _title << "<b>#{title}</b></div><small id=\"toon_date\">#{date}</small>"
-  }
+  end
 
   # BGM 출력
-  resp.search('//div[@id="bgm_player"]').each {|r|
-    r.search('script').each {|e|
+  resp.search('//div[@id="bgm_player"]').each do |r|
+    r.search('script').each do |e|
       bgmURL = $1 if e.inner_html =~ /showMusicPlayer\("http:\/\/(.*)"\);/
       if not File::exists?("/var/www/webtoon/tmp/#{bgmURL.gsub(/\//, "@")}")
         _data = a.get("http://#{bgmURL}").body
@@ -144,17 +145,17 @@ if site == "naver"
       _content << "<embed src=\"/webtoon/tmp/#{bgmURL.gsub(/\//, "@")}\" type=\"application/x-mplayer2\" pluginspage=\"http://www.microsoft.com/Windows/MediaPlayer/\" width=\"0\" height=\"0\"/>"
       _content << '</object></div>'
       _content << '</div><br/><br/>'
-    }
-  }
+    end
+  end
 
   # 스크롤 형식의 웹툰
-  resp.search('//div[@class="wt_viewer"]').each {|r|
+  resp.search('//div[@class="wt_viewer"]').each do |r|
     imageList = nil
     imageWidth = nil
     imageHeight = nil
     check_link = nil
     link_url = nil
-    resp.search('//head/script[last()]')[0].inner_html.strip.split(/;\s*\n/).map(&:strip).each {|v|
+    resp.search('//head/script[last()]')[0].inner_html.strip.split(/;\s*\n/).map(&:strip).each do |v|
       if v =~ /imageList\s*=\s*\[([\w\W]*)\]/
         imageList = $1.split(/\s*,\s*/).map {|item| $1 if item =~ /"http:\/\/(.*)"/}
       elsif v =~ /var\s*imageWidth\s*=\s*\[([\w\W]*)\]/
@@ -166,11 +167,11 @@ if site == "naver"
       elsif v =~ /aContent\.push\('<a(\s+target="_blank")?\s+href="([\w\W]*)"\s*>\s*<[\w\W]*>\s*<\/a>\s*'\)/
         link_url = $2
       end
-    }
+    end
     first_img = true
     f_exist = true
     i = 0
-    r.element_children.each {|v|
+    r.element_children.each do |v|
       # Image
       if v.name == "img"
         if first_img
@@ -212,8 +213,8 @@ if site == "naver"
       else
         _content << "<script>alert('예상하지 못한 태그 <#{v.name}>을 관리자에게 알려주세요.');</script>"
       end
-    }
-    (i..imageList.length - 1).each {|idx|
+    end
+    (i..imageList.length - 1).each do |idx|
       if check_link and idx == imageList.length - 1
         _content << "<a target=\"_blank\" href=\"#{link_url}\">"
         if not File::exists?("/var/www/webtoon/tmp/#{imageList[idx].gsub(/\//, "@")}")
@@ -228,14 +229,14 @@ if site == "naver"
       else
         _content << naverPutObj(a, imageList[idx], imageWidth[idx], imageHeight[idx])
       end
-    }
-  }
+    end
+  end
 
   # 만화책 형식의 웹툰
-  resp.search('//div[@class="view_group"]').each {|r|
+  resp.search('//div[@class="view_group"]').each do |r|
     count = 0
-    r.search('div[@class="book_viewer"]/div[@class="flip-cached_page"]/div').each {|v|
-      v.search('img').each {|e|
+    r.search('div[@class="book_viewer"]/div[@class="flip-cached_page"]/div').each do |v|
+      v.search('img').each do |e|
         if e.attributes["class"].to_s =~ /real_url\(http:\/\/(.*)\)/
           url = $1
           if not File::exists?("/var/www/webtoon/tmp/#{url.gsub(/\//, "@")}")
@@ -256,13 +257,13 @@ if site == "naver"
             count += 1
           end
         end
-      }
-    }
+      end
+    end
     _content << '<br/>'
-  }
+  end
 
   # 작가 블로그, 다른 작품 출력
-  resp.search('//script').each {|r|
+  resp.search('//script').each do |r|
     if r.inner_html =~ /artistData/
       _content << '<br/><br/>'
       _content << '<div id="artist_area" style="width: 85%; clear: both; margin: 0 auto;">'
@@ -277,10 +278,10 @@ if site == "naver"
           { "artistId" => artistId, "nickname" => nickname, "blogUrl" => blogUrl }
         }
       end
-      _info.each {|v|
+      _info.each do |v|
         _blog << "<a href=\"#{v["blogUrl"]}\" target=\"_blank\">#{v["nickname"]}</a><br/>" if v["blogUrl"] != ""
         _other << "<span style=\"cursor: pointer; color: #{btnColor["link"]}; text-decoration: underline;\" onclick=\"getOtherToon(#{v["artistId"]});\">#{v["nickname"]} &gt;&gt;</span><br/>"
-      }
+      end
       _blog << '</div></td>'
       _other << '</div></td>'
       _content << _blog
@@ -289,7 +290,7 @@ if site == "naver"
       _content << '<td colspan="2"><div id="artist_otherlist"></div></td>'
       _content << '</tr></table></div>'
     end
-  }
+  end
 
   # 작가의 말, 별점 출력
   _writerCmt = $1.gsub("<", "&lt;").gsub(">", "&gt;").gsub(/&lt;br&gt;/i, "<br>") if resp.body =~ /<div\s+class="writer_info">[\w\W]*<p>([\w\W]*)<\/p>\s*<ul\s+class="btn_group">[\w\W]*<\/div>/
@@ -304,6 +305,7 @@ if site == "naver"
   puts '<br/>'
   puts _content
   puts "<script>setTimeout(\"location.replace('#title_area');\", 100);</script>"
+
 # Daum 웹툰
 elsif site == "daum"
   resp = a.get "http://cartoon.media.daum.net/webtoon/viewer/#{num}"
@@ -313,10 +315,10 @@ elsif site == "daum"
 
   # 웹툰 제목, 작가, 설명 출력
   comic_title = ""
-  resp.search('//div[@class="episode_info"]').each {|r|
+  resp.search('//div[@class="episode_info"]').each do |r|
     comic_title = r.search('a[@class="title"]')[0].inner_html.strip()
     _title << "<div style=\"padding: 15px 0px 15px 0px; background-color: #{btnColor["buttonB"]};\"></div>"
-  }
+  end
   # 웹툰 회, 날짜 출력
   title = resp.search('//div[@class="others"]/span/span[@class="episode_title"]')[0].inner_html.gsub("<", "&lt;").gsub(">", "&gt;").gsub('"', "&quot;").gsub("'", "&#39;")
   _title << "<small id=\"toon_date\"></small>"
@@ -326,7 +328,7 @@ elsif site == "daum"
   if resp.search('//div[@class="img_list_wrap"]').length > 0
     count = 1
     toon_resp = JSON.parse(a.post("http://cartoon.media.daum.net/webtoon/viewer_images.js?webtoon_episode_id=#{num}").body)
-    toon_resp["images"].each {|r|
+    toon_resp["images"].each do |r|
       url = $1 if r["url"] =~ /http:\/\/(.+)/
 
       if r["mediaType"] == "image"
@@ -376,9 +378,9 @@ elsif site == "daum"
           end
         end
       end
-    }
+    end
     _content << '<br/>'
-    resp.search('//div[@class="img_list"]/div[@class="by_daum"]').each {|r|
+    resp.search('//div[@class="img_list"]/div[@class="by_daum"]').each do |r|
       url = "photo-section.daum-img.net/-cartoon10/img/published.png"
       if not File::exists?("/var/www/webtoon/tmp/#{url.gsub(/\//, "@")}")
         _data = a.get("http://#{url}").body
@@ -389,7 +391,7 @@ elsif site == "daum"
         end
       end
       _content << "<img src=\"/webtoon/tmp/#{url.gsub(/\//, "@")}\"/>"
-    }
+    end
   # 만화책 형식의 웹툰
   else
     _content << "<iframe width=\"95%\" height=\"3600\" src=\"http://cartoon.media.daum.net/webtoon/viewer/#{num}\" onload=\"location.replace('#title_area');\"></iframe>"

@@ -62,11 +62,11 @@ if site == "naver"
 
   count = 0
 
-  resp.search('//div[@class="list_area daily_all"]').each {|r|
+  resp.search('//div[@class="list_area daily_all"]').each do |r|
     day = 0
-    r.search('div/div[@class="col_inner"]').each {|v|
+    r.search('div/div[@class="col_inner"]').each do |v|
       str << "<td id=\"day#{day}\">"
-      v.search('ul/li/div[@class="thumb"]').each {|v1|
+      v.search('ul/li/div[@class="thumb"]').each do |v1|
         _a = v1.search('a')[0]
         _titleId = $1.to_i if _a.attributes["href"].value =~ /\/webtoon\/list\.nhn\?titleId=(\d+)/
         _title = _a.attributes["title"].value
@@ -78,13 +78,13 @@ if site == "naver"
 
         str << "<div id=\"#{_titleId}\" name=\"#{_titleId}\" class=\"current_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}#{_new}#{_up}\" onclick=\"viewToon(#{_titleId});\">#{_title}<small>#{_new}#{_up}</small></div>"
         count += 1
-      }
+      end
       count = 0
       str << '</td>'
       day += 1
-    }
+    end
     str << '</td></tr></table>'
-  }
+  end
 
   # 완결
   resp = a.get 'http://comic.naver.com/webtoon/finish.nhn'
@@ -94,7 +94,7 @@ if site == "naver"
 
   count = 0
 
-  resp.search('//div[@class="thumb"]').each {|r|
+  resp.search('//div[@class="thumb"]').each do |r|
     _a = r.search('a')[0]
     _titleId = $1.to_i if _a.attributes["href"].value =~ /\/webtoon\/list\.nhn\?titleId=(\d+)/
     _title = _a.attributes["title"].value
@@ -105,9 +105,8 @@ if site == "naver"
     str_td[count % 7] << "<div id=\"#{_titleId}\" name=\"#{_titleId}\" class=\"finished_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon(#{_titleId});\">#{_title}</div>"
     count += 1
   }
-  (0...str_td.length).each {|i|
-    str << str_td[i] + "</td>"
-  }
+
+  (0...str_td.length).each {|i| str << str_td[i] + "</td>" }
   str << '</tr></table><br/><br/>'
 
   # reqList 처리
@@ -145,6 +144,7 @@ if site == "naver"
   str << '</script>'
 
   puts str
+
 # Daum 웹툰
 elsif site == "daum"
   reqList = Hash.new
@@ -173,11 +173,11 @@ elsif site == "daum"
 
   count = 0
 
-  resp.search('//div[@class="area_toonlist area_bg"]').each {|r|
+  resp.search('//div[@class="area_toonlist area_bg"]').each do |r|
     day = 0
-    r.search('div/div[@class="bg_line"]').each {|v|
+    r.search('div/div[@class="bg_line"]').each do |v|
       str << "<td id=\"day#{day}\">"
-      v.search('ul/li/a').each {|v1|
+      v.search('ul/li/a').each do |v1|
         _titleId = $1 if v1.attributes["href"].value =~ /\/webtoon\/view\/(.+)$/
         _title = v1.attributes["title"].value
         _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
@@ -186,13 +186,13 @@ elsif site == "daum"
 
         str << "<div id=\"#{_titleId}\" name=\"#{_titleId}\" class=\"current_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon('#{_titleId}');\">#{_title}</div>"
         count += 1
-      }
+      end
       count = 0
       str << '</td>'
       day += 1
-    }
+    end
     str << '</td></tr></table>'
-  }
+  end
 
   # 완결
   resp = a.get 'http://cartoon.media.daum.net/webtoon/finished'
@@ -202,7 +202,7 @@ elsif site == "daum"
 
   count = 0
 
-  resp.search('//ul[@class="list_type_image list_incount list_year"]/li').each {|r|
+  resp.search('//ul[@class="list_type_image list_incount list_year"]/li').each do |r|
     next if r.attributes["class"].value == "line_dot"
     _titleId = $1 if r.search('a')[0].attributes["href"].value =~ /\/webtoon\/view\/(.+)$/
     _title = r.search('p')[0].attributes["title"].value
@@ -212,10 +212,9 @@ elsif site == "daum"
 
     str_td[count % 7] << "<div id=\"#{_titleId}\" name=\"#{_titleId}\" class=\"finished_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon('#{_titleId}');\">#{_title}</div>"
     count += 1
-  }
-  (0...str_td.length).each {|i|
-    str << str_td[i] + "</td>"
-  }
+  end
+
+  (0...str_td.length).each {|i| str << str_td[i] + "</td>" }
   str << '</tr></table><br/><br/>'
 
   # reqList 처리
@@ -231,12 +230,12 @@ elsif site == "daum"
     toonInfo = [num_resp[1], (num_resp[2].nil?) ? nil : num_resp[2].gsub('"', "&quot;").gsub("'", "&#39;").gsub("<", "&lt;").gsub(">", "&gt;")]
 
     str << "$.get(\"/cgi-bin/webtoon/displayToon.cgi?site=daum&id=#{v}&num=#{numList[0]}\");"
-    (0...numList.length).each {|i|
+    (0...numList.length).each do |i|
       db.execute("UPDATE daum_numList SET toon_num=?, toon_date=? WHERE toon_id=? AND toon_num_idx=?;", numList[i], dateList[i], v, i)
       db.execute("INSERT INTO daum_numList (toon_id, toon_num_idx, toon_num, toon_date) SELECT ?, ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_numList WHERE toon_id=? AND toon_num_idx=?);", v, i, numList[i], dateList[i], v, i)
       db.execute("UPDATE daum_toonInfo SET toon_writer=?, toon_intro=? WHERE toon_id=?;", toonInfo[0], toonInfo[1], v)
       db.execute("INSERT INTO daum_toonInfo (toon_id, toon_writer, toon_intro) SELECT ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_toonInfo WHERE toon_id=?);", v, toonInfo[0], toonInfo[1], v)
-    }
+    end
     if reqList[v] == -1 # 완결
       db.execute("UPDATE daum_lastNum SET toon_num=? WHERE toon_id=?;", numList[-1], v)
       db.execute("INSERT INTO daum_lastNum (toon_id, toon_num) SELECT ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_lastNum WHERE toon_id=?);", v, numList[-1], v)

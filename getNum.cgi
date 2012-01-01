@@ -16,24 +16,25 @@ if site == "naver"
   str = ""
   resp = a.get "http://comic.naver.com/webtoon/detail.nhn?titleId=#{id}"
 
-  resp.search('//div[@id="header"]/div[@id="submenu"]/ul[@class="submenu"]/li').each {|v|
-    v.search('a[@class="current"]').each {|e|
+  resp.search('//div[@id="header"]/div[@id="submenu"]/ul[@class="submenu"]/li').each do |v|
+    v.search('a[@class="current"]').each do |e|
       str << case e.attributes["href"].value
       when "/webtoon/weekday.nhn" then "n "
       when "/webtoon/finish.nhn" then "y "
       else "x "
       end
-    }
-  }
-  resp.search('//div[@class="btn_area"]').each {|v|
-    v.search('span[@class="pre"]/a').each {|e|
+    end
+  end
+  resp.search('//div[@class="btn_area"]').each do |v|
+    v.search('span[@class="pre"]/a').each do |e|
       if e.attributes["href"].value =~ /\/webtoon\/detail\.nhn\?titleId=\d+&seq=(\d+)/
         puts str << "#{$1.to_i + 1}"
         exit
       end
-    }
+    end
     puts str << "1"
-  }
+  end
+
 # Daum 웹툰
 elsif site == "daum"
   str = ""
@@ -42,12 +43,12 @@ elsif site == "daum"
   str_finish = ""
   resp = a.get "http://cartoon.media.daum.net/webtoon/view/#{id}"
 
-  resp.search('//div[@id="daumContent"]/div[@id="cMain"]').each {|r|
-    r.search('div[@id="mCenter"]/div[@class="area_toon_info"]').each {|v|
-      v.search('div[@class="wrap_cont"]/dl[1]/dd/a').each {|v1|
+  resp.search('//div[@id="daumContent"]/div[@id="cMain"]').each do |r|
+    r.search('div[@id="mCenter"]/div[@class="area_toon_info"]').each do |v|
+      v.search('div[@class="wrap_cont"]/dl[1]/dd/a').each do |v1|
         str_writer.push(v1.inner_html.strip)
       }
-      v.search('div[@class="wrap_more"]/dl[@class="list_intro"]/dd').each {|v1|
+      v.search('div[@class="wrap_more"]/dl[@class="list_intro"]/dd').each do |v1|
         str_toonInfo = v1.inner_html.strip
       }
     }
@@ -60,9 +61,7 @@ elsif site == "daum"
         end
       }.
       reverse.
-      each {|v|
-        str << "#{v["num"]},#{v["date"]} "
-      }
+      each {|v| str << "#{v["num"]},#{v["date"]} " }
   }
 
   puts ((str_finish == "") ? "n " : str_finish) + str[0...-1] + "\n" + str_writer.join(" / ") + "\n" + str_toonInfo
