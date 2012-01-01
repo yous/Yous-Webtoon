@@ -58,7 +58,7 @@ elsif site == "daum"
       }.
       reverse.
       each {|v| str << "#{v["num"]},#{v["date"]} " }
-  }
+  end
 
   puts ((str_finish == "") ? "n " : str_finish) + str[0...-1] + "\n" + str_writer.join(" / ") + "\n" + str_toonInfo
 end

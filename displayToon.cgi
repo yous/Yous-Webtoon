@@ -100,7 +100,7 @@ if site == "naver"
   end
   # 웹툰 회 제목, 날짜 출력
   resp.search('//div[@class="view_area"]').each do |r|
-    r1 = r.at('div[@class="btn_me"]/div[@class="pme2"]/script') or r.at('div[@class="btn_me2"]/div[@class="pme2"]/script')
+    r1 = (r.at('div[@class="btn_me"]/div[@class="pme2"]/script') or r.at('div[@class="btn_me2"]/div[@class="pme2"]/script'))
     if r1.inner_html =~ /"title"\s*:\s*"([\w\W]*)"\s*,[\w\W]*"tag"/
       title = $1.gsub("<", "&lt;").gsub(">", "&gt;").gsub('"', "&quot;").gsub("'", "&#39;")
     end

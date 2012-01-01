@@ -104,7 +104,7 @@ if site == "naver"
 
     str_td[count % 7] << "<div id=\"#{_titleId}\" name=\"#{_titleId}\" class=\"finished_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon(#{_titleId});\">#{_title}</div>"
     count += 1
-  }
+  end
 
   (0...str_td.length).each {|i| str << str_td[i] + "</td>" }
   str << '</tr></table><br/><br/>'
