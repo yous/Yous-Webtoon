@@ -27,8 +27,8 @@ if site == "naver"
     resp = a.get "http://comic.naver.com/artistTitle.nhn?artistId=#{artistId}&page=#{page}"
 
     resp.search('//ul[@class="authorList"]/li').each do |r|
-      titleId = $1 if r.search('h4[@class="title"]/a')[0].attributes["href"].to_s =~ /\/webtoon\/detail\.nhn\?titleId=(\d+)/
-        title = r.search('h4[@class="title"]/a')[0].inner_html
+      titleId = $1 if r.at('h4[@class="title"]/a').attributes["href"].to_s =~ /\/webtoon\/detail\.nhn\?titleId=(\d+)/
+        title = r.at('h4[@class="title"]/a').inner_html
       puts "<div id=\"#{titleId}\" style=\"background-color: #{btnColor["buttonB"]}; cursor: default; margin: 3px 0px 3px 0px;\" onclick=\"viewToon('#{titleId}');\">#{title}</div>"
     end
     page += 1
@@ -40,7 +40,7 @@ elsif site == "daum"
 
   if check_other == "y"
     resp.
-      search('//div[@id="daumContent"]/div/div[@id="mCenter"]/script')[0].
+      at('//div[@id="daumContent"]/div/div[@id="mCenter"]/script').
       inner_html.strip.split(';').map(&:strip).
       find_all {|v| v =~ /data2\.push\([\w\W]*\)/}.
       map {|v|
@@ -55,7 +55,7 @@ elsif site == "daum"
     end
   else
     resp.
-      search('//div[@id="daumContent"]/div/div[@id="mCenter"]/script')[0].
+      at('//div[@id="daumContent"]/div/div[@id="mCenter"]/script').
       inner_html.strip.split(';').map(&:strip).
       find_all {|v| v =~ /data3\.push\([\w\W]*\)/}.
       map {|v| $1 if v =~ /data3\.push\(\s*\{\s*img\s*:\s*"http:\/\/(.*)"\s*,\s*no\s*:\s*".*"\s*\}\s*\)/}.

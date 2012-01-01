@@ -67,7 +67,7 @@ if site == "naver"
     r.search('div/div[@class="col_inner"]').each do |v|
       str << "<td id=\"day#{day}\">"
       v.search('ul/li/div[@class="thumb"]').each do |v1|
-        _a = v1.search('a')[0]
+        _a = v1.at('a')
         _titleId = $1.to_i if _a.attributes["href"].value =~ /\/webtoon\/list\.nhn\?titleId=(\d+)/
         _title = _a.attributes["title"].value
         _up = (_a.search('em').length != 0) ? '(UP)' : ''
@@ -95,7 +95,7 @@ if site == "naver"
   count = 0
 
   resp.search('//div[@class="thumb"]').each do |r|
-    _a = r.search('a')[0]
+    _a = r.at('a')
     _titleId = $1.to_i if _a.attributes["href"].value =~ /\/webtoon\/list\.nhn\?titleId=(\d+)/
     _title = _a.attributes["title"].value
     _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
@@ -204,8 +204,8 @@ elsif site == "daum"
 
   resp.search('//ul[@class="list_type_image list_incount list_year"]/li').each do |r|
     next if r.attributes["class"].value == "line_dot"
-    _titleId = $1 if r.search('a')[0].attributes["href"].value =~ /\/webtoon\/view\/(.+)$/
-    _title = r.search('p')[0].attributes["title"].value
+    _titleId = $1 if r.at('a').attributes["href"].value =~ /\/webtoon\/view\/(.+)$/
+    _title = r.at('p').attributes["title"].value
     _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
     reqList[_titleId] = -1 if tmpList.index(_titleId) == nil

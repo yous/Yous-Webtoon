@@ -45,14 +45,10 @@ elsif site == "daum"
 
   resp.search('//div[@id="daumContent"]/div[@id="cMain"]').each do |r|
     r.search('div[@id="mCenter"]/div[@class="area_toon_info"]').each do |v|
-      v.search('div[@class="wrap_cont"]/dl[1]/dd/a').each do |v1|
-        str_writer.push(v1.inner_html.strip)
-      }
-      v.search('div[@class="wrap_more"]/dl[@class="list_intro"]/dd').each do |v1|
-        str_toonInfo = v1.inner_html.strip
-      }
-    }
-    r.search('div[@id="mCenter"]/script')[0].inner_html.strip.split(";").map(&:strip).
+      str_writer.push(v.at('div[@class="wrap_cont"]/dl[1]/dd/a').inner_html.strip)
+      str_toonInfo = v.at('div[@class="wrap_more"]/dl[@class="list_intro"]/dd').inner_html.strip
+    end
+    r.at('div[@id="mCenter"]/script').inner_html.strip.split(";").map(&:strip).
       find_all {|v| v =~ /data1\.push\([\w\W]*\)/}.
       map {|v|
         if v =~ /data1\.push\(\s*\{\s*img\s*:\s*"[\w\W]*"\s*,\s*title\s*:\s*"[\w\W]*"\s*,\s*shortTitle\s*:\s*"[\w\W]*"\s*,\s*url\s*:\s*"\/webtoon\/viewer\/(\d+)"\s*,\s*date\s*:\s*"([\w\W]*)"\s*,\s*price\s*:\s*"[\w\W]*"\s*,\s*finishYn\s*:\s*"([\w\W]*)"\s*,\s*payYn\s*:\s*"[\w\W]*"\s*\}\s*\)/

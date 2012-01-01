@@ -89,23 +89,22 @@ if site == "naver"
 
   # 웹툰 제목, 작가, 설명 출력
   resp.search('//div[@class="dsc"]').each do |r|
-    comic_title, writer = $1, $2 if r.search('h2')[0].inner_html =~ /([\w\W]*)<em>([\w\W]*)<\/em>/
+    comic_title, writer = $1, $2 if r.at('h2').inner_html =~ /([\w\W]*)<em>([\w\W]*)<\/em>/
     if resp.body =~ /<p class="txt">([\w\W]*)<\/p>[\w\W]*<ul class="btn_group">[\w\W]*<div class="tit_area">/
       comic_text = $1.gsub(/^<br\/?>/i, "").gsub(/<br\/?>$/i, "").gsub("<", "&lt;").gsub(">", "&gt;").gsub('"', "&quot;").gsub("'", "&#39;").gsub(/&lt;br\/?&gt;/i, "<br/>")
     end
-    #comic_text = r.search('p[@class="txt"]')[0].inner_html.strip().gsub(/^<br\/?>/i, "").gsub(/<br\/?>$/i, "").gsub(/<br\/?>/i, " ")
+    #comic_text = r.at('p[@class="txt"]').inner_html.strip().gsub(/^<br\/?>/i, "").gsub(/<br\/?>$/i, "").gsub(/<br\/?>/i, " ")
     comic_title = comic_title.strip()
     writer = writer.strip().gsub(/^<span>\s*/i, "").gsub(/\s*<\/span>/i, "")
     _title << "<div style=\"padding: 15px 0px 15px 0px; background-color: #{btnColor["buttonB"]};\">#{comic_title} - #{writer}<br/><small style=\"font-size: 12px;\">#{comic_text}</small><br/><br/>"
   end
   # 웹툰 회 제목, 날짜 출력
   resp.search('//div[@class="view_area"]').each do |r|
-    r1 = r.search('div[@class="btn_me"]/div[@class="pme2"]/script')[0]
-    r1 = r.search('div[@class="btn_me2"]/div[@class="pme2"]/script')[0] if r1 == nil
+    r1 = r.at('div[@class="btn_me"]/div[@class="pme2"]/script') or r.at('div[@class="btn_me2"]/div[@class="pme2"]/script')
     if r1.inner_html =~ /"title"\s*:\s*"([\w\W]*)"\s*,[\w\W]*"tag"/
       title = $1.gsub("<", "&lt;").gsub(">", "&gt;").gsub('"', "&quot;").gsub("'", "&#39;")
     end
-    date = resp.search('//div[@class="tit_area"]/div[@class="vote_lst"]/dl[@class="rt"]/dd[@class="date"]')[0].inner_html
+    date = resp.at('//div[@class="tit_area"]/div[@class="vote_lst"]/dl[@class="rt"]/dd[@class="date"]').inner_html
     _title << "<b>#{title}</b></div><small id=\"toon_date\">#{date}</small>"
   end
 
@@ -155,7 +154,7 @@ if site == "naver"
     imageHeight = nil
     check_link = nil
     link_url = nil
-    resp.search('//head/script[last()]')[0].inner_html.strip.split(/;\s*\n/).map(&:strip).each do |v|
+    resp.at('//head/script[last()]').inner_html.strip.split(/;\s*\n/).map(&:strip).each do |v|
       if v =~ /imageList\s*=\s*\[([\w\W]*)\]/
         imageList = $1.split(/\s*,\s*/).map {|item| $1 if item =~ /"http:\/\/(.*)"/}
       elsif v =~ /var\s*imageWidth\s*=\s*\[([\w\W]*)\]/
@@ -294,8 +293,8 @@ if site == "naver"
 
   # 작가의 말, 별점 출력
   _writerCmt = $1.gsub("<", "&lt;").gsub(">", "&gt;").gsub(/&lt;br&gt;/i, "<br>") if resp.body =~ /<div\s+class="writer_info">[\w\W]*<p>([\w\W]*)<\/p>\s*<ul\s+class="btn_group">[\w\W]*<\/div>/
-  _rating = resp.search('//span[@id="bottomPointTotalNumber"]/strong')[0].inner_html
-  _ratingPerson = resp.search('//span[@class="pointTotalPerson"]/em')[0].inner_html
+  _rating = resp.at('//span[@id="bottomPointTotalNumber"]/strong').inner_html
+  _ratingPerson = resp.at('//span[@class="pointTotalPerson"]/em').inner_html
   _content << "<div id=\"writer_info\" style=\"width: 85%; text-align: left; clear: both; margin: 0 auto;\"><div style=\"background-color: #{btnColor["buttonB"]}; padding: 2px 15px 2px 15px;\"><b>작가의 말</b></div><p style=\"padding: 0px 20px 0px 20px;\">#{_writerCmt}</p><p style=\"padding: 0px 20px 0px 20px; text-align: right;\">별점 #{_rating} (#{_ratingPerson}명)</p></div></br>"
 
   _title << '</div>'
@@ -316,11 +315,11 @@ elsif site == "daum"
   # 웹툰 제목, 작가, 설명 출력
   comic_title = ""
   resp.search('//div[@class="episode_info"]').each do |r|
-    comic_title = r.search('a[@class="title"]')[0].inner_html.strip()
+    comic_title = r.at('a[@class="title"]').inner_html.strip()
     _title << "<div style=\"padding: 15px 0px 15px 0px; background-color: #{btnColor["buttonB"]};\"></div>"
   end
   # 웹툰 회, 날짜 출력
-  title = resp.search('//div[@class="others"]/span/span[@class="episode_title"]')[0].inner_html.gsub("<", "&lt;").gsub(">", "&gt;").gsub('"', "&quot;").gsub("'", "&#39;")
+  title = resp.at('//div[@class="others"]/span/span[@class="episode_title"]').inner_html.gsub("<", "&lt;").gsub(">", "&gt;").gsub('"', "&quot;").gsub("'", "&#39;")
   _title << "<small id=\"toon_date\"></small>"
   _title << "<script>$('#title_area div').append('#{comic_title} - ' + toonInfo['#{id}'][0] + '<br/><small style=\"font-size: 12px;\">' + toonInfo['#{id}'][1] + '</small><br/><br/><b>#{title}</b>');$('#toon_date').html(dateList['#{id}'][numList['#{id}'].indexOf(#{num})]);</script>"
 
@@ -396,7 +395,7 @@ elsif site == "daum"
   else
     _content << "<iframe width=\"95%\" height=\"3600\" src=\"http://cartoon.media.daum.net/webtoon/viewer/#{num}\" onload=\"location.replace('#title_area');\"></iframe>"
 =begin
-    _ids, _recentId, _nick = $1, $2, $3 if resp.search('//div[@class="img_list"]/script')[0].inner_html =~ /Webtoon\.EmbedViewer\.init\('([\d,]*)','(\d+)','(.*)'\);/
+    _ids, _recentId, _nick = $1, $2, $3 if resp.at('//div[@class="img_list"]/script').inner_html =~ /Webtoon\.EmbedViewer\.init\('([\d,]*)','(\d+)','(.*)'\);/
     _url = "photo-section.daum-img.net/-cartoon10/swf/webtoon/GaroViewer2011.swf"
     if not File::exists?("/var/www/webtoon/tmp/#{_url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}")
       _data = a.get("http://#{_url.gsub(/\?[\w\W]*$/, "")}").body
