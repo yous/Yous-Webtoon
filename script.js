@@ -169,7 +169,7 @@ function toonlist_area_init()
   var str = "<br/>";
   str += '<span id="Naver" style="color: ' + btnColor["link"] + '; cursor: pointer; margin: 10px;" onclick="site_change(\'naver\');"><u>N</u>aver</span>';
   str += '<span id="Daum" style="color: ' + btnColor["link"] + '; cursor: pointer; margin: 10px;" onclick="site_change(\'daum\');"><u>D</u>aum</span>';
-  str += "<script>id=null;num=null;site=null;change_remote();</script>"
+  str += "<script>id=null;num=null;site=null;change_remote();</script>";
   $("#toonlist_area").html(str);
 }
 
