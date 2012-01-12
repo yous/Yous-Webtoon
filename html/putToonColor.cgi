@@ -10,7 +10,7 @@ puts "Content-Type: text/html; charset=utf-8\n\n"
 cgi = CGI.new
 site = cgi.params["site"][0]
 finish = cgi.params["finish"][0]
-day_BM = cgi.params["day_BM"][0].split("+")
+day_BM = cgi.params["day_BM"][0].split(",")
 
 session = CGI::Session.new(cgi, "session_key" => "SSID", "prefix" => "rubysess.", "tmpdir" => "../sess")
 
