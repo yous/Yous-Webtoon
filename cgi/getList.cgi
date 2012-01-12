@@ -13,7 +13,7 @@ site = cgi.params["site"][0]
 
 session = CGI::Session.new(cgi, "session_key" => "SSID", "prefix" => "rubysess.", "tmpdir" => "sess")
 
-db = SQLite3::Database.new("/var/db/#{Digest::SHA1.hexdigest("webtoon.db")}")
+db = SQLite3::Database.new("db/webtoon.db")
 db.execute("CREATE TABLE IF NOT EXISTS naver_bm (id INTEGER, toon_id INTEGER, toon_num INTEGER);")
 db.execute("CREATE TABLE IF NOT EXISTS naver_lastNum (toon_id INTEGER PRIMARY KEY, toon_num INTEGER);")
 db.execute("CREATE TABLE IF NOT EXISTS naver_tmpList (toon_id INTEGER PRIMARY KEY);")
@@ -112,7 +112,7 @@ if site == "naver"
   # reqList 처리
   str << '<script>'
   reqList.keys.each do |v|
-    str << "$.get(\"/cgi-bin/webtoon/displayToon.cgi?site=naver&id=#{v}&num=1\");"
+    str << "$.get(\"/cgi/displayToon.cgi?site=naver&id=#{v}&num=1\");"
     db.execute("INSERT INTO naver_tmpList (toon_id) SELECT ? WHERE NOT EXISTS (SELECT 1 FROM naver_tmpList WHERE toon_id=?);", v, v)
   end
   str << 'resizeWidth();'
@@ -222,14 +222,14 @@ elsif site == "daum"
   reqList.keys.each do |v|
     numList = []
     dateList = []
-    num_resp = a.get("http://#{localhost}/cgi-bin/webtoon/getNum.cgi?site=daum&id=#{v}").body.strip.split("\n").map(&:strip)
+    num_resp = a.get("http://#{localhost}/cgi/getNum.cgi?site=daum&id=#{v}").body.strip.split("\n").map(&:strip)
     num_resp[0].split()[1..-1].map {|item|
       numList.push(item.split(",")[0].to_i)
       dateList.push(item.split(",")[1])
     }
     toonInfo = [num_resp[1], (num_resp[2].nil?) ? nil : num_resp[2].gsub('"', "&quot;").gsub("'", "&#39;").gsub("<", "&lt;").gsub(">", "&gt;")]
 
-    str << "$.get(\"/cgi-bin/webtoon/displayToon.cgi?site=daum&id=#{v}&num=#{numList[0]}\");"
+    str << "$.get(\"/cgi/displayToon.cgi?site=daum&id=#{v}&num=#{numList[0]}\");"
     (0...numList.length).each do |i|
       db.execute("UPDATE daum_numList SET toon_num=?, toon_date=? WHERE toon_id=? AND toon_num_idx=?;", numList[i], dateList[i], v, i)
       db.execute("INSERT INTO daum_numList (toon_id, toon_num_idx, toon_num, toon_date) SELECT ?, ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_numList WHERE toon_id=? AND toon_num_idx=?);", v, i, numList[i], dateList[i], v, i)
