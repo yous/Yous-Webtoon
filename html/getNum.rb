@@ -27,13 +27,11 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
         end
       end
       resp.search('//div[@class="btn_area"]').each do |v|
-        v.search('span[@class="pre"]/a').each do |e|
-          if e.attributes["href"].value =~ /\/webtoon\/detail\.nhn\?titleId=\d+&seq=(\d+)/
-            res.body = (str << "#{$1.to_i + 1}")
-            exit
-          end
+        if v.at('span[@class="pre"]/a').attributes["href"].value =~ /\/webtoon\/detail\.nhn\?titleId=\d+&seq=(\d+)/
+          res.body = (str << "#{$1.to_i + 1}")
+        else
+          res.body = (str << "1")
         end
-        res.body = (str << "1")
       end
 
       # Daum 웹툰
