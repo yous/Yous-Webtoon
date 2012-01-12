@@ -97,7 +97,7 @@ function putToonColor(day)
     for (i = 7; i >= 1; i--)
     {
       $.post(
-        "/cgi/putToonColor.cgi",
+        "/putToonColor.cgi",
         {site: site, finish: "n", day_BM: day_BM[i].join(",")},
         function (data) { count += 1; if (count == 8) { $("#loading").css("display", "none"); } $("#display_area").append(data); }
       );
@@ -110,7 +110,7 @@ function putToonColor(day)
         finish_BM.push(_id);
     }
     $.post(
-      "/cgi/putToonColor.cgi",
+      "/putToonColor.cgi",
       {site: site, finish: "y", day_BM: finish_BM.join(",")},
       function (data) { count += 1; if (count == 8) { $("#loading").css("display", "none"); } $("#display_area").append(data); }
     );
@@ -129,7 +129,7 @@ function putToonColor(day)
     }
 
     $.post(
-      "/cgi/putToonColor.cgi",
+      "/putToonColor.cgi",
       {site: site, finish: "n", day_BM: day_BM.join(",")},
       function (data) { $("#loading").css("display", "none"); $("#display_area").append(data); }
     );
@@ -154,7 +154,7 @@ function site_change(_site)
   $("#inputNum").val("");
   $("#url").removeAttr("href");
   $.get(
-    "/cgi/getList.cgi",
+    "/getList.cgi",
     {site: _site},
     function (data) {
       site = _site;
@@ -230,7 +230,7 @@ function toggle_login(log)
 function join()
 {
   $.post(
-    "/cgi/join.cgi",
+    "/join.cgi",
     {user_id: $("#user_id").val(), user_pw: $("#user_pw").val()},
     function (data) { $("#display_area").html(data); }
   );
@@ -240,7 +240,7 @@ function join()
 function leave()
 {
   $.post(
-    "/cgi/leave.cgi",
+    "/leave.cgi",
     {user_pw: $("#user_pw").val()},
     function (data) { $("#display_area").html(data); }
   );
@@ -250,7 +250,7 @@ function leave()
 function login()
 {
   $.post(
-    "/cgi/login.cgi",
+    "/login.cgi",
     {user_id: $("#user_id").val(), user_pw: $("#user_pw").val()},
     function (data) { $("#display_area").html(data); }
   );
@@ -261,7 +261,7 @@ function logout()
 {
   add_bookmark();
   $.post(
-    "/cgi/logout.cgi",
+    "/logout.cgi",
     function (data) { $("#display_area").html(data); }
   );
 }
@@ -277,12 +277,12 @@ function add_bookmark()
       var check = finishToon.indexOf(id)
       var _finish = (check == -1) ? "no" : lastNum[id];
       if (site == "naver")
-        $.post("/cgi/saveBM.cgi", {site: site, add: "no", toon_id: id, toon_num: num, finish: _finish});
+        $.post("/saveBM.cgi", {site: site, add: "no", toon_id: id, toon_num: num, finish: _finish});
       else if (site == "daum")
       {
         req_numList = numList[id].join(" ");
         req_dateList = dateList[id].join(" ");
-        $.post("/cgi/saveBM.cgi", {site: site, add: "no", toon_id: id, toon_num: num, numList: req_numList, dateList: req_dateList, finish: _finish});
+        $.post("/saveBM.cgi", {site: site, add: "no", toon_id: id, toon_num: num, numList: req_numList, dateList: req_dateList, finish: _finish});
       }
       alert("북마크가 저장되었습니다!");
       $("#moveBM").attr("disabled", true);
@@ -315,12 +315,12 @@ function add_bookmark()
       }
       var _finish = (check == -1) ? "no" : lastNum[id];
       if (site == "naver")
-        $.post("/cgi/saveBM.cgi", {site: site, add: "yes", toon_id: id, toon_num: num, finish: _finish});
+        $.post("/saveBM.cgi", {site: site, add: "yes", toon_id: id, toon_num: num, finish: _finish});
       else if (site == "daum")
       {
         req_numList = numList[id].join(" ");
         req_dateList = dateList[id].join(" ");
-        $.post("/cgi/saveBM.cgi", {site: site, add: "yes", toon_id: id, toon_num: num, numList: req_numList, dateList: req_dateList, finish: _finish});
+        $.post("/saveBM.cgi", {site: site, add: "yes", toon_id: id, toon_num: num, numList: req_numList, dateList: req_dateList, finish: _finish});
       }
       alert("북마크가 저장되었습니다!");
       $("#saveBM").attr("disabled", true);
@@ -464,7 +464,7 @@ function getOtherToon(_id, /* Daum 웹툰용 */ check_other)
       $("#artist_otherlist").attr("name", _id);
       $("#artist_otherlist").css("display", "block");
       $.get(
-        "/cgi/getOtherToon.cgi",
+        "/getOtherToon.cgi",
         {site: site, id: _id},
         function (data) {
           $("#artist_otherlist").html(data + "<br/>");
@@ -492,7 +492,7 @@ function getOtherToon(_id, /* Daum 웹툰용 */ check_other)
       $("#artist_otherlist").attr("name", _name);
       $("#artist_otherlist").css("display", "block");
       $.get(
-        "/cgi/getOtherToon.cgi",
+        "/getOtherToon.cgi",
         {site: site, id: _id, other: check_other},
         function (data) {
           $("#artist_otherlist").html(data + "<br/>");
@@ -543,7 +543,7 @@ function viewToon(_id, _num)
   {
     if (site == "naver")
       $.get(
-        "/cgi/getNum.cgi",
+        "/getNum.cgi",
         {site: site, id: id},
         function (data) {
           if (data == "")
@@ -555,7 +555,7 @@ function viewToon(_id, _num)
           }
           lastNum[id] = parseInt(data.split(" ")[1]);
           $.get(
-            "/cgi/displayToon.cgi",
+            "/displayToon.cgi",
             {site: site, id: id, num: num},
             function (data) {
               $("#display_area").html(data);
@@ -563,12 +563,12 @@ function viewToon(_id, _num)
             }
           );
           if (num < lastNum[id])
-            $.get("/cgi/displayToon.cgi", {site: site, id: id, num: num + 1});
+            $.get("/displayToon.cgi", {site: site, id: id, num: num + 1});
         }
       );
     else if (site == "daum")
       $.get(
-        "/cgi/getNum.cgi",
+        "/getNum.cgi",
         {site: site, id: id},
         function (data) {
           if (data == "")
@@ -589,7 +589,7 @@ function viewToon(_id, _num)
           lastNum[id] = numList[id][numList[id].length - 1];
           num = numList[id][0];
           $.get(
-            "/cgi/displayToon.cgi",
+            "/displayToon.cgi",
             {site: site, id: id, num: num},
             function (data) {
               if (data == "")
@@ -607,7 +607,7 @@ function viewToon(_id, _num)
             for (i = 0; i < numList[id].length; i++)
             {
               if (numList[id][i] == num)
-                $.get("/cgi/displayToon.cgi", {site: site, id: id, num: numList[id][i + 1]});
+                $.get("/displayToon.cgi", {site: site, id: id, num: numList[id][i + 1]});
             }
         }
       );
@@ -615,16 +615,16 @@ function viewToon(_id, _num)
   else if (num < lastNum[id])
   {
     if (site == "naver")
-      $.get("/cgi/displayToon.cgi", {site: site, id: id, num: num + 1});
+      $.get("/displayToon.cgi", {site: site, id: id, num: num + 1});
     else if (site == "daum")
     {
       for (i = 0; i < numList[id].length; i++)
         if (numList[id][i] == num)
-          $.get("/cgi/displayToon.cgi", {site: site, id: id, num: numList[id][i + 1]});
+          $.get("/displayToon.cgi", {site: site, id: id, num: numList[id][i + 1]});
     }
 
     $.get(
-      "/cgi/displayToon.cgi",
+      "/displayToon.cgi",
       {site: site, id: id, num: num},
       function (data) {
         if (data == "")
@@ -642,7 +642,7 @@ function viewToon(_id, _num)
   else
   {
     $.get(
-      "/cgi/displayToon.cgi",
+      "/displayToon.cgi",
       {site: site, id: id, num: num},
       function (data) {
         if (data == "")

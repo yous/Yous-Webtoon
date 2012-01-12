@@ -19,7 +19,7 @@ dateList = (cgi.has_key?("dateList")) ? cgi.params["dateList"][0].split : nil
 
 session = CGI::Session.new(cgi, "session_key" => "SSID", "prefix" => "rubysess.", "tmpdir" => "sess")
 
-db = SQLite3::Database.new("../../db/webtoon.db")
+db = SQLite3::Database.new("../db/webtoon.db")
 db.execute("CREATE TABLE IF NOT EXISTS usr (id INTEGER PRIMARY KEY, user_id VARCHAR(255), user_pw VARCHAR(255));")
 db.execute("CREATE TABLE IF NOT EXISTS naver_bm (id INTEGER, toon_id INTEGER, toon_num INTEGER);")
 db.execute("CREATE TABLE IF NOT EXISTS naver_lastNum (toon_id INTEGER PRIMARY KEY, toon_num INTEGER);")
