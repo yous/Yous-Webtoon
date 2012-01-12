@@ -4,7 +4,6 @@ require 'mechanize'
 require 'cgi'
 require 'cgi/session'
 require 'sqlite3'
-require 'digest/sha1'
 
 puts "Content-Type: text/html; charset=utf-8\n\n"
 
