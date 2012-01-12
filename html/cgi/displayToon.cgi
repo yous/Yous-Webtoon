@@ -9,12 +9,12 @@ def flashObj(_url, _flashID, _width, _height, _wmode = "transparent", _flashVars
   s << '<param name="allowScriptAccess" value="always"/>'
   s << '<param name="quality" value="high"/>'
   s << '<param name="menu" value="false"/>'
-  s << "<param name=\"movie\" value=\"/webtoon/tmp/#{_url.gsub(/\//, "@")}\"/>"
+  s << "<param name=\"movie\" value=\"/images/#{_url.gsub(/\//, "@")}\"/>"
   s << "<param name=\"wmode\" value=\"#{_wmode}\"/>"
   s << "<param name=\"bgcolor\" value=\"#{_bgColor}\"/>"
   s << "<param name=\"FlashVars\" value=\"#{_flashVars}\"/>"
   s << "<param name=\"allowFullScreen\" value=\"#{_allowFullScreen}\"/>"
-  s << "<embed src=\"/webtoon/tmp/#{_url.gsub(/\//, "@")}\" quality=\"high\" wmode=\"#{_wmode}\" menu=\"false\" FlashVars=\"#{_flashVars}\" bgcolor=\"#{_bgColor}\" width=\"#{_width}\" height=\"#{_height}\" name=\"#{_flashID}\" allowFullScreen=\"#{_allowFullScreen}\" align=\"middle\" allowScriptAccess=\"always\" type=\"application/x-shockwave-flash\" pluginspage=\"http://www.macromedia.com/go/getflashplayer\"/>"
+  s << "<embed src=\"/images/#{_url.gsub(/\//, "@")}\" quality=\"high\" wmode=\"#{_wmode}\" menu=\"false\" FlashVars=\"#{_flashVars}\" bgcolor=\"#{_bgColor}\" width=\"#{_width}\" height=\"#{_height}\" name=\"#{_flashID}\" allowFullScreen=\"#{_allowFullScreen}\" align=\"middle\" allowScriptAccess=\"always\" type=\"application/x-shockwave-flash\" pluginspage=\"http://www.macromedia.com/go/getflashplayer\"/>"
   s << '</object>'
 end
 
@@ -41,7 +41,7 @@ def naverPutObj(mechanObj, _imageURL, _imageWidth, _imageHeight, _first_img = fa
           end
         end
       end
-      str << flashObj("/webtoon/tmp/#{"flash.comic.naver.com/webtoon/flvPlayer.swf".gsub(/\//, "@")}", "flvPlayer", "640", "395", "transparent", "flvURL=#{_imageURL}&imgURL=http://static.comic.naver.com/staticImages/COMICWEB/NAVER/images/flash/#{id}/flv.jpg&autoPlay=true&defaultVolume=0.5&flvWidth=640&flvHeight=360", "#FFFFFF", true)
+      str << flashObj("flash.comic.naver.com/webtoon/flvPlayer.swf".gsub(/\//, "@"), "flvPlayer", "640", "395", "transparent", "flvURL=#{_imageURL}&imgURL=http://static.comic.naver.com/staticImages/COMICWEB/NAVER/images/flash/#{id}/flv.jpg&autoPlay=true&defaultVolume=0.5&flvWidth=640&flvHeight=360", "#FFFFFF", true)
     end
   # Image
   else
@@ -54,9 +54,9 @@ def naverPutObj(mechanObj, _imageURL, _imageWidth, _imageHeight, _first_img = fa
       end
     end
     if _first_img
-      str << "<img src=\"/webtoon/tmp/#{_imageURL.gsub(/\//, "@")}\" onload=\"location.replace('#title_area');\">"
+      str << "<img src=\"/images/#{_imageURL.gsub(/\//, "@")}\" onload=\"location.replace('#title_area');\">"
     else
-      str << "<img src=\"/webtoon/tmp/#{_imageURL.gsub(/\//, "@")}\">"
+      str << "<img src=\"/images/#{_imageURL.gsub(/\//, "@")}\">"
     end
   end
   str
@@ -134,14 +134,14 @@ if site == "naver"
         _content << '<div id="music_player">'
       end
       _content << '<object id="music_player_obj" classid="CLSID:6BF52A52-394A-11d3-B153-00C04F79FAA6" width="0" height="0">'
-      _content << "<param name=\"URL\" value=\"/webtoon/tmp#{bgmURL.gsub(/\//, "@")}\"/>"
+      _content << "<param name=\"URL\" value=\"/images#{bgmURL.gsub(/\//, "@")}\"/>"
       _content << '<param name="AutoStart" value="1"/>'
       _content << '<param name="uiMode" value="none"/>'
       _content << '<param name="StretchToFit" value="1"/>'
       _content << '<param name="invokeURLs" value="false"/>'
       _content << '<param name="WindowlessVideo" value="1"/>'
       _content << '<param name="Volume" value="50"/>'
-      _content << "<embed src=\"/webtoon/tmp/#{bgmURL.gsub(/\//, "@")}\" type=\"application/x-mplayer2\" pluginspage=\"http://www.microsoft.com/Windows/MediaPlayer/\" width=\"0\" height=\"0\"/>"
+      _content << "<embed src=\"/images/#{bgmURL.gsub(/\//, "@")}\" type=\"application/x-mplayer2\" pluginspage=\"http://www.microsoft.com/Windows/MediaPlayer/\" width=\"0\" height=\"0\"/>"
       _content << '</object></div>'
       _content << '</div><br/><br/>'
     end
@@ -203,7 +203,7 @@ if site == "naver"
             end
           end
         end
-        _content << "<img src=\"/webtoon/tmp/#{imageList[i].gsub(/\//, "@")}\"></a>"
+        _content << "<img src=\"/images/#{imageList[i].gsub(/\//, "@")}\"></a>"
         i += 1
       # br tag
       elsif v.name == "br"
@@ -224,7 +224,7 @@ if site == "naver"
             end
           end
         end
-        _content << "<img src=\"/webtoon/tmp/#{imageList[idx].gsub(/\//, "@")}\"></a>"
+        _content << "<img src=\"/images/#{imageList[idx].gsub(/\//, "@")}\"></a>"
       else
         _content << naverPutObj(a, imageList[idx], imageWidth[idx], imageHeight[idx])
       end
@@ -248,11 +248,11 @@ if site == "naver"
           end
           if count <= 1
             _content << "<hr id=\"anchor_0\" style=\"width: 80%; height: 1px; border: 0px;\"/>" if count == 0
-            _content << "<img src=\"/webtoon/tmp/#{url.gsub(/\//, "@")}\" style=\"display: inline; width: 470px; height: 670px;\" onload=\"location.replace('#title_area');\">"
+            _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\" style=\"display: inline; width: 470px; height: 670px;\" onload=\"location.replace('#title_area');\">"
             count += 1
           else
             _content << ((count % 2 == 0) ? "<br/><br/><br/><hr id=\"anchor_#{count / 2}\" style=\"width: 80%; height: 1px; border: 0px;\"/>" : "")
-            _content << "<img src=\"/webtoon/tmp/#{url.gsub(/\//, "@")}\" style=\"display: inline; width: 470px; height: 670px;\">"
+            _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\" style=\"display: inline; width: 470px; height: 670px;\">"
             count += 1
           end
         end
@@ -340,9 +340,9 @@ elsif site == "daum"
           end
         end
         if count == 1
-          _content << "<img src=\"/webtoon/tmp/#{url.gsub(/\//, "@")}\" width=\"#{r["width"]}\" onload=\"location.replace('#title_area');\"/>"
+          _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\" width=\"#{r["width"]}\" onload=\"location.replace('#title_area');\"/>"
         else
-          _content << "<img src=\"/webtoon/tmp/#{url.gsub(/\//, "@")}\" width=\"#{r["width"]}\"/>"
+          _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\" width=\"#{r["width"]}\"/>"
         end
       else
         daum_tvpot = (url =~ /flvs\.daum\.net\/flvPlayer\.swf/) ? true : false
@@ -389,7 +389,7 @@ elsif site == "daum"
           end
         end
       end
-      _content << "<img src=\"/webtoon/tmp/#{url.gsub(/\//, "@")}\"/>"
+      _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\"/>"
     end
   # 만화책 형식의 웹툰
   else

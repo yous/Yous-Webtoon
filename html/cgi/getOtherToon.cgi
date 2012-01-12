@@ -68,7 +68,7 @@ elsif site == "daum"
             end
           end
         end
-        puts "<img src=\"/webtoon/tmp/#{v.gsub(/\//, "@")}\"/>"
+        puts "<img src=\"/images/#{v.gsub(/\//, "@")}\"/>"
         check_puts = true if not check_puts
       }
     if not check_puts
