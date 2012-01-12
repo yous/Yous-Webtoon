@@ -1,4 +1,5 @@
 .rvmrc
+db
 join.cgi
 leave.cgi
 login.cgi
