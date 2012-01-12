@@ -17,7 +17,7 @@ finish = (cgi.has_key?("finish")) ? cgi.params["finish"][0] : nil
 numList = (cgi.has_key?("numList")) ? cgi.params["numList"][0].split.map(&:to_i) : nil
 dateList = (cgi.has_key?("dateList")) ? cgi.params["dateList"][0].split : nil
 
-session = CGI::Session.new(cgi, "session_key" => "SSID", "prefix" => "rubysess.", "tmpdir" => "sess")
+session = CGI::Session.new(cgi, "session_key" => "SSID", "prefix" => "rubysess.", "tmpdir" => "../sess")
 
 db = SQLite3::Database.new("../db/webtoon.db")
 db.execute("CREATE TABLE IF NOT EXISTS usr (id INTEGER PRIMARY KEY, user_id VARCHAR(255), user_pw VARCHAR(255));")

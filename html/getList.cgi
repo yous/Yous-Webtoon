@@ -10,7 +10,7 @@ puts "Content-Type: text/html; charset=utf-8\n\n"
 cgi = CGI.new
 site = cgi.params["site"][0]
 
-session = CGI::Session.new(cgi, "session_key" => "SSID", "prefix" => "rubysess.", "tmpdir" => "sess")
+session = CGI::Session.new(cgi, "session_key" => "SSID", "prefix" => "rubysess.", "tmpdir" => "../sess")
 
 db = SQLite3::Database.new("../db/webtoon.db")
 db.execute("CREATE TABLE IF NOT EXISTS naver_bm (id INTEGER, toon_id INTEGER, toon_num INTEGER);")
