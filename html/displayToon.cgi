@@ -23,20 +23,20 @@ def naverPutObj(mechanObj, _imageURL, _imageWidth, _imageHeight, _first_img = fa
   # Flash
   if _imageURL.downcase.index(".swf") != nil or _imageURL.downcase.index(".flv") != nil
     if _imageURL.downcase.index(".swf") != nil
-      if not File::exists?("/var/www/webtoon/tmp/#{_imageURL.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}")
+      if not File::exists?("images/#{_imageURL.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}")
         _data = mechanObj.get("http://#{_imageURL.gsub(/\?[\w\W]*$/, "")}").body
         if _data != nil
-          File.open("/var/www/webtoon/tmp/#{_imageURL.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}", "w") do |f|
+          File.open("images/#{_imageURL.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}", "w") do |f|
             f.write(_data)
           end
         end
       end
       str << flashObj(_imageURL.gsub(/\//, "@"), id, _imageWidth, _imageHeight, "transparent", "", "", "")
     else
-      if not File::exists?("/var/www/webtoon/tmp/#{_imageURL.gsub(/\//, "@")}")
+      if not File::exists?("images/#{_imageURL.gsub(/\//, "@")}")
         _data = mechanObj.get("http://flash.comic.naver.com/webtoon/flvPlayer.swf").body
         if _data != nil
-          File.open("/var/www/webtoon/tmp/#{"flash.comic.naver.com/webtoon/flvPlayer.swf".gsub(/\//, "@")}", "w") do |f|
+          File.open("images/#{"flash.comic.naver.com/webtoon/flvPlayer.swf".gsub(/\//, "@")}", "w") do |f|
             f.write(_data)
           end
         end
@@ -45,10 +45,10 @@ def naverPutObj(mechanObj, _imageURL, _imageWidth, _imageHeight, _first_img = fa
     end
   # Image
   else
-    if not File::exists?("/var/www/webtoon/tmp/#{_imageURL.gsub(/\//, "@")}")
+    if not File::exists?("images/#{_imageURL.gsub(/\//, "@")}")
       _data = mechanObj.get("http://#{_imageURL}").body
       if _data != nil
-        File.open("/var/www/webtoon/tmp/#{_imageURL.gsub(/\//, "@")}", "w") do |f|
+        File.open("images/#{_imageURL.gsub(/\//, "@")}", "w") do |f|
           f.write(_data)
         end
       end
@@ -112,10 +112,10 @@ if site == "naver"
   resp.search('//div[@id="bgm_player"]').each do |r|
     r.search('script').each do |e|
       bgmURL = $1 if e.inner_html =~ /showMusicPlayer\("http:\/\/(.*)"\);/
-      if not File::exists?("/var/www/webtoon/tmp/#{bgmURL.gsub(/\//, "@")}")
+      if not File::exists?("images/#{bgmURL.gsub(/\//, "@")}")
         _data = a.get("http://#{bgmURL}").body
         if _data != nil
-          File.open("/var/www/webtoon/tmp/#{bgmURL.gsub(/\//, "@")}", "w") do |f|
+          File.open("images/#{bgmURL.gsub(/\//, "@")}", "w") do |f|
             f.write(_data)
           end
         end
@@ -195,10 +195,10 @@ if site == "naver"
           i += 1
         }
         _content << "<a target=\"_blank\" href=\"#{link_url}\">"
-        if not File::exists?("/var/www/webtoon/tmp/#{imageList[i].gsub(/\//, "@")}")
+        if not File::exists?("images/#{imageList[i].gsub(/\//, "@")}")
           _data = a.get("http://#{imageList[i]}").body
           if _data != nil
-            File.open("/var/www/webtoon/tmp/#{imageList[i].gsub(/\//, "@")}", "w") do |f|
+            File.open("images/#{imageList[i].gsub(/\//, "@")}", "w") do |f|
               f.write(_data)
             end
           end
@@ -216,10 +216,10 @@ if site == "naver"
     (i..imageList.length - 1).each do |idx|
       if check_link and idx == imageList.length - 1
         _content << "<a target=\"_blank\" href=\"#{link_url}\">"
-        if not File::exists?("/var/www/webtoon/tmp/#{imageList[idx].gsub(/\//, "@")}")
+        if not File::exists?("images/#{imageList[idx].gsub(/\//, "@")}")
           _data = a.get("http://#{imageList[idx]}").body
           if _data != nil
-            File.open("/var/www/webtoon/tmp/#{imageList[idx].gsub(/\//, "@")}", "w") do |f|
+            File.open("images/#{imageList[idx].gsub(/\//, "@")}", "w") do |f|
               f.write(_data)
             end
           end
@@ -238,10 +238,10 @@ if site == "naver"
       v.search('img').each do |e|
         if e.attributes["class"].to_s =~ /real_url\(http:\/\/(.*)\)/
           url = $1
-          if not File::exists?("/var/www/webtoon/tmp/#{url.gsub(/\//, "@")}")
+          if not File::exists?("images/#{url.gsub(/\//, "@")}")
             _data = a.get("http://#{url}").body
             if _data != nil
-              File.open("/var/www/webtoon/tmp/#{url.gsub(/\//, "@")}", "w") do |f|
+              File.open("images/#{url.gsub(/\//, "@")}", "w") do |f|
                 f.write(_data)
               end
             end
@@ -331,10 +331,10 @@ elsif site == "daum"
       url = $1 if r["url"] =~ /http:\/\/(.+)/
 
       if r["mediaType"] == "image"
-        if not File::exists?("/var/www/webtoon/tmp/#{url.gsub(/\//, "@")}")
+        if not File::exists?("images/#{url.gsub(/\//, "@")}")
           _data = a.get("http://#{url}").body
           if _data != nil
-            File.open("/var/www/webtoon/tmp/#{url.gsub(/\//, "@")}", "w") do |f|
+            File.open("images/#{url.gsub(/\//, "@")}", "w") do |f|
               f.write(_data)
             end
           end
@@ -346,10 +346,10 @@ elsif site == "daum"
         end
       else
         daum_tvpot = (url =~ /flvs\.daum\.net\/flvPlayer\.swf/) ? true : false
-        if not daum_tvpot and not File::exists?("/var/www/webtoon/tmp/#{url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}")
+        if not daum_tvpot and not File::exists?("images/#{url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}")
           _data = a.get("http://#{url.gsub(/\?[\w\W]*$/, "")}").body
           if _data != nil
-            File.open("/var/www/webtoon/tmp/#{url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}", "w") do |f|
+            File.open("images/#{url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}", "w") do |f|
               f.write(_data)
             end
           end
@@ -381,10 +381,10 @@ elsif site == "daum"
     _content << '<br/>'
     resp.search('//div[@class="img_list"]/div[@class="by_daum"]').each do |r|
       url = "photo-section.daum-img.net/-cartoon10/img/published.png"
-      if not File::exists?("/var/www/webtoon/tmp/#{url.gsub(/\//, "@")}")
+      if not File::exists?("images/#{url.gsub(/\//, "@")}")
         _data = a.get("http://#{url}").body
         if _data != nil
-          File.open("/var/www/webtoon/tmp/#{url.gsub(/\//, "@")}", "w") do |f|
+          File.open("images/#{url.gsub(/\//, "@")}", "w") do |f|
             f.write(_data)
           end
         end
@@ -397,10 +397,10 @@ elsif site == "daum"
 =begin
     _ids, _recentId, _nick = $1, $2, $3 if resp.at('//div[@class="img_list"]/script').inner_html =~ /Webtoon\.EmbedViewer\.init\('([\d,]*)','(\d+)','(.*)'\);/
     _url = "photo-section.daum-img.net/-cartoon10/swf/webtoon/GaroViewer2011.swf"
-    if not File::exists?("/var/www/webtoon/tmp/#{_url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}")
+    if not File::exists?("images/#{_url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}")
       _data = a.get("http://#{_url.gsub(/\?[\w\W]*$/, "")}").body
       if _data != nil
-        File.open("/var/www/webtoon/tmp/#{_url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}", "w") do |f|
+        File.open("images/#{_url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}", "w") do |f|
           f.write(_data)
         end
       end

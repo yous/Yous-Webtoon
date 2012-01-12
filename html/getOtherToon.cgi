@@ -60,10 +60,10 @@ elsif site == "daum"
       find_all {|v| v =~ /data3\.push\([\w\W]*\)/}.
       map {|v| $1 if v =~ /data3\.push\(\s*\{\s*img\s*:\s*"http:\/\/(.*)"\s*,\s*no\s*:\s*".*"\s*\}\s*\)/}.
       each {|v|
-        if not File::exists?("/var/www/webtoon/tmp/#{v.gsub(/\//, "@")}")
+        if not File::exists?("images/#{v.gsub(/\//, "@")}")
           _data = a.get("http://#{v}").body
           if _data != nil
-            File.open("/var/www/webtoon/tmp/#{v.gsub(/\//, "@")}", "w") do |f|
+            File.open("images/#{v.gsub(/\//, "@")}", "w") do |f|
               f.write(_data)
             end
           end
