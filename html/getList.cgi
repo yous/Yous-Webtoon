@@ -23,7 +23,7 @@ db.execute("CREATE TABLE IF NOT EXISTS daum_toonInfo (toon_id VARCHAR(255), toon
 
 a = Mechanize.new
 
-localhost = "192.168.90.128"
+localhost = "192.168.90.128:8888"
 btnColor = {
   "buttonA" => "#FAFAFA",
   "buttonB" => "#EAEAEA",
