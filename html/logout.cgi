@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby
+#!/usr/local/rvm/wrappers/ruby-1.8.7-p352@webtoon/ruby
 require 'rubygems'
 require 'cgi'
 require 'cgi/session'
