@@ -464,7 +464,7 @@ function getOtherToon(_id, /* Daum 웹툰용 */ check_other)
       $("#artist_otherlist").attr("name", _id);
       $("#artist_otherlist").css("display", "block");
       $.get(
-        "/getOtherToon.cgi",
+        "/getOtherToon",
         {site: site, id: _id},
         function (data) {
           $("#artist_otherlist").html(data + "<br/>");
@@ -492,7 +492,7 @@ function getOtherToon(_id, /* Daum 웹툰용 */ check_other)
       $("#artist_otherlist").attr("name", _name);
       $("#artist_otherlist").css("display", "block");
       $.get(
-        "/getOtherToon.cgi",
+        "/getOtherToon",
         {site: site, id: _id, other: check_other},
         function (data) {
           $("#artist_otherlist").html(data + "<br/>");
@@ -543,7 +543,7 @@ function viewToon(_id, _num)
   {
     if (site == "naver")
       $.get(
-        "/getNum.cgi",
+        "/getNum",
         {site: site, id: id},
         function (data) {
           if (data == "")
@@ -555,7 +555,7 @@ function viewToon(_id, _num)
           }
           lastNum[id] = parseInt(data.split(" ")[1]);
           $.get(
-            "/displayToon.cgi",
+            "/displayToon",
             {site: site, id: id, num: num},
             function (data) {
               $("#display_area").html(data);
@@ -563,12 +563,12 @@ function viewToon(_id, _num)
             }
           );
           if (num < lastNum[id])
-            $.get("/displayToon.cgi", {site: site, id: id, num: num + 1});
+            $.get("/displayToon", {site: site, id: id, num: num + 1});
         }
       );
     else if (site == "daum")
       $.get(
-        "/getNum.cgi",
+        "/getNum",
         {site: site, id: id},
         function (data) {
           if (data == "")
@@ -589,7 +589,7 @@ function viewToon(_id, _num)
           lastNum[id] = numList[id][numList[id].length - 1];
           num = numList[id][0];
           $.get(
-            "/displayToon.cgi",
+            "/displayToon",
             {site: site, id: id, num: num},
             function (data) {
               if (data == "")
@@ -607,7 +607,7 @@ function viewToon(_id, _num)
             for (i = 0; i < numList[id].length; i++)
             {
               if (numList[id][i] == num)
-                $.get("/displayToon.cgi", {site: site, id: id, num: numList[id][i + 1]});
+                $.get("/displayToon", {site: site, id: id, num: numList[id][i + 1]});
             }
         }
       );
@@ -615,16 +615,16 @@ function viewToon(_id, _num)
   else if (num < lastNum[id])
   {
     if (site == "naver")
-      $.get("/displayToon.cgi", {site: site, id: id, num: num + 1});
+      $.get("/displayToon", {site: site, id: id, num: num + 1});
     else if (site == "daum")
     {
       for (i = 0; i < numList[id].length; i++)
         if (numList[id][i] == num)
-          $.get("/displayToon.cgi", {site: site, id: id, num: numList[id][i + 1]});
+          $.get("/displayToon", {site: site, id: id, num: numList[id][i + 1]});
     }
 
     $.get(
-      "/displayToon.cgi",
+      "/displayToon",
       {site: site, id: id, num: num},
       function (data) {
         if (data == "")
@@ -642,7 +642,7 @@ function viewToon(_id, _num)
   else
   {
     $.get(
-      "/displayToon.cgi",
+      "/displayToon",
       {site: site, id: id, num: num},
       function (data) {
         if (data == "")

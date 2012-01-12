@@ -111,7 +111,7 @@ if site == "naver"
   # reqList 처리
   str << '<script>'
   reqList.keys.each do |v|
-    str << "$.get(\"/displayToon.cgi?site=naver&id=#{v}&num=1\");"
+    str << "$.get(\"/displayToon?site=naver&id=#{v}&num=1\");"
     db.execute("INSERT INTO naver_tmpList (toon_id) SELECT ? WHERE NOT EXISTS (SELECT 1 FROM naver_tmpList WHERE toon_id=?);", v, v)
   end
   str << 'resizeWidth();'
@@ -221,14 +221,14 @@ elsif site == "daum"
   reqList.keys.each do |v|
     numList = []
     dateList = []
-    num_resp = a.get("http://#{localhost}/getNum.cgi?site=daum&id=#{v}").body.strip.split("\n").map(&:strip)
+    num_resp = a.get("http://#{localhost}/getNum?site=daum&id=#{v}").body.strip.split("\n").map(&:strip)
     num_resp[0].split()[1..-1].map {|item|
       numList.push(item.split(",")[0].to_i)
       dateList.push(item.split(",")[1])
     }
     toonInfo = [num_resp[1], (num_resp[2].nil?) ? nil : num_resp[2].gsub('"', "&quot;").gsub("'", "&#39;").gsub("<", "&lt;").gsub(">", "&gt;")]
 
-    str << "$.get(\"/displayToon.cgi?site=daum&id=#{v}&num=#{numList[0]}\");"
+    str << "$.get(\"/displayToon?site=daum&id=#{v}&num=#{numList[0]}\");"
     (0...numList.length).each do |i|
       db.execute("UPDATE daum_numList SET toon_num=?, toon_date=? WHERE toon_id=? AND toon_num_idx=?;", numList[i], dateList[i], v, i)
       db.execute("INSERT INTO daum_numList (toon_id, toon_num_idx, toon_num, toon_date) SELECT ?, ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_numList WHERE toon_id=? AND toon_num_idx=?);", v, i, numList[i], dateList[i], v, i)

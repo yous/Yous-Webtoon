@@ -54,7 +54,7 @@ if site == "naver"
 
   if finish == "n"
     day_BM.each do |v|
-      resp = a.get("http://#{localhost}/getNum.cgi?site=naver&id=#{v}").body.split(" ")
+      resp = a.get("http://#{localhost}/getNum?site=naver&id=#{v}").body.split(" ")
       lastNum[v] = resp[1].to_i
       if toonBM[v] < lastNum[v]
         reqList[v] = toonBM[v] + 1
@@ -66,7 +66,7 @@ if site == "naver"
   else
     day_BM.each do |v|
       unless finishToon.include?(v)
-        resp = a.get("http://#{localhost}/getNum.cgi?site=naver&id=#{v}").body.split(" ")
+        resp = a.get("http://#{localhost}/getNum?site=naver&id=#{v}").body.split(" ")
         lastNum[v] = resp[1].to_i
         db.execute("INSERT INTO naver_lastNum (toon_id, toon_num) VALUES (?, ?);", v, lastNum[v])
         finishToon.push(v)
@@ -87,7 +87,7 @@ if site == "naver"
 
   # reqList 처리
   reqList.keys.each do |v|
-    str << "$.get(\"/displayToon.cgi?site=naver&id=#{v}&num=#{reqList[v]}\");"
+    str << "$.get(\"/displayToon?site=naver&id=#{v}&num=#{reqList[v]}\");"
   end
 
   str << "</script>"
@@ -128,7 +128,7 @@ elsif site == "daum"
         str << "finishToon.splice(finishToon.indexOf('#{v}'),1);"
         db.execute("DELETE FROM daum_lastNum WHERE toon_id=?;", v)
       end
-      resp = a.get("http://#{localhost}/getNum.cgi?site=daum&id=#{v}").body.strip.split("\n")[0].split()
+      resp = a.get("http://#{localhost}/getNum?site=daum&id=#{v}").body.strip.split("\n")[0].split()
       numList[v] = []
       dateList[v] = []
       resp.drop(1).each do |item|
@@ -149,7 +149,7 @@ elsif site == "daum"
   else
     day_BM.each do |v|
       unless finishToon.include?(v)
-        resp = a.get("http://#{localhost}/getNum.cgi?site=daum&id=#{v}").body.strip.split("\n")[0].split()
+        resp = a.get("http://#{localhost}/getNum?site=daum&id=#{v}").body.strip.split("\n")[0].split()
         numList[v] = resp.drop(1).map(&:to_i)
         lastNum[v] = numList[v][-1]
         str << "numList['#{v}']=[#{numList[v].join(",")}];"
@@ -171,7 +171,7 @@ elsif site == "daum"
 
   # reqList 처리
   reqList.keys.each do |v|
-    str << "$.get(\"/displayToon.cgi?site=daum&id=#{v}&num=#{reqList[v]}\");"
+    str << "$.get(\"/displayToon?site=daum&id=#{v}&num=#{reqList[v]}\");"
   end
 
   str << "</script>"
