@@ -4,12 +4,15 @@ require "mechanize"
 
 class GetNum < WEBrick::HTTPServlet::AbstractServlet
   def do_GET(req, res)
-    res.status = 200
-    res["Content-Type"] = "text/html; charset=utf-8"
-
     site = req.query["site"]
     id = req.query["id"]
 
+    res.status = 200
+    res["Content-Type"] = "text/html; charset=utf-8"
+    res.body = process(site, id) if site != nil and id != nil
+  end
+
+  def process(site, id)
     a = Mechanize.new
 
     # Naver 웹툰
@@ -28,11 +31,13 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
       end
       resp.search('//div[@class="btn_area"]').each do |v|
         if v.at('span[@class="pre"]/a').attributes["href"].value =~ /\/webtoon\/detail\.nhn\?titleId=\d+&seq=(\d+)/
-          res.body = (str << "#{$1.to_i + 1}")
+          str << "#{$1.to_i + 1}"
         else
-          res.body = (str << "1")
+          str << "1"
         end
       end
+
+      str
 
       # Daum 웹툰
     elsif site == "daum"
@@ -59,7 +64,7 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
           each {|v| str << "#{v["num"]},#{v["date"]} " }
       end
 
-      res.body = ((str_finish == "") ? "n " : str_finish) + str[0...-1] + "\n" + str_writer.join(" / ") + "\n" + str_toonInfo
+      ((str_finish == "") ? "n " : str_finish) + str[0...-1] + "\n" + str_writer.join(" / ") + "\n" + str_toonInfo
     end
   end
 end
