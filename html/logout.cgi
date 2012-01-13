@@ -1,4 +1,5 @@
 #!/usr/local/rvm/wrappers/ruby-1.9.3-p0@webtoon/ruby
+# encoding: utf-8
 require 'rubygems'
 require 'cgi'
 require 'cgi/session'
