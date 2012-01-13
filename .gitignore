@@ -1,8 +1,12 @@
 .rvmrc
+
 favicon.ico
+Log
+
 db
 images
 sess
+
 join.cgi
 leave.cgi
 login.cgi
