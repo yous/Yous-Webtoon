@@ -260,7 +260,7 @@ function login()
 function logout()
 {
   add_bookmark();
-  $.post(
+  $.get(
     "/logout.cgi",
     function (data) { $("#display_area").html(data); }
   );
