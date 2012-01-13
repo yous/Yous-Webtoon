@@ -7,13 +7,14 @@ class GetOtherToon < WEBrick::HTTPServlet::AbstractServlet
   def do_GET(req, res)
     site = req.query["site"]
     id = req.query["id"]
+    check_other = (site == "daum") ? req.query["other"] : nil
 
     res.status = 200
     res["Content-Type"] = "text/html; charset=utf-8"
-    res.body = process(site, id) if site != nil and id != nil
+    res.body = process(site, id, check_other) if site != nil and id != nil
   end
 
-  def process(site, id)
+  def process(site, id, check_other = nil)
     str = ""
 
     btnColor = {
@@ -41,7 +42,6 @@ class GetOtherToon < WEBrick::HTTPServlet::AbstractServlet
         page += 1
       end while (resp.search('//div[@class="pagenavigation"]/a[@class="next"]').length > 0)
     elsif site == "daum"
-      check_other = cgi.params["other"][0]
       resp = a.get "http://cartoon.media.daum.net/webtoon/view/#{id}"
       check_puts = false
 
