@@ -5,14 +5,17 @@ require "json"
 
 class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
   def do_GET(req, res)
-    res.status = 200
-    res["Content-Type"] = "text/html; charset=utf-8"
-
-    str = ""
-
     site = req.query["site"]
     id = req.query["id"]
     num = req.query["num"]
+
+    res.status = 200
+    res["Content-Type"] = "text/html; charset=utf-8"
+    res.body = process(site, id, num) if site != nil and id != nil and num != nil
+  end
+
+  def process(site, id, num)
+    str = ""
 
     btnColor = {
       "buttonA" => "#FAFAFA",
@@ -35,9 +38,9 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
       # 웹툰 제목, 작가, 설명 출력
       resp.search('//div[@class="dsc"]').each do |r|
         comic_title, writer = $1, $2 if r.at('h2').inner_html =~ /([\w\W]*)<em>([\w\W]*)<\/em>/
-          if resp.body =~ /<p class="txt">([\w\W]*)<\/p>[\w\W]*<ul class="btn_group">[\w\W]*<div class="tit_area">/
-            comic_text = $1.gsub(/^<br\/?>/i, "").gsub(/<br\/?>$/i, "").gsub("<", "&lt;").gsub(">", "&gt;").gsub('"', "&quot;").gsub("'", "&#39;").gsub(/&lt;br\/?&gt;/i, "<br/>")
-          end
+        if resp.body =~ /<p class="txt">([\w\W]*)<\/p>[\w\W]*<ul class="btn_group">[\w\W]*<div class="tit_area">/
+          comic_text = $1.gsub(/^<br\/?>/i, "").gsub(/<br\/?>$/i, "").gsub("<", "&lt;").gsub(">", "&gt;").gsub('"', "&quot;").gsub("'", "&#39;").gsub(/&lt;br\/?&gt;/i, "<br/>")
+        end
         #comic_text = r.at('p[@class="txt"]').inner_html.strip().gsub(/^<br\/?>/i, "").gsub(/<br\/?>$/i, "").gsub(/<br\/?>/i, " ")
         comic_title = comic_title.strip()
         writer = writer.strip().gsub(/^<span>\s*/i, "").gsub(/\s*<\/span>/i, "")
@@ -57,14 +60,14 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
       resp.search('//div[@id="bgm_player"]').each do |r|
         r.search('script').each do |e|
           bgmURL = $1 if e.inner_html =~ /showMusicPlayer\("http:\/\/(.*)"\);/
-            if not File::exists?("html/images/#{bgmURL.gsub(/\//, "@")}")
-              _data = a.get("http://#{bgmURL}").body
-              if _data != nil
-                File.open("html/images/#{bgmURL.gsub(/\//, "@")}", "w") do |f|
-                  f.write(_data)
-                end
+          if not File::exists?("html/images/#{bgmURL.gsub(/\//, "@")}")
+            _data = a.get("http://#{bgmURL}").body
+            if _data != nil
+              File.open("html/images/#{bgmURL.gsub(/\//, "@")}", "w") do |f|
+                f.write(_data)
               end
             end
+          end
           if ENV["HTTP_USER_AGENT"] =~ /MSIE/
             _content << '<script>play_status = "play";</script>'
             _content << '<div id="toonBGM" style="float: left; position: absolute;">'
@@ -125,7 +128,7 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
               _content << naverPutObj(a, imageList[i], imageWidth[i], imageHeight[i])
             end
             i += 1
-            # Flash
+          # Flash
           elsif v.name == "script"
             if f_exist
               _content << '<script>$("#title_area").append("<small style=\'float: left;\'>Flash Exist <span style=\'cursor: pointer;\' onclick=\'toggle_toonlist();\'>목록 접기/펼치기</span></small>");toggle_toonlist(true);location.replace("#title_area");</script>'
@@ -133,7 +136,7 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
             end
             _content << naverPutObj(a, imageList[i], imageWidth[i], imageHeight[i])
             i += 1
-            # a tag
+          # a tag
           elsif v.name == "a"
             (imageList.length - 1 - i).times {
               _content << naverPutObj(a, imageList[i], imageWidth[i], imageHeight[i])
@@ -150,10 +153,10 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
             end
             _content << "<img src=\"/images/#{imageList[i].gsub(/\//, "@")}\"></a>"
             i += 1
-            # br tag
+          # br tag
           elsif v.name == "br"
             _content << "<br/>"
-            # 예외 alert
+          # 예외 alert
           else
             _content << "<script>alert('예상하지 못한 태그 <#{v.name}>을 관리자에게 알려주세요.');</script>"
           end
@@ -250,7 +253,7 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
       str << _content
       str << "<script>setTimeout(\"location.replace('#title_area');\", 100);</script>"
 
-      # Daum 웹툰
+    # Daum 웹툰
     elsif site == "daum"
       resp = a.get "http://cartoon.media.daum.net/webtoon/viewer/#{num}"
 
@@ -275,53 +278,53 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
         toon_resp["images"].each do |r|
           url = $1 if r["url"] =~ /http:\/\/(.+)/
 
-            if r["mediaType"] == "image"
-              if not File::exists?("html/images/#{url.gsub(/\//, "@")}")
-                _data = a.get("http://#{url}").body
-                if _data != nil
-                  File.open("html/images/#{url.gsub(/\//, "@")}", "w") do |f|
-                    f.write(_data)
-                  end
-                end
-              end
-              if count == 1
-                _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\" width=\"#{r["width"]}\" onload=\"location.replace('#title_area');\"/>"
-              else
-                _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\" width=\"#{r["width"]}\"/>"
-              end
-            else
-              daum_tvpot = (url =~ /flvs\.daum\.net\/flvPlayer\.swf/) ? true : false
-              if not daum_tvpot and not File::exists?("html/images/#{url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}")
-                _data = a.get("http://#{url.gsub(/\?[\w\W]*$/, "")}").body
-                if _data != nil
-                  File.open("html/images/#{url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}", "w") do |f|
-                    f.write(_data)
-                  end
-                end
-              end
-              if r["mediaType"] == "flash"
-                if daum_tvpot
-                  _content << "<iframe src=\"http://#{url}\" width=\"700\" height=\"560\" frameborder=\"0\"></iframe>"
-                else
-                  _content << flashObj(url.gsub(/\//, "@"), "flash#{count}", 700, 560, "transparent")
-                  count += 1
-                end
-              elsif r["mediaType"] == "movie"
-                if daum_tvpot
-                  _content << "<iframe src=\"http://#{url}\" width=\"502\" height=\"399\" frameborder=\"0\"></iframe>"
-                else
-                  _content << flashObj(url.gsub(/\//, "@"), "flash#{count}", 502, 399, "transparent")
-                  count += 1
-                end
-              elsif r["mediaType"] == "hdmovie"
-                if daum_tvpot
-                  _content << "<iframe src=\"http://#{url}\" width=\"760\" height=\"450\" frameborder=\"0\"></iframe>"
-                else
-                  _content << flashObj(url.gsub(/\//, "@"), "flash#{count}", 760, 450, "transparent")
-                  count += 1
+          if r["mediaType"] == "image"
+            if not File::exists?("html/images/#{url.gsub(/\//, "@")}")
+              _data = a.get("http://#{url}").body
+              if _data != nil
+                File.open("html/images/#{url.gsub(/\//, "@")}", "w") do |f|
+                  f.write(_data)
                 end
               end
             end
+            if count == 1
+              _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\" width=\"#{r["width"]}\" onload=\"location.replace('#title_area');\"/>"
+            else
+              _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\" width=\"#{r["width"]}\"/>"
+            end
+          else
+            daum_tvpot = (url =~ /flvs\.daum\.net\/flvPlayer\.swf/) ? true : false
+            if not daum_tvpot and not File::exists?("html/images/#{url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}")
+              _data = a.get("http://#{url.gsub(/\?[\w\W]*$/, "")}").body
+              if _data != nil
+                File.open("html/images/#{url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}", "w") do |f|
+                  f.write(_data)
+                end
+              end
+            end
+            if r["mediaType"] == "flash"
+              if daum_tvpot
+                _content << "<iframe src=\"http://#{url}\" width=\"700\" height=\"560\" frameborder=\"0\"></iframe>"
+              else
+                _content << flashObj(url.gsub(/\//, "@"), "flash#{count}", 700, 560, "transparent")
+                count += 1
+              end
+            elsif r["mediaType"] == "movie"
+              if daum_tvpot
+                _content << "<iframe src=\"http://#{url}\" width=\"502\" height=\"399\" frameborder=\"0\"></iframe>"
+              else
+                _content << flashObj(url.gsub(/\//, "@"), "flash#{count}", 502, 399, "transparent")
+                count += 1
+              end
+            elsif r["mediaType"] == "hdmovie"
+              if daum_tvpot
+                _content << "<iframe src=\"http://#{url}\" width=\"760\" height=\"450\" frameborder=\"0\"></iframe>"
+              else
+                _content << flashObj(url.gsub(/\//, "@"), "flash#{count}", 760, 450, "transparent")
+                count += 1
+              end
+            end
+          end
         end
         _content << '<br/>'
         resp.search('//div[@class="img_list"]/div[@class="by_daum"]').each do |r|
@@ -340,17 +343,17 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
       else
         _content << "<iframe width=\"95%\" height=\"3600\" src=\"http://cartoon.media.daum.net/webtoon/viewer/#{num}\" onload=\"location.replace('#title_area');\"></iframe>"
 =begin
-    _ids, _recentId, _nick = $1, $2, $3 if resp.at('//div[@class="img_list"]/script').inner_html =~ /Webtoon\.EmbedViewer\.init\('([\d,]*)','(\d+)','(.*)'\);/
-    _url = "photo-section.daum-img.net/-cartoon10/swf/webtoon/GaroViewer2011.swf"
-    if not File::exists?("html/images/#{_url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}")
-      _data = a.get("http://#{_url.gsub(/\?[\w\W]*$/, "")}").body
-      if _data != nil
-        File.open("html/images/#{_url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}", "w") do |f|
-          f.write(_data)
+        _ids, _recentId, _nick = $1, $2, $3 if resp.at('//div[@class="img_list"]/script').inner_html =~ /Webtoon\.EmbedViewer\.init\('([\d,]*)','(\d+)','(.*)'\);/
+        _url = "photo-section.daum-img.net/-cartoon10/swf/webtoon/GaroViewer2011.swf"
+        if not File::exists?("html/images/#{_url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}")
+          _data = a.get("http://#{_url.gsub(/\?[\w\W]*$/, "")}").body
+          if _data != nil
+            File.open("html/images/#{_url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}", "w") do |f|
+              f.write(_data)
+            end
+          end
         end
-      end
-    end
-    _content << flashObj(_url.gsub(/\//, "@") + "?v=21&episode_ids=#{_ids}&recent_id=#{_recentId}&img_cnt=&page_no=1", 'viewerFla', 940, 700, 'transparent');
+        _content << flashObj(_url.gsub(/\//, "@") + "?v=21&episode_ids=#{_ids}&recent_id=#{_recentId}&img_cnt=&page_no=1", 'viewerFla', 940, 700, 'transparent');
 =end
       end
 
@@ -373,8 +376,7 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
       str << '<br/><br/>'
       str << "<script>setTimeout(\"location.replace('#title_area');\", 100);</script>"
     end
-
-    res.body = str
+    str
   end
 
   def flashObj(_url, _flashID, _width, _height, _wmode = "transparent", _flashVars = "", _bgColor = "#FFFFFF", _allowFullScreen = true)
@@ -416,7 +418,7 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
         end
         str << flashObj("flash.comic.naver.com/webtoon/flvPlayer.swf".gsub(/\//, "@"), "flvPlayer", "640", "395", "transparent", "flvURL=#{_imageURL}&imgURL=http://static.comic.naver.com/staticImages/COMICWEB/NAVER/images/flash/#{id}/flv.jpg&autoPlay=true&defaultVolume=0.5&flvWidth=640&flvHeight=360", "#FFFFFF", true)
       end
-      # Image
+    # Image
     else
       if not File::exists?("html/images/#{_imageURL.gsub(/\//, "@")}")
         _data = mechanObj.get("http://#{_imageURL}").body
