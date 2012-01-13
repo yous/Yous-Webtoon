@@ -4,13 +4,16 @@ require "mechanize"
 
 class GetOtherToon < WEBrick::HTTPServlet::AbstractServlet
   def do_GET(req, res)
-    res.status = 200
-    res["Content-Type"] = "text/html; charset=utf-8"
-
-    str = ""
-
     site = req.query["site"]
     id = req.query["id"]
+
+    res.status = 200
+    res["Content-Type"] = "text/html; charset=utf-8"
+    res.body = process(site, id) if site != nil and id != nil
+  end
+
+  def process(site, id)
+    str = ""
 
     btnColor = {
       "buttonA" => "#FAFAFA",
@@ -80,6 +83,6 @@ class GetOtherToon < WEBrick::HTTPServlet::AbstractServlet
       end
     end
 
-    res.body = str
+    str
   end
 end
