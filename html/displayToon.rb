@@ -124,10 +124,10 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
           # Image
           if v.name == "img"
             if first_img
-              _content << naverPutObj(a, imageList[i], imageWidth[i], imageHeight[i], true)
+              _content << naverPutObj(a, id, imageList[i], imageWidth[i], imageHeight[i], true)
               first_img = false
             else
-              _content << naverPutObj(a, imageList[i], imageWidth[i], imageHeight[i])
+              _content << naverPutObj(a, id, imageList[i], imageWidth[i], imageHeight[i])
             end
             i += 1
           # Flash
@@ -136,12 +136,12 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
               _content << '<script>$("#title_area").append("<small style=\'float: left;\'>Flash Exist <span style=\'cursor: pointer;\' onclick=\'toggle_toonlist();\'>목록 접기/펼치기</span></small>");toggle_toonlist(true);location.replace("#title_area");</script>'
               f_exist = false
             end
-            _content << naverPutObj(a, imageList[i], imageWidth[i], imageHeight[i])
+            _content << naverPutObj(a, id, imageList[i], imageWidth[i], imageHeight[i])
             i += 1
           # a tag
           elsif v.name == "a"
             (imageList.length - 1 - i).times {
-              _content << naverPutObj(a, imageList[i], imageWidth[i], imageHeight[i])
+              _content << naverPutObj(a, id, imageList[i], imageWidth[i], imageHeight[i])
               i += 1
             }
             _content << "<a target=\"_blank\" href=\"#{link_url}\">"
@@ -176,7 +176,7 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
             end
             _content << "<img src=\"/images/#{imageList[idx].gsub(/\//, "@")}\"></a>"
           else
-            _content << naverPutObj(a, imageList[idx], imageWidth[idx], imageHeight[idx])
+            _content << naverPutObj(a, id, imageList[idx], imageWidth[idx], imageHeight[idx])
           end
         end
       end
@@ -243,7 +243,7 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
 
       # 작가의 말, 별점 출력
       _writerCmt = $1.gsub("<", "&lt;").gsub(">", "&gt;").gsub(/&lt;br&gt;/i, "<br>") if resp.body =~ /<div\s+class="writer_info">[\w\W]*<p>([\w\W]*)<\/p>\s*<ul\s+class="btn_group">[\w\W]*<\/div>/
-        _rating = resp.at('//span[@id="bottomPointTotalNumber"]/strong').inner_html
+      _rating = resp.at('//span[@id="bottomPointTotalNumber"]/strong').inner_html
       _ratingPerson = resp.at('//span[@class="pointTotalPerson"]/em').inner_html
       _content << "<div id=\"writer_info\" style=\"width: 85%; text-align: left; clear: both; margin: 0 auto;\"><div style=\"background-color: #{btnColor["buttonB"]}; padding: 2px 15px 2px 15px;\"><b>작가의 말</b></div><p style=\"padding: 0px 20px 0px 20px;\">#{_writerCmt}</p><p style=\"padding: 0px 20px 0px 20px; text-align: right;\">별점 #{_rating} (#{_ratingPerson}명)</p></div></br>"
 
@@ -395,7 +395,7 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
     s << '</object>'
   end
 
-  def naverPutObj(mechanObj, _imageURL, _imageWidth, _imageHeight, _first_img = false)
+  def naverPutObj(mechanObj, id, _imageURL, _imageWidth, _imageHeight, _first_img = false)
     str = ""
     # Flash
     if _imageURL.downcase.index(".swf") != nil or _imageURL.downcase.index(".flv") != nil
