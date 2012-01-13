@@ -484,7 +484,7 @@ function getOtherToon(_id, /* Daum 웹툰용 */ check_other)
     if (check_other)
       var _name = "other";
     else
-      var _name = "gall";
+      var _name = "note";
     check_other = (check_other) ? "y" : "n";
 
     if ($("#artist_otherlist").attr("name") != _name)

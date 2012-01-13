@@ -61,6 +61,8 @@ class GetOtherToon < WEBrick::HTTPServlet::AbstractServlet
           str << "<span>관련 웹툰이 없습니다.</span>"
         end
       else
+        str << "<span>준비중입니다.</span>"
+=begin
         resp.
           at('//div[@id="daumContent"]/div/div[@id="mCenter"]/script').
           inner_html.strip.split(';').map(&:strip).
@@ -81,6 +83,7 @@ class GetOtherToon < WEBrick::HTTPServlet::AbstractServlet
         if not check_puts
           str << "<span>등록된 이미지가 없습니다.</span>"
         end
+=end
       end
     end
 

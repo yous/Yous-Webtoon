@@ -360,12 +360,12 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
 =end
       end
 
-      # 작가 블로그, 다른 작품 출력
+      # 작가 블로그, 관련 웹툰 출력
       _content << "<br/><br/>"
       _content << '<div id="artist_area" style="width: 85%; clear: both; margin: 0 auto;">'
       _content << '<table id="artist_info" align="right"><tr>'
-      _content << "<td><div style=\"text-align: center; width: 100px; margin: 0px 10px 0px 10px; cursor: pointer; background-color: #{btnColor["buttonB"]};\" onclick=\"show_artist_table(0);\">다른 작품</div></td>"
-      _content << "<td><div style=\"text-align: center; width: 100px; margin: 0px 10px 0px 10px; cursor: pointer; background-color: #{btnColor["buttonB"]};\" onclick=\"show_artist_table(1);\">갤러리</div></td>"
+      _content << "<td><div style=\"text-align: center; width: 100px; margin: 0px 10px 0px 10px; cursor: pointer; background-color: #{btnColor["buttonB"]};\" onclick=\"show_artist_table(0);\">관련 웹툰</div></td>"
+      _content << "<td><div style=\"text-align: center; width: 100px; margin: 0px 10px 0px 10px; cursor: pointer; background-color: #{btnColor["buttonB"]};\" onclick=\"show_artist_table(1);\">작품 노트</div></td>"
       _content << "</tr><tr>"
       _content << '<td colspan="2"><div id="artist_otherlist"></div></td>'
       _content << '</tr></table></div>'
