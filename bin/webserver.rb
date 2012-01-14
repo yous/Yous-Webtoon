@@ -1,7 +1,7 @@
 require "webrick"
-require "./html/displayToon"
-require "./html/getNum"
-require "./html/getOtherToon"
+require "displayToon"
+require "getNum"
+require "getOtherToon"
 
 BasicSocket.do_not_reverse_lookup = true
 
