@@ -224,8 +224,8 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
           _other = '<td><div id="artist_other" style="display: none;">'
           if r.inner_html =~ /artistData\s*=\s*\[([\w\W]*)\];[\w\W]*var actionRunner;/
             _info = $1.scan(/\{"artistId" : (\d+),[\s\n\r]*"nickname": '(.*)',[\s\n\r]*"blogUrl" : '(.*)'[\s\n\r]*\}/).collect {|artistId, nickname, blogUrl|
-            { "artistId" => artistId, "nickname" => nickname, "blogUrl" => blogUrl }
-          }
+              { "artistId" => artistId, "nickname" => nickname, "blogUrl" => blogUrl }
+            }
           end
           _info.each do |v|
             _blog << "<a href=\"#{v["blogUrl"]}\" target=\"_blank\">#{v["nickname"]}</a><br/>" if v["blogUrl"] != ""
@@ -271,7 +271,7 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
       end
       # 웹툰 회, 날짜 출력
       title = resp.at('//div[@class="others"]/span/span[@class="episode_title"]').inner_html.gsub("<", "&lt;").gsub(">", "&gt;").gsub('"', "&quot;").gsub("'", "&#39;")
-        _title << "<small id=\"toon_date\"></small>"
+      _title << "<small id=\"toon_date\"></small>"
       _title << "<script>$('#title_area div').append('#{comic_title} - ' + toonInfo['#{id}'][0] + '<br/><small style=\"font-size: 12px;\">' + toonInfo['#{id}'][1] + '</small><br/><br/><b>#{title}</b>');$('#toon_date').html(dateList['#{id}'][numList['#{id}'].indexOf(#{num})]);</script>"
 
       # 스크롤 형식의 웹툰

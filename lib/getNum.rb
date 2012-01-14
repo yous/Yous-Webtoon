@@ -56,11 +56,11 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
         r.at('div[@id="mCenter"]/script').inner_html.strip.split(";").map(&:strip).
           find_all {|v| v =~ /data1\.push\([\w\W]*\)/}.
           map {|v|
-          if v =~ /data1\.push\(\s*\{\s*img\s*:\s*"[\w\W]*"\s*,\s*title\s*:\s*"[\w\W]*"\s*,\s*shortTitle\s*:\s*"[\w\W]*"\s*,\s*url\s*:\s*"\/webtoon\/viewer\/(\d+)"\s*,\s*date\s*:\s*"([\w\W]*)"\s*,\s*price\s*:\s*"[\w\W]*"\s*,\s*finishYn\s*:\s*"([\w\W]*)"\s*,\s*payYn\s*:\s*"[\w\W]*"\s*\}\s*\)/
-            str_finish = "y " if $3 == "Y" and str_finish == ""
-            {"num" => $1, "date" => $2, "finish" => $3}
-          end
-        }.
+            if v =~ /data1\.push\(\s*\{\s*img\s*:\s*"[\w\W]*"\s*,\s*title\s*:\s*"[\w\W]*"\s*,\s*shortTitle\s*:\s*"[\w\W]*"\s*,\s*url\s*:\s*"\/webtoon\/viewer\/(\d+)"\s*,\s*date\s*:\s*"([\w\W]*)"\s*,\s*price\s*:\s*"[\w\W]*"\s*,\s*finishYn\s*:\s*"([\w\W]*)"\s*,\s*payYn\s*:\s*"[\w\W]*"\s*\}\s*\)/
+              str_finish = "y " if $3 == "Y" and str_finish == ""
+              {"num" => $1, "date" => $2, "finish" => $3}
+            end
+          }.
           reverse.
           each {|v| str << "#{v["num"]},#{v["date"]} " }
       end

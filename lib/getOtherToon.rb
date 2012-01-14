@@ -51,7 +51,7 @@ class GetOtherToon < WEBrick::HTTPServlet::AbstractServlet
           inner_html.strip.split(';').map(&:strip).
           find_all {|v| v =~ /data2\.push\([\w\W]*\)/}.
           map {|v|
-          {"title" => $1, "url" => $2} if v =~ /data2\.push\(\s*\{\s*img\s*:\s*".*"\s*,\s*title\s*:\s*"(.*)"\s*,\s*shortTitle\s*:\s*".*"\s*,\s*url\s*:\s*"\/webtoon\/view\/(.*)"\s*\}\s*\)/
+            {"title" => $1, "url" => $2} if v =~ /data2\.push\(\s*\{\s*img\s*:\s*".*"\s*,\s*title\s*:\s*"(.*)"\s*,\s*shortTitle\s*:\s*".*"\s*,\s*url\s*:\s*"\/webtoon\/view\/(.*)"\s*\}\s*\)/
           }.
           each do |v|
             str << "<div id=\"#{v["url"]}\" style=\"background-color: #{btnColor["buttonB"]}; cursor: default; margin: 3px 0px 3px 0px;\" onclick=\"viewToon('#{v["url"]}');\">#{v["title"]}</div>"
@@ -69,17 +69,17 @@ class GetOtherToon < WEBrick::HTTPServlet::AbstractServlet
           find_all {|v| v =~ /data3\.push\([\w\W]*\)/}.
           map {|v| $1 if v =~ /data3\.push\(\s*\{\s*img\s*:\s*"http:\/\/(.*)"\s*,\s*no\s*:\s*".*"\s*\}\s*\)/}.
           each {|v|
-          if not File::exists?("images/#{v.gsub(/\//, "@")}")
-            _data = a.get("http://#{v}").body
-            if _data != nil
-              File.open("images/#{v.gsub(/\//, "@")}", "w") do |f|
-                f.write(_data)
+            if not File::exists?("images/#{v.gsub(/\//, "@")}")
+              _data = a.get("http://#{v}").body
+              if _data != nil
+                File.open("images/#{v.gsub(/\//, "@")}", "w") do |f|
+                  f.write(_data)
+                end
               end
             end
-          end
-          str << "<img src=\"/images/#{v.gsub(/\//, "@")}\"/>"
-          check_puts = true if not check_puts
-        }
+            str << "<img src=\"/images/#{v.gsub(/\//, "@")}\"/>"
+            check_puts = true if not check_puts
+          }
         if not check_puts
           str << "<span>등록된 이미지가 없습니다.</span>"
         end
