@@ -2,7 +2,6 @@
 # encoding: utf-8
 require 'rubygems'
 require 'cgi'
-require 'cgi/session'
 require 'sqlite3'
 require 'digest/sha1'
 
