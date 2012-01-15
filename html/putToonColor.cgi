@@ -160,7 +160,7 @@ elsif site == "daum"
         str << "finishToon.push('#{v}');"
       end
       if toonBM[v] < lastNum[v]
-        reqList[v] = toonBM[v] + 1
+        reqList[v] = numList[v][numList[v].index(toonBM[v]) + 1]
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
       else
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_finish"]}');"
