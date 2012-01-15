@@ -1,5 +1,240 @@
 //jQuery.ajaxSetup({ async: false });
 
+classNaver = function()
+{
+  this.id = function(_id) { return parseInt(_id); };
+  this.first_num = function() { return 1; };
+  this.prev_num = function() { return num - 1; };
+  this.next_num = function() { return num + 1; };
+  this.idx_to_num = function(_inputNum)
+  {
+    if (_inputNum > lastNum[id])
+      return lastNum[id];
+    else
+      return _inputNum;
+  }
+  this.src = function() { return "http://comic.naver.com/webtoon/detail.nhn?titleId=" + id + "&seq=" + num; };
+  this.inputNum = function() { return num; };
+  this.toonlist_area_init = function() { return '<span id="Naver" style="color: ' + btnColor["link"] + '; cursor: pointer; margin: 10px;" onclick="site_change(\'naver\');"><u>N</u>aver</span>'; };
+  this.saveBM = function(_add, _finish)
+  {
+    $.post("/saveBM.cgi", {site: site, add: _add, toon_id: id, toon_num: num, finish: _finish});
+  };
+  this.show_artist_table = function(opt)
+  {
+    $("#artist_otherlist").attr("name", "");
+    $("#artist_otherlist").html("");
+    $("#artist_otherlist").css("display", "none");
+
+    if (opt == 0)
+    {
+      $("#artist_other").css("display", "none");
+      if ($("#artist_blog").css("display") == "none")
+      {
+        $("#artist_blog").css("display", "block");
+        location.replace("#artist_info");
+      }
+      else
+        $("#artist_blog").css("display", "none");
+    }
+    else
+    {
+      $("#artist_blog").css("display", "none");
+      if ($("#artist_other").css("display") == "none")
+      {
+        $("#artist_other").css("display", "block");
+        location.replace("#artist_info");
+      }
+      else
+        $("#artist_other").css("display", "none");
+    }
+  };
+  this.getOtherToon = function(_id)
+  {
+    if ($("#artist_otherlist").attr("name") != _id)
+    {
+      $("#artist_otherlist").attr("name", _id);
+      $("#artist_otherlist").css("display", "block");
+      $.get(
+        "/getOtherToon",
+        {site: site, id: _id},
+        function(data) {
+          $("#artist_otherlist").html(data + "<br/>");
+          location.replace("#artist_otherlist");
+        }
+      );
+    }
+    else
+    {
+      $("#artist_otherlist").attr("name", "");
+      $("#artist_otherlist").html("");
+      $("#artist_otherlist").css("display", "none");
+    }
+  };
+  this.getNextToon = function() { $.get("/displayToon", {site: site, id: id, num: num + 1}); };
+  this.getNumAndDisplay = function(prev_id, prev_num)
+  {
+    $.get(
+      "/getNum",
+      {site: site, id: id},
+      function(data) {
+        if (data == "")
+        {
+          alert("접속할 수 없습니다!");
+          id = prev_id;
+          num = prev_num;
+          return;
+        }
+        lastNum[id] = parseInt(data.split(" ")[1]);
+        $.get(
+          "/displayToon",
+          {site: site, id: id, num: num},
+          function(data) {
+            $("#display_area").html(data);
+            change_remote();
+          }
+        );
+        if (num < lastNum[id])
+          this.getNextToon();
+      }
+    );
+  };
+}
+
+classDaum = function()
+{
+  this.id = function(_id) { return _id; };
+  this.first_num = function() { return (numList[id]) ? numList[id][0] : 0; };
+  this.prev_num = function()
+  {
+    for (i = 0; i < numList[id].length; i++)
+    {
+      if (numList[id][i] == num)
+        return numList[id][i - 1];
+    }
+  };
+  this.next_num = function()
+  {
+    for (i = 0; i < numList[id].length; i++)
+    {
+      if (numList[id][i] == num)
+        return numList[id][i + 1];
+    }
+  };
+  this.idx_to_num = function(_inputNum)
+  {
+    _inputNum -= 1;
+    if (_inputNum >= numList[id].length)
+      _inputNum = numList[id].length - 1;
+    return numList[id][_inputNum];
+  }
+  this.src = function() { return "http://cartoon.media.daum.net/webtoon/viewer/" + num; };
+  this.inputNum = function()
+  {
+    for (i = 0; i < numList[id].length; i++)
+    {
+      if (numList[id][i] == num)
+        return i + 1;
+    }
+  };
+  this.toonlist_area_init = function() { return '<span id="Daum" style="color: ' + btnColor["link"] + '; cursor: pointer; margin: 10px;" onclick="site_change(\'daum\');"><u>D</u>aum</span>'; };
+  this.saveBM = function(_add, _finish)
+  {
+    var req_numList = numList[id].join(" ");
+    var req_dateList = dateList[id].join(" ");
+    $.post("/saveBM.cgi", {site: site, add: _add, toon_id: id, toon_num: num, numList: req_numList, dateList: req_dateList, finish: _finish});
+  };
+  this.show_artist_table = function(opt)
+  {
+    if (opt == 0)
+      getOtherToon(id);
+    else
+      getOtherToon(id, false);
+  };
+  this.getOtherToon = function(_id, check_other)
+  {
+    if (check_other)
+      var _name = "other";
+    else
+      var _name = "note";
+    check_other = (check_other) ? "y" : "n";
+
+    if ($("#artist_otherlist").attr("name") != _name)
+    {
+      $("#artist_otherlist").attr("name", _name);
+      $("#artist_otherlist").css("display", "block");
+      $.get(
+        "/getOtherToon",
+        {site: site, id: _id, other: check_other},
+        function(data) {
+          $("#artist_otherlist").html(data + "<br/>");
+          location.replace("#artist_otherlist");
+        }
+      );
+    }
+    else
+    {
+      $("#artist_otherlist").attr("name", "");
+      $("#artist_otherlist").html("");
+      $("#artist_otherlist").css("display", "none");
+    }
+  };
+  this.getNextToon = function()
+  {
+    for (i = 0; i < numList[id].length; i++)
+    {
+      if (numList[id][i] == num)
+        $.get("/displayToon", {site: site, id: id, num: numList[id][i + 1]});
+    }
+  };
+  this.getNumAndDisplay = function(prev_id, prev_num)
+  {
+    $.get(
+      "/getNum",
+      {site: site, id: id},
+      function(data) {
+        if (data == "")
+        {
+          alert("접속할 수 없습니다!");
+          id = prev_id;
+          num = prev_num;
+          return;
+        }
+        var tmp = data.split("\n")[0].split(" ").slice(1);
+        numList[id] = [];
+        dateList[id] = [];
+        for (i = 0; i < tmp.length; i++) {
+          numList[id].push(parseInt(tmp[i].split(",")[0]));
+          dateList[id].push(tmp[i].split(",")[1]);
+        }
+        writer[id] = data.split("\n")[1];
+        lastNum[id] = numList[id][numList[id].length - 1];
+        num = numList[id][0];
+        $.get(
+          "/displayToon",
+          {site: site, id: id, num: num},
+          function(data) {
+            if (data == "")
+            {
+              alert("접속할 수 없습니다!");
+              id = prev_id;
+              num = prev_num;
+              return;
+            }
+            $("#display_area").html(data);
+            change_remote();
+          }
+        );
+        if (num < lastNum[id])
+          this.getNextToon();
+      }
+    );
+  };
+}
+
+var Naver = new classNaver();
+var Daum = new classDaum();
+
 // width 자동 조절
 function resizeWidth()
 {
@@ -44,28 +279,24 @@ function loading(n)
 // remote 버튼 정리
 function change_remote()
 {
-  $("#saveBM").attr("disabled", (!id || (site == "naver" && num == 1 || site == "daum" && numList[id] && num == numList[id][0]) || num == toonBM[id]) ? true : false);
+  $("#saveBM").attr("disabled", (!id || (site == "naver" && num == Naver.first_num() || site == "daum" && num == Daum.first_num()) || num == toonBM[id]) ? true : false);
   $("#moveBM").attr("disabled", (!id || !toonBM[id] || num == toonBM[id]) ? true : false);
-  $("#firstBtn").attr("disabled", (!id || (site == "naver" && num == 1 || site == "daum" && numList[id] && num == numList[id][0])) ? true : false);
+  $("#firstBtn").attr("disabled", (!id || (site == "naver" && num == Naver.first_num() || site == "daum" && num == Daum.first_num())) ? true : false);
   $("#lastBtn").attr("disabled", (!id || num == lastNum[id]) ? true : false);
-  $("#prevBtn").attr("disabled", (!id || (site == "naver" && num == 1 || site == "daum" && numList[id] && num == numList[id][0])) ? true : false);
+  $("#prevBtn").attr("disabled", (!id || (site == "naver" && num == Naver.first_num() || site == "daum" && num == Daum.first_num())) ? true : false);
   $("#nextBtn").attr("disabled", (!id || num == lastNum[id]) ? true : false);
   $("#dirBtn").attr("disabled", (!id) ? true : false);
 
   var src = "";
   if (site == "naver")
   {
-    src = "http://comic.naver.com/webtoon/detail.nhn?titleId=" + id + "&seq=" + num;
-    $("#inputNum").val(num);
+    src = Naver.src();
+    $("#inputNum").val(Naver.inputNum());
   }
   else if (site == "daum")
   {
-    src = "http://cartoon.media.daum.net/webtoon/viewer/" + num;
-    for (i = 0; i < numList[id].length; i++)
-    {
-      if (numList[id][i] == num)
-        $("#inputNum").val(i + 1);
-    }
+    src = Daum.src();
+    $("#inputNum").val(Daum.inputNum());
   }
 
   $("#url").removeAttr("href");
@@ -167,8 +398,8 @@ function site_change(_site)
 function toonlist_area_init()
 {
   var str = "<br/>";
-  str += '<span id="Naver" style="color: ' + btnColor["link"] + '; cursor: pointer; margin: 10px;" onclick="site_change(\'naver\');"><u>N</u>aver</span>';
-  str += '<span id="Daum" style="color: ' + btnColor["link"] + '; cursor: pointer; margin: 10px;" onclick="site_change(\'daum\');"><u>D</u>aum</span>';
+  str += Naver.toonlist_area_init();
+  str += Daum.toonlist_area_init();
   str += "<script>id=null;num=null;site=null;change_remote();</script>";
   $("#toonlist_area").html(str);
 }
@@ -271,19 +502,17 @@ function add_bookmark()
 {
   if (id && num)
   {
-    if (toonBM[id] && (site == "naver" && num == 1 || site == "daum" && num == numList[id][0]))
+    if (toonBM[id] && (site == "naver" && num == Naver.first_num() || site == "daum" && num == Daum.first_num()))
     {
       delete toonBM[id];
-      var check = finishToon.indexOf(id)
+      var check = finishToon.indexOf(id);
       var _finish = (check == -1) ? "no" : lastNum[id];
+
       if (site == "naver")
-        $.post("/saveBM.cgi", {site: site, add: "no", toon_id: id, toon_num: num, finish: _finish});
+        Naver.saveBM("no", _finish);
       else if (site == "daum")
-      {
-        req_numList = numList[id].join(" ");
-        req_dateList = dateList[id].join(" ");
-        $.post("/saveBM.cgi", {site: site, add: "no", toon_id: id, toon_num: num, numList: req_numList, dateList: req_dateList, finish: _finish});
-      }
+        Daum.saveBM("no", _finish);
+
       alert("북마크가 저장되었습니다!");
       $("#moveBM").attr("disabled", true);
 
@@ -304,7 +533,7 @@ function add_bookmark()
 
       location.replace("#");
     }
-    else if (!toonBM[id] && (site == "naver" && num != 1 || site == "daum" && num != numList[id][0]) || toonBM[id] && toonBM[id] != num)
+    else if (!toonBM[id] && (site == "naver" && num != Naver.first_num() || site == "daum" && num != Daum.first_num()) || toonBM[id] && toonBM[id] != num)
     {
       toonBM[id] = num;
       var check = -1;
@@ -314,14 +543,12 @@ function add_bookmark()
           check = i;
       }
       var _finish = (check == -1) ? "no" : lastNum[id];
+
       if (site == "naver")
-        $.post("/saveBM.cgi", {site: site, add: "yes", toon_id: id, toon_num: num, finish: _finish});
+        Naver.saveBM("yes", _finish);
       else if (site == "daum")
-      {
-        req_numList = numList[id].join(" ");
-        req_dateList = dateList[id].join(" ");
-        $.post("/saveBM.cgi", {site: site, add: "yes", toon_id: id, toon_num: num, numList: req_numList, dateList: req_dateList, finish: _finish});
-      }
+        Daum.saveBM("yes", _finish);
+
       alert("북마크가 저장되었습니다!");
       $("#saveBM").attr("disabled", true);
       $("#moveBM").attr("disabled", true);
@@ -414,41 +641,9 @@ function show_table()
 function show_artist_table(opt)
 {
   if (site == "naver")
-  {
-    $("#artist_otherlist").attr("name", "");
-    $("#artist_otherlist").html("");
-    $("#artist_otherlist").css("display", "none");
-
-    if (opt == 0)
-    {
-      $("#artist_other").css("display", "none");
-      if ($("#artist_blog").css("display") == "none")
-      {
-        $("#artist_blog").css("display", "block");
-        location.replace("#artist_info");
-      }
-      else
-        $("#artist_blog").css("display", "none");
-    }
-    else
-    {
-      $("#artist_blog").css("display", "none");
-      if ($("#artist_other").css("display") == "none")
-      {
-        $("#artist_other").css("display", "block");
-        location.replace("#artist_info");
-      }
-      else
-        $("#artist_other").css("display", "none");
-    }
-  }
+    Naver.show_artist_table(opt);
   else if (site == "daum")
-  {
-    if (opt == 0)
-      getOtherToon(id);
-    else
-      getOtherToon(id, false);
-  }
+    Daum.show_artist_table(opt);
 }
 
 // 작가의 다른 작품 출력
@@ -458,55 +653,9 @@ function getOtherToon(_id, /* Daum 웹툰용 */ check_other)
     check_other = true;
 
   if (site == "naver")
-  {
-    if ($("#artist_otherlist").attr("name") != _id)
-    {
-      $("#artist_otherlist").attr("name", _id);
-      $("#artist_otherlist").css("display", "block");
-      $.get(
-        "/getOtherToon",
-        {site: site, id: _id},
-        function (data) {
-          $("#artist_otherlist").html(data + "<br/>");
-          location.replace("#artist_otherlist");
-        }
-      );
-    }
-    else
-    {
-      $("#artist_otherlist").attr("name", "");
-      $("#artist_otherlist").html("");
-      $("#artist_otherlist").css("display", "none");
-    }
-  }
+    Naver.getOtherToon(_id);
   else if (site == "daum")
-  {
-    if (check_other)
-      var _name = "other";
-    else
-      var _name = "note";
-    check_other = (check_other) ? "y" : "n";
-
-    if ($("#artist_otherlist").attr("name") != _name)
-    {
-      $("#artist_otherlist").attr("name", _name);
-      $("#artist_otherlist").css("display", "block");
-      $.get(
-        "/getOtherToon",
-        {site: site, id: _id, other: check_other},
-        function (data) {
-          $("#artist_otherlist").html(data + "<br/>");
-          location.replace("#artist_otherlist");
-        }
-      );
-    }
-    else
-    {
-      $("#artist_otherlist").attr("name", "");
-      $("#artist_otherlist").html("");
-      $("#artist_otherlist").css("display", "none");
-    }
-  }
+    Daum.getOtherToon(_id, check_other);
 }
 
 // 웹툰 출력
@@ -526,121 +675,39 @@ function viewToon(_id, _num)
   if (_id != id)
     add_bookmark();
 
-  id = (site == "naver") ? parseInt(_id) : _id;
+  if (site == "naver")
+    id = Naver.id(_id);
+  else if (site == "daum")
+    id = Daum.id(_id);
 
   if (typeof(_num) == "undefined")
   {
     if (toonBM[id])
       _num = toonBM[id];
     else if (site == "naver")
-      _num = 1;
+      _num = Naver.first_num();
     else if (site == "daum")
-      _num = (numList[id]) ? numList[id][0] : 0;
+      _num = Daum.first_num();
   }
   num = parseInt(_num);
 
   if (typeof(lastNum[id]) == "undefined")
   {
     if (site == "naver")
-      $.get(
-        "/getNum",
-        {site: site, id: id},
-        function (data) {
-          if (data == "")
-          {
-            alert("접속할 수 없습니다!");
-            id = prev_id;
-            num = prev_num;
-            return;
-          }
-          lastNum[id] = parseInt(data.split(" ")[1]);
-          $.get(
-            "/displayToon",
-            {site: site, id: id, num: num},
-            function (data) {
-              $("#display_area").html(data);
-              change_remote();
-            }
-          );
-          if (num < lastNum[id])
-            $.get("/displayToon", {site: site, id: id, num: num + 1});
-        }
-      );
+      Naver.getNumAndDisplay(prev_id, prev_num);
     else if (site == "daum")
-      $.get(
-        "/getNum",
-        {site: site, id: id},
-        function (data) {
-          if (data == "")
-          {
-            alert("접속할 수 없습니다!");
-            id = prev_id;
-            num = prev_num;
-            return;
-          }
-          var tmp = data.split("\n")[0].split(" ").slice(1);
-          numList[id] = [];
-          dateList[id] = [];
-          for (i = 0; i < tmp.length; i++) {
-            numList[id].push(parseInt(tmp[i].split(",")[0]));
-            dateList[id].push(tmp[i].split(",")[1]);
-          }
-          writer[id] = data.split("\n")[1];
-          lastNum[id] = numList[id][numList[id].length - 1];
-          num = numList[id][0];
-          $.get(
-            "/displayToon",
-            {site: site, id: id, num: num},
-            function (data) {
-              if (data == "")
-              {
-                alert("접속할 수 없습니다!");
-                id = prev_id;
-                num = prev_num;
-                return;
-              }
-              $("#display_area").html(data);
-              change_remote();
-            }
-          );
-          if (num < lastNum[id])
-            for (i = 0; i < numList[id].length; i++)
-            {
-              if (numList[id][i] == num)
-                $.get("/displayToon", {site: site, id: id, num: numList[id][i + 1]});
-            }
-        }
-      );
-  }
-  else if (num < lastNum[id])
-  {
-    if (site == "naver")
-      $.get("/displayToon", {site: site, id: id, num: num + 1});
-    else if (site == "daum")
-    {
-      for (i = 0; i < numList[id].length; i++)
-        if (numList[id][i] == num)
-          $.get("/displayToon", {site: site, id: id, num: numList[id][i + 1]});
-    }
-
-    $.get(
-      "/displayToon",
-      {site: site, id: id, num: num},
-      function (data) {
-        if (data == "")
-        {
-          alert("접속할 수 없습니다!");
-          id = prev_id;
-          num = prev_num;
-          return;
-        }
-        $("#display_area").html(data);
-        change_remote();
-      }
-    );
+      Daum.getNumAndDisplay(prev_id, prev_num);
   }
   else
   {
+    if (num < lastNum[id])
+    {
+      if (site == "naver")
+        Naver.getNextToon();
+      else if (site == "daum")
+        Daum.getNextToon();
+    }
+
     $.get(
       "/displayToon",
       {site: site, id: id, num: num},
@@ -669,9 +736,9 @@ function go_to(opt)
   switch (opt) {
     case -2: // 첫 화
       if (site == "naver")
-        viewToon(id, 1);
+        viewToon(id, Naver.first_num());
       else if (site == "daum")
-        viewToon(id, numList[id][0]);
+        viewToon(id, Daum.first_num());
       break;
     case 2: // 마지막 화
       viewToon(id, lastNum[id]);
@@ -679,40 +746,26 @@ function go_to(opt)
     case -1: // 이전 화
       if (site == "naver")
       {
-        if (num == 1)
+        if (num == Naver.first_num())
           alert("첫 화입니다!");
         else
-          viewToon(id, num - 1);
+          viewToon(id, Naver.prev_num());
       }
       else if (site == "daum")
       {
-        if (num == numList[id][0])
+        if (num == Daum.first_num())
           alert("첫 화입니다!");
         else
-        {
-          for (i = 0; i < numList[id].length; i++)
-            if (numList[id][i] == num)
-            {
-              viewToon(id, numList[id][i - 1]);
-              return;
-            }
-        }
+          viewToon(id, Daum.prev_num());
       }
       break;
     case 1: // 다음 화
       if (num == lastNum[id])
         alert("마지막 화입니다!");
       else if (site == "naver")
-        viewToon(id, num + 1);
+        viewToon(id, Naver.next_num());
       else if (site == "daum")
-      {
-        for (i = 0; i < numList[id].length; i++)
-          if (numList[id][i] == num)
-          {
-            viewToon(id, numList[id][i + 1]);
-            return;
-          }
-      }
+        viewToon(id, Daum.next_num());
       break;
     case 0: // 직접 이동
       var inputNum = parseInt($("#inputNum").val());
@@ -725,17 +778,9 @@ function go_to(opt)
         inputNum = 1;
 
       if (site == "naver")
-      {
-        if (inputNum > lastNum[id])
-          inputNum = lastNum[id];
-      }
+        inputNum = Naver.idx_to_num(inputNum);
       else if (site == "daum")
-      {
-        inputNum -= 1;
-        if (inputNum >= numList[id].length)
-          inputNum = numList[id].length - 1;
-        inputNum = numList[id][inputNum];
-      }
+        inputNum = Daum.idx_to_num(inputNum);
 
       viewToon(id, inputNum);
       break;
