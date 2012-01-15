@@ -12,7 +12,7 @@ cgi = CGI.new
 user_id = (cgi.has_key?("user_id")) ? cgi.params["user_id"][0] : nil
 user_pw = (cgi.has_key?("user_pw")) ? cgi.params["user_pw"][0] : nil
 
-db = SQLite3::Database.new("../db/webtoon.db")
+db = SQLite3::Database.new(File.join(File.dirname(__FILE__), "/../db/webtoon.db"))
 db.execute("CREATE TABLE IF NOT EXISTS usr (id INTEGER PRIMARY KEY, usr_id VARCHAR(255), usr_pw VARCHAR(255));")
 
 check = true

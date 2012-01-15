@@ -8,7 +8,7 @@ puts "Content-Type: text/html; charset=utf-8\n\n"
 
 cgi = CGI.new
 
-session = CGI::Session.new(cgi, "session_key" => "SSID", "prefix" => "rubysess.", "tmpdir" => "../sess")
+session = CGI::Session.new(cgi, "session_key" => "SSID", "prefix" => "rubysess.", "tmpdir" => File.join(File.dirname(__FILE__), "/../sess"))
 
 if session["user_id"] != nil and session["user_id"] != ""
   session["user_id"] = nil

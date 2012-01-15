@@ -11,9 +11,9 @@ puts "Content-Type: text/html; charset=utf-8\n\n"
 cgi = CGI.new
 user_pw = (cgi.has_key?("user_pw")) ? cgi.params["user_pw"][0] : nil
 
-session = CGI::Session.new(cgi, "session_key" => "SSID", "prefix" => "rubysess.", "tmpdir" => "../sess")
+session = CGI::Session.new(cgi, "session_key" => "SSID", "prefix" => "rubysess.", "tmpdir" => File.join(File.dirname(__FILE__), "/../sess"))
 
-db = SQLite3::Database.new("../db/webtoon.db")
+db = SQLite3::Database.new(File.join(File.dirname(__FILE__), "/../db/webtoon.db"))
 db.execute("CREATE TABLE IF NOT EXISTS usr (id INTEGER PRIMARY KEY, usr_id VARCHAR(255), usr_pw VARCHAR(255));")
 db.execute("CREATE TABLE IF NOT EXISTS naver_bm (id INTEGER, toon_id INTEGER, toon_num INTEGER);")
 db.execute("CREATE TABLE IF NOT EXISTS daum_bm (id INTEGER, toon_id VARCHAR(255), toon_num INTEGER);")
