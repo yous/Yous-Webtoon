@@ -147,11 +147,32 @@ if site == "naver"
 
 # Daum 웹툰
 elsif site == "daum"
+  numList = Hash.new
+  dateList = Hash.new
+  toonInfo = Hash.new
+  lastNum = Hash.new
+  finishToon = []
   reqList = Hash.new
   tmpList = []
 
   db.execute("SELECT toon_id FROM daum_numList ORDER BY toon_num_idx;") do |_toon_id|
     tmpList.push(_toon_id[0]) unless tmpList.include?(_toon_id[0])
+  end
+
+  db.execute("SELECT toon_id, toon_num FROM daum_lastNum;") do |_toon_id, _lastNum|
+    lastNum[_toon_id] = _lastNum
+    finishToon.push(_toon_id)
+  end
+
+  db.execute("SELECT toon_id, toon_num, toon_date FROM daum_numList ORDER BY toon_num_idx;") do |_toon_id, _toon_num, _toon_date|
+    numList[_toon_id] = [] if numList[_toon_id] == nil
+    numList[_toon_id].push(_toon_num)
+    dateList[_toon_id] = [] if dateList[_toon_id] == nil
+    dateList[_toon_id].push(_toon_date)
+  end
+
+  db.execute("SELECT toon_id, toon_writer, toon_intro FROM daum_toonInfo;") do |_toon_id, _toon_writer, _toon_intro|
+    toonInfo[_toon_id] = [_toon_writer, _toon_intro]
   end
 
   # 연재
@@ -220,64 +241,46 @@ elsif site == "daum"
   # reqList 처리
   str << '<script>'
   reqList.keys.each do |v|
-    numList = []
-    dateList = []
+    _numList = []
+    _dateList = []
     num_resp = a.get("http://#{localhost}/getNum?site=daum&id=#{v}").body.strip.split("\n").map {|item| item.strip.force_encoding("UTF-8") }
     num_resp[0].split()[1..-1].map {|item|
-      numList.push(item.split(",")[0].to_i)
-      dateList.push(item.split(",")[1])
+      _numList.push(item.split(",")[0].to_i)
+      _dateList.push(item.split(",")[1])
     }
-    toonInfo = [num_resp[1], (num_resp[2].nil?) ? nil : num_resp[2].gsub('"', "&quot;").gsub("'", "&#39;").gsub("<", "&lt;").gsub(">", "&gt;")]
+    _toonInfo = [num_resp[1], (num_resp[2].nil?) ? nil : num_resp[2].gsub('"', "&quot;").gsub("'", "&#39;").gsub("<", "&lt;").gsub(">", "&gt;")]
 
-    str << "$.get(\"/displayToon?site=daum&id=#{v}&num=#{numList[0]}\");"
-    (0...numList.length).each do |i|
-      db.execute("UPDATE daum_numList SET toon_num=?, toon_date=? WHERE toon_id=? AND toon_num_idx=?;", numList[i], dateList[i], v, i)
-      db.execute("INSERT INTO daum_numList (toon_id, toon_num_idx, toon_num, toon_date) SELECT :toon_id, :toon_num_idx, ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_numList WHERE toon_id=:toon_id AND toon_num_idx=:toon_num_idx);", numList[i], dateList[i], "toon_id" => v, "toon_num_idx" => i)
-      db.execute("UPDATE daum_toonInfo SET toon_writer=?, toon_intro=? WHERE toon_id=?;", toonInfo[0], toonInfo[1], v)
-      db.execute("INSERT INTO daum_toonInfo (toon_id, toon_writer, toon_intro) SELECT :toon_id, ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_toonInfo WHERE toon_id=:toon_id);", toonInfo[0], toonInfo[1], "toon_id" => v)
+    str << "$.get(\"/displayToon?site=daum&id=#{v}&num=#{_numList[0]}\");"
+    (0..._numList.length).each do |i|
+      db.execute("UPDATE daum_numList SET toon_num=?, toon_date=? WHERE toon_id=? AND toon_num_idx=?;", _numList[i], _dateList[i], v, i)
+      db.execute("INSERT INTO daum_numList (toon_id, toon_num_idx, toon_num, toon_date) SELECT :toon_id, :toon_num_idx, ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_numList WHERE toon_id=:toon_id AND toon_num_idx=:toon_num_idx);", _numList[i], _dateList[i], "toon_id" => v, "toon_num_idx" => i)
+      db.execute("UPDATE daum_toonInfo SET toon_writer=?, toon_intro=? WHERE toon_id=?;", _toonInfo[0], _toonInfo[1], v)
+      db.execute("INSERT INTO daum_toonInfo (toon_id, toon_writer, toon_intro) SELECT :toon_id, ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_toonInfo WHERE toon_id=:toon_id);", _toonInfo[0], _toonInfo[1], "toon_id" => v)
     end
     if reqList[v] == -1 # 완결
-      db.execute("UPDATE daum_lastNum SET toon_num=? WHERE toon_id=?;", numList[-1], v)
-      db.execute("INSERT INTO daum_lastNum (toon_id, toon_num) SELECT :toon_id, ? WHERE NOT EXISTS (SELECT 1 FROM daum_lastNum WHERE toon_id=:toon_id);", numList[-1], "toon_id" => v)
+      db.execute("UPDATE daum_lastNum SET toon_num=? WHERE toon_id=?;", _numList[-1], v)
+      db.execute("INSERT INTO daum_lastNum (toon_id, toon_num) SELECT :toon_id, ? WHERE NOT EXISTS (SELECT 1 FROM daum_lastNum WHERE toon_id=:toon_id);", _numList[-1], "toon_id" => v)
     end
   end
   str << 'resizeWidth();'
 
+  # 웹툰 정보 입력
+  str << "numList={#{numList.keys.map {|v| "'#{v}':[#{numList[v].join(",")}]"}.join(",")}};"
+  str << "dateList={#{dateList.keys.map {|v| "'#{v}':['#{dateList[v].join("','")}']"}.join(",")}};"
+  str << "toonInfo={#{toonInfo.keys.map {|v| "'#{v}':['#{toonInfo[v].join("','")}']"}.join(",")}};"
+  str << "lastNum={#{lastNum.keys.map {|v| "'#{v}':#{lastNum[v]}"}.join(",")}};"
+  str << "finishToon=[#{finishToon.map {|v| "'#{v}'"}.join(",")}];"
+
   # toon background-color 처리
   if session["user_id"] != nil and session["user_id"] != ""
     toonBM = Hash.new
-    numList = Hash.new
-    dateList = Hash.new
-    toonInfo = Hash.new
-    lastNum = Hash.new
-    finishToon = []
 
     db.execute("SELECT toon_id, toon_num FROM daum_bm WHERE id=? ORDER BY toon_id;", session["user_id"]) do |_toon_id, _toon_num|
       toonBM[_toon_id] = _toon_num
-      db.execute("SELECT toon_num FROM daum_lastNum WHERE toon_id=?;", _toon_id) do |_lastNum|
-        lastNum[_toon_id] = _lastNum[0]
-        finishToon.push(_toon_id)
-      end
-    end
-
-    db.execute("SELECT toon_id, toon_num, toon_date FROM daum_numList ORDER BY toon_num_idx;") do |_toon_id, _toon_num, _toon_date|
-      numList[_toon_id] = [] if numList[_toon_id] == nil
-      numList[_toon_id].push(_toon_num)
-      dateList[_toon_id] = [] if dateList[_toon_id] == nil
-      dateList[_toon_id].push(_toon_date)
-    end
-
-    db.execute("SELECT toon_id, toon_writer, toon_intro FROM daum_toonInfo;") do |_toon_id, _toon_writer, _toon_intro|
-      toonInfo[_toon_id] = [_toon_writer, _toon_intro]
     end
 
     str << "toonBM={#{toonBM.keys.map {|v| "'#{v}':#{toonBM[v]}"}.join(",")}};"
-    str << "numList={#{numList.keys.map {|v| "'#{v}':[#{numList[v].join(",")}]"}.join(",")}};"
-    str << "dateList={#{dateList.keys.map {|v| "'#{v}':['#{dateList[v].join("','")}']"}.join(",")}};"
-    str << "toonInfo={#{toonInfo.keys.map {|v| "'#{v}':['#{toonInfo[v].join("','")}']"}.join(",")}};"
-    str << "lastNum={#{lastNum.keys.map {|v| "'#{v}':#{lastNum[v]}"}.join(",")}};"
-    str << "finishToon=[#{finishToon.map {|v| "'#{v}'"}.join(",")}];"
-  
+
     str << '$("#loading").html("<big><b> Loading</b></big>");'
     str << '$("#loading").css("display", "inline");'
     str << 'loading(10);'
