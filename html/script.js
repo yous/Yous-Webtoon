@@ -95,7 +95,7 @@ classNaver = function()
           }
         );
         if (num < lastNum[id])
-          this.getNextToon();
+          Naver.getNextToon();
       }
     );
   };
@@ -226,7 +226,7 @@ classDaum = function()
           }
         );
         if (num < lastNum[id])
-          this.getNextToon();
+          Daum.getNextToon();
       }
     );
   };
