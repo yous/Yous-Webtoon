@@ -40,9 +40,8 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
       resp.search('//div[@class="dsc"]').each do |r|
         comic_title, writer = $1, $2 if r.at('h2').inner_html =~ /([\w\W]*)<em>([\w\W]*)<\/em>/
         if resp.body =~ /<p class="txt">([\w\W]*)<\/p>[\w\W]*<ul class="btn_group">[\w\W]*<div class="tit_area">/
-          comic_text = $1.gsub(/^<br\/?>/i, "").gsub(/<br\/?>$/i, "").gsub("<", "&lt;").gsub(">", "&gt;").gsub('"', "&quot;").gsub("'", "&#39;").gsub(/&lt;br\/?&gt;/i, "<br/>")
+          comic_text = $1.gsub(/^<br\/?>/i, "").gsub(/<br\/?>$/i, "").gsub("<", "&lt;").gsub(">", "&gt;").gsub('"', "&quot;").gsub("'", "&#39;").gsub(/&lt;br\/?&gt;/i, "<br/>").force_encoding("UTF-8")
         end
-        comic_text.force_encoding("UTF-8")
         #comic_text = r.at('p[@class="txt"]').inner_html.strip().gsub(/^<br\/?>/i, "").gsub(/<br\/?>$/i, "").gsub(/<br\/?>/i, " ")
         comic_title = comic_title.strip()
         writer = writer.strip().gsub(/^<span>\s*/i, "").gsub(/\s*<\/span>/i, "")
@@ -242,8 +241,7 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
       end
 
       # 작가의 말, 별점 출력
-      _writerCmt = $1.gsub("<", "&lt;").gsub(">", "&gt;").gsub(/&lt;br&gt;/i, "<br>") if resp.body =~ /<div\s+class="writer_info">[\w\W]*<p>([\w\W]*)<\/p>\s*<ul\s+class="btn_group">[\w\W]*<\/div>/
-      _writerCmt.force_encoding("UTF-8")
+      _writerCmt = $1.gsub("<", "&lt;").gsub(">", "&gt;").gsub(/&lt;br&gt;/i, "<br>").force_encoding("UTF-8") if resp.body =~ /<div\s+class="writer_info">[\w\W]*<p>([\w\W]*)<\/p>\s*<ul\s+class="btn_group">[\w\W]*<\/div>/
       _rating = resp.at('//span[@id="bottomPointTotalNumber"]/strong').inner_html
       _ratingPerson = resp.at('//span[@class="pointTotalPerson"]/em').inner_html
       _content << "<div id=\"writer_info\" style=\"width: 85%; text-align: left; clear: both; margin: 0 auto;\"><div style=\"background-color: #{btnColor["buttonB"]}; padding: 2px 15px 2px 15px;\"><b>작가의 말</b></div><p style=\"padding: 0px 20px 0px 20px;\">#{_writerCmt}</p><p style=\"padding: 0px 20px 0px 20px; text-align: right;\">별점 #{_rating} (#{_ratingPerson}명)</p></div></br>"
