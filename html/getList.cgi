@@ -165,14 +165,22 @@ elsif site == "daum"
   end
 
   db.execute("SELECT toon_id, toon_num, toon_date FROM daum_numList ORDER BY toon_num_idx;") do |_toon_id, _toon_num, _toon_date|
-    numList[_toon_id] = [] if numList[_toon_id] == nil
-    numList[_toon_id].push(_toon_num)
-    dateList[_toon_id] = [] if dateList[_toon_id] == nil
-    dateList[_toon_id].push(_toon_date)
+    if _toon_num.nil? or _toon_date.nil?
+      reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0
+    else
+      numList[_toon_id] = [] if numList[_toon_id] == nil
+      numList[_toon_id].push(_toon_num)
+      dateList[_toon_id] = [] if dateList[_toon_id] == nil
+      dateList[_toon_id].push(_toon_date)
+    end
   end
 
   db.execute("SELECT toon_id, toon_writer, toon_intro FROM daum_toonInfo;") do |_toon_id, _toon_writer, _toon_intro|
-    toonInfo[_toon_id] = [_toon_writer, _toon_intro]
+    if _toon_writer.nil? or _toon_intro.nil?
+      reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0
+    else
+      toonInfo[_toon_id] = [_toon_writer, _toon_intro]
+    end
   end
 
   # 연재
