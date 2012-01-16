@@ -222,7 +222,7 @@ elsif site == "daum"
   reqList.keys.each do |v|
     numList = []
     dateList = []
-    num_resp = a.get("http://#{localhost}/getNum?site=daum&id=#{v}").body.strip.split("\n").map(&:strip)
+    num_resp = a.get("http://#{localhost}/getNum?site=daum&id=#{v}").body.strip.split("\n").map {|item| item.strip.force_encoding("UTF-8") }
     num_resp[0].split()[1..-1].map {|item|
       numList.push(item.split(",")[0].to_i)
       dateList.push(item.split(",")[1])
