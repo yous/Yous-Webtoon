@@ -36,7 +36,7 @@ class GetOtherToon < WEBrick::HTTPServlet::AbstractServlet
 
         resp.search('//ul[@class="authorList"]/li').each do |r|
           titleId = $1 if r.at('h4[@class="title"]/a').attributes["href"].to_s =~ /\/webtoon\/detail\.nhn\?titleId=(\d+)/
-          title = r.at('h4[@class="title"]/a').inner_html
+          title = r.at('h4[@class="title"]/a').inner_html.force_encoding("UTF-8")
           str << "<div id=\"#{titleId}\" style=\"background-color: #{btnColor["buttonB"]}; cursor: default; margin: 3px 0px 3px 0px;\" onclick=\"viewToon('#{titleId}');\">#{title}</div>"
         end
         page += 1
@@ -48,7 +48,7 @@ class GetOtherToon < WEBrick::HTTPServlet::AbstractServlet
       if check_other == "y"
         resp.
           at('//div[@id="daumContent"]/div/div[@id="mCenter"]/script').
-          inner_html.strip.split(';').map(&:strip).
+          inner_html.force_encoding("UTF-8").strip.split(';').map(&:strip).
           find_all {|v| v =~ /data2\.push\([\w\W]*\)/}.
           map {|v|
             {"title" => $1, "url" => $2} if v =~ /data2\.push\(\s*\{\s*img\s*:\s*".*"\s*,\s*title\s*:\s*"(.*)"\s*,\s*shortTitle\s*:\s*".*"\s*,\s*url\s*:\s*"\/webtoon\/view\/(.*)"\s*\}\s*\)/
