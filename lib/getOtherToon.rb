@@ -51,7 +51,7 @@ class GetOtherToon < WEBrick::HTTPServlet::AbstractServlet
           inner_html.force_encoding("UTF-8").strip.split(';').map(&:strip).
           find_all {|v| v =~ /data2\.push\([\w\W]*\)/}.
           map {|v|
-            {"title" => $1, "url" => $2} if v =~ /data2\.push\(\s*\{\s*img\s*:\s*".*"\s*,\s*title\s*:\s*"(.*)"\s*,\s*shortTitle\s*:\s*".*"\s*,\s*url\s*:\s*"\/webtoon\/view\/(.*)"\s*\}\s*\)/
+            {"title" => $1, "url" => $2} if v =~ /data2\.push\(\s*\{\s*img\s*:\s*".*"\s*,\s*title\s*:\s*"(.*)"\s*,\s*shortTitle\s*:\s*".*"\s*,\s*url\s*:\s*"\/webtoon\/view\/(.*)"\s*,\s*isAdult\s*:\s*.*\}\s*\)/
           }.
           each do |v|
             str << "<div id=\"#{v["url"]}\" style=\"background-color: #{btnColor["buttonB"]}; cursor: default; margin: 3px 0px 3px 0px;\" onclick=\"viewToon('#{v["url"]}');\">#{v["title"]}</div>"
