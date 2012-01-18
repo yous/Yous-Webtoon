@@ -1,5 +1,3 @@
-//jQuery.ajaxSetup({ async: false });
-
 (function() {
   window.classNaver = function(name)
   {
