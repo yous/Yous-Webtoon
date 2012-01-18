@@ -1,5 +1,5 @@
 (function() {
-  window.classNaver = function(name)
+  window.classNaver = function()
   {
     if (_Naver == null)
       _Naver = new classNaver();
