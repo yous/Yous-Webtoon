@@ -40,7 +40,7 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
 
       str
 
-      # Daum 웹툰
+    # Daum 웹툰
     elsif site == "daum"
       str = ""
       str_writer = []
