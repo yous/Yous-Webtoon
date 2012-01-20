@@ -817,7 +817,7 @@ function spanKeyDown(spanId, e)
   if (event == null)
     var event = e;
 
-  if (event.keyCode == 13 || event.keyCode == 32) // Enter
+  if (event.keyCode == 13 || event.keyCode == 32) // Enter || Space
     $("#" + spanId).trigger("click");
 }
 
