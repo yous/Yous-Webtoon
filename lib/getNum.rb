@@ -2,6 +2,7 @@
 require "rubygems"
 require "webrick"
 require "mechanize"
+require "sqlite3"
 
 class GetNum < WEBrick::HTTPServlet::AbstractServlet
   def do_GET(req, res)
@@ -66,6 +67,52 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
       end
 
       ((str_finish == "") ? "n " : str_finish) + str[0...-1] + "\n" + str_writer.join(" / ") + "\n" + str_toonInfo
+
+    # Yahoo 웹툰
+    elsif site == "yahoo"
+      str_finish = ""
+      str_intro = ""
+      numList = []
+      tmp_numList = []
+
+      db = SQLite3::Database.new("db/webtoon.db")
+      db.execute("CREATE TABLE IF NOT EXISTS yahoo_numList (toon_id INTEGER, toon_num_idx INTEGER, toon_num INTEGER);")
+      db.execute("SELECT toon_num FROM yahoo_numList WHERE toon_id=? ORDER BY toon_num_idx;", id) do |_toon_num|
+        numList.push(_toon_num[0])
+      end
+      db.execute("SELECT toon_num FROM yahoo_lastNum WHERE toon_id=?;", id) do |_toon_num|
+        str_finish = "y "
+      end
+      db.close
+
+      _lastNum = (_lastNum.nil?) ? 0 : _lastNum
+
+      resp = a.get "http://kr.news.yahoo.com/service/cartoon/shelllist.htm?linkid=toon_series&work_idx=#{id}"
+
+      str_intro = resp.at('//div[@id="ctg"]/span[@class="dsc"]/dl/dd').inner_html.encode("UTF-8").strip.gsub("\r", "").gsub("\n", "")
+
+      check = true
+      while check
+        resp.search('//div[@id="cth"]/ol/li').each do |r|
+          if r.at('a[2]').attributes["href"].value =~ /http:\/\/kr\.news\.yahoo\.com\/service\/cartoon\/shellview2\.htm\?linkid=series_cartoon&sidx=(\d+)/
+            if numList.include?($1.to_i)
+              check = false
+              break
+            else
+              tmp_numList.push($1.to_i)
+            end
+          end
+        end
+        if check and resp.search('//div[@id="pa0"]/span[@class="nxt"]').length > 0
+          resp = a.get resp.at('//div[@id="pa0"]/span[@class="nxt"]/a').attributes["href"].value
+        else
+          break
+        end
+      end
+
+      numList += tmp_numList.reverse
+
+      ((str_finish == "") ? "n " : str_finish) + numList.join(" ") + "\n" + str_intro
     end
   end
 end

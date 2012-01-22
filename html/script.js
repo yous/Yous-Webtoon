@@ -250,8 +250,113 @@
   }
 })();
 
+(function() {
+  window.classYahoo = function()
+  {
+    if (_Yahoo == null)
+      _Yahoo = new classYahoo();
+    return _Yahoo;
+  }
+
+  var _Yahoo = null;
+  var classYahoo = function()
+  {
+    this.id = function(_id) { return parseInt(_id); };
+    this.first_num = function() { return (numList[id]) ? numList[id][0] : 0; };
+    this.prev_num = function()
+    {
+      for (i = 0; i < numList[id].length; i++)
+      {
+        if (numList[id][i] == num)
+          return numList[id][i - 1];
+      }
+    }
+    this.next_num = function()
+    {
+      for (i = 0; i < numList[id].length; i++)
+      {
+        if (numList[id][i] == num)
+          return numList[id][i + 1];
+      }
+    }
+    this.idx_to_num = function(_inputNum)
+    {
+      _inputNum -= 1;
+      if (_inputNum >= numList[id].length)
+        _inputNum = numList[id].length - 1;
+      return numList[id][_inputNum];
+    }
+    this.src = function() { return "http://kr.news.yahoo.com/service/cartoon/shellview2.htm?linkid=series_cartoon&sidx=" + num + "&widx=" + id; };
+    this.inputNum = function()
+    {
+      for (i = 0; i < numList[id].length; i++)
+      {
+        if (numList[id][i] == num)
+          return i + 1;
+      }
+    };
+    this.toonlist_area_init = function() { return '<span style="color: ' + btnColor["link"] + '; cursor: pointer; margin: 10px;" onclick="site_change(\'yahoo\');"><u>Y</u>ahoo</span>'; };
+    this.saveBM = function(_add, _finish)
+    {
+      var req_numList = numList[id].join(" ");
+      $.post("/saveBM.cgi", {site: site, add: _add, toon_id: id, toon_num: num, numList: req_numList, finish: _finish});
+    };
+    this.show_artist_table = function(opt) { return; };
+    this.getOtherToon = function(_id) { return; };
+    this.getNextToon = function()
+    {
+      for (i = 0; i < numList[id].length; i++)
+      {
+        if (numList[id][i] == num)
+          $.get("/displayToon", {site: site, id: id, num: numList[id][i + 1]});
+      }
+    }
+    this.getNumAndDisplay = function(prev_id, prev_num)
+    {
+      $.get(
+        "/getNum",
+        {site: site, id: id},
+        function(data) {
+          if (data == "")
+          {
+            alert("접속할 수 없습니다!");
+            id = prev_id;
+            num = prev_num;
+            return;
+          }
+          tmp = data.split("\n")[0].split(" ").slice(1);
+          numList[id] = []
+          for (i = 0; i < tmp.length; i++)
+            numList[id].push(parseInt(tmp[i]));
+
+          lastNum[id] = numList[id][numList[id].length - 1];
+          num = numList[id][0];
+          $.get(
+            "/displayToon",
+            {site: site, id: id, num: num},
+            function(data) {
+              if (data == "")
+              {
+                alert("접속할 수 없습니다!");
+                id = prev_id;
+                num = prev_num;
+                return;
+              }
+              $("#display_area").html(data);
+              change_remote();
+            }
+          );
+          if (num < lastNum[id])
+            Yahoo.getNextToon();
+        }
+      );
+    };
+  }
+})();
+
 var Naver = new classNaver();
 var Daum = new classDaum();
+var Yahoo = new classYahoo();
 
 // width 자동 조절
 function resizeWidth()
@@ -297,11 +402,11 @@ function loading(n)
 // remote 버튼 정리
 function change_remote()
 {
-  $("#saveBM").attr("disabled", (!id || (site == "naver" && num == Naver.first_num() || site == "daum" && num == Daum.first_num()) || num == toonBM[id]) ? true : false);
+  $("#saveBM").attr("disabled", (!id || (site == "naver" && num == Naver.first_num() || site == "daum" && num == Daum.first_num() || site == "yahoo" && num == Yahoo.first_num()) || num == toonBM[id]) ? true : false);
   $("#moveBM").attr("disabled", (!id || !toonBM[id] || num == toonBM[id]) ? true : false);
-  $("#firstBtn").attr("disabled", (!id || (site == "naver" && num == Naver.first_num() || site == "daum" && num == Daum.first_num())) ? true : false);
+  $("#firstBtn").attr("disabled", (!id || (site == "naver" && num == Naver.first_num() || site == "daum" && num == Daum.first_num() || site == "yahoo" && num == Yahoo.first_num())) ? true : false);
   $("#lastBtn").attr("disabled", (!id || num == lastNum[id]) ? true : false);
-  $("#prevBtn").attr("disabled", (!id || (site == "naver" && num == Naver.first_num() || site == "daum" && num == Daum.first_num())) ? true : false);
+  $("#prevBtn").attr("disabled", (!id || (site == "naver" && num == Naver.first_num() || site == "daum" && num == Daum.first_num() || site == "yahoo" && num == Yahoo.first_num())) ? true : false);
   $("#nextBtn").attr("disabled", (!id || num == lastNum[id]) ? true : false);
   $("#dirBtn").attr("disabled", (!id) ? true : false);
 
@@ -315,6 +420,11 @@ function change_remote()
   {
     src = Daum.src();
     $("#inputNum").val(Daum.inputNum());
+  }
+  else if (site == "yahoo")
+  {
+    src = Yahoo.src();
+    $("#inputNum").val(Yahoo.inputNum());
   }
 
   $("#url").removeAttr("href");
@@ -418,6 +528,7 @@ function toonlist_area_init()
   var str = "<br/>";
   str += Naver.toonlist_area_init();
   str += Daum.toonlist_area_init();
+  str += Yahoo.toonlist_area_init();
   str += "<script>id=null;num=null;site=null;change_remote();</script>";
   $("#toonlist_area").html(str);
 }
@@ -520,7 +631,7 @@ function add_bookmark()
 {
   if (id && num)
   {
-    if (toonBM[id] && (site == "naver" && num == Naver.first_num() || site == "daum" && num == Daum.first_num()))
+    if (toonBM[id] && (site == "naver" && num == Naver.first_num() || site == "daum" && num == Daum.first_num() || site == "yahoo" && num == Yahoo.first_num()))
     {
       delete toonBM[id];
       var check = finishToon.indexOf(id);
@@ -530,6 +641,8 @@ function add_bookmark()
         Naver.saveBM("no", _finish);
       else if (site == "daum")
         Daum.saveBM("no", _finish);
+      else if (site == "yahoo")
+        Yahoo.saveBM("no", _finish);
 
       alert("북마크가 저장되었습니다!");
       $("#moveBM").attr("disabled", true);
@@ -551,7 +664,7 @@ function add_bookmark()
 
       location.replace("#");
     }
-    else if (!toonBM[id] && (site == "naver" && num != Naver.first_num() || site == "daum" && num != Daum.first_num()) || toonBM[id] && toonBM[id] != num)
+    else if (!toonBM[id] && (site == "naver" && num != Naver.first_num() || site == "daum" && num != Daum.first_num() || site == "yahoo" && num != Yahoo.first_num()) || toonBM[id] && toonBM[id] != num)
     {
       toonBM[id] = num;
       var check = -1;
@@ -566,6 +679,8 @@ function add_bookmark()
         Naver.saveBM("yes", _finish);
       else if (site == "daum")
         Daum.saveBM("yes", _finish);
+      else if (site == "yahoo")
+        Yahoo.saveBM("yes", _finish);
 
       alert("북마크가 저장되었습니다!");
       $("#saveBM").attr("disabled", true);
@@ -662,6 +777,8 @@ function show_artist_table(opt)
     Naver.show_artist_table(opt);
   else if (site == "daum")
     Daum.show_artist_table(opt);
+  else if (site == "yahoo")
+    Yahoo.show_artist_table(opt);
 }
 
 // 작가의 다른 작품 출력
@@ -674,6 +791,8 @@ function getOtherToon(_id, /* Daum 웹툰용 */ check_other)
     Naver.getOtherToon(_id);
   else if (site == "daum")
     Daum.getOtherToon(_id, check_other);
+  else if (site == "yahoo")
+    Yahoo.getOtherToon(_id);
 }
 
 // 웹툰 출력
@@ -697,6 +816,8 @@ function viewToon(_id, _num)
     id = Naver.id(_id);
   else if (site == "daum")
     id = Daum.id(_id);
+  else if (site == "yahoo")
+    id = Yahoo.id(_id);
 
   if (typeof(_num) == "undefined")
   {
@@ -706,6 +827,8 @@ function viewToon(_id, _num)
       _num = Naver.first_num();
     else if (site == "daum")
       _num = Daum.first_num();
+    else if (site == "yahoo")
+      _num = Yahoo.first_num();
   }
   num = parseInt(_num);
 
@@ -715,6 +838,8 @@ function viewToon(_id, _num)
       Naver.getNumAndDisplay(prev_id, prev_num);
     else if (site == "daum")
       Daum.getNumAndDisplay(prev_id, prev_num);
+    else if (site == "yahoo")
+      Yahoo.getNumAndDisplay(prev_id, prev_num);
   }
   else
   {
@@ -724,6 +849,8 @@ function viewToon(_id, _num)
         Naver.getNextToon();
       else if (site == "daum")
         Daum.getNextToon();
+      else if (site == "yahoo")
+        Yahoo.getNextToon();
     }
 
     $.get(
@@ -757,6 +884,8 @@ function go_to(opt)
         viewToon(id, Naver.first_num());
       else if (site == "daum")
         viewToon(id, Daum.first_num());
+      else if (site == "yahoo")
+        viewToon(id, Yahoo.first_num());
       break;
     case 2: // 마지막 화
       viewToon(id, lastNum[id]);
@@ -776,6 +905,13 @@ function go_to(opt)
         else
           viewToon(id, Daum.prev_num());
       }
+      else if (site == "yahoo")
+      {
+        if (num == Yahoo.first_num())
+          alert("첫 화입니다!");
+        else
+          viewToon(id, Yahoo.prev_num());
+      }
       break;
     case 1: // 다음 화
       if (num == lastNum[id])
@@ -784,6 +920,8 @@ function go_to(opt)
         viewToon(id, Naver.next_num());
       else if (site == "daum")
         viewToon(id, Daum.next_num());
+      else if (site == "yahoo")
+        viewToon(id, Yahoo.next_num());
       break;
     case 0: // 직접 이동
       var inputNum = parseInt($("#inputNum").val());
@@ -799,6 +937,8 @@ function go_to(opt)
         inputNum = Naver.idx_to_num(inputNum);
       else if (site == "daum")
         inputNum = Daum.idx_to_num(inputNum);
+      else if (site == "yahoo")
+        inputNum = Yahoo.idx_to_num(inputNum);
 
       viewToon(id, inputNum);
       break;

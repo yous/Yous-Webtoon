@@ -3,6 +3,7 @@ require "rubygems"
 require "webrick"
 require "mechanize"
 require "json"
+require "iconv"
 
 class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
   def do_GET(req, res)
@@ -367,6 +368,47 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
       _content << "</tr><tr>"
       _content << '<td colspan="2"><div id="artist_otherlist"></div></td>'
       _content << '</tr></table></div>'
+
+      _title << '</div>'
+      _content << '</div>'
+
+      str << _title
+      str << '<br/>'
+      str << _content
+      str << '<br/><br/>'
+      str << "<script>setTimeout(\"location.replace('#title_area');\", 100);</script>"
+
+    # Yahoo 웹툰
+    elsif site == "yahoo"
+      resp = JSON.parse(Iconv::iconv("UTF-8", "EUC-KR", a.get("http://kr.news.yahoo.com/cartoon/series/get_series.php?sidx=#{num}").body.gsub(/<!-[^>]+>/, "").gsub('SEQ', '"SEQ"').gsub('URL', '"URL"'))[0])
+
+      _title = '<div id="title_area">'
+      _content = '<div id="content_area">'
+
+      # 웹툰 제목, 작가, 설명, 회 제목, 날짜 출력
+      _title << "<div style=\"padding: 15px 0px 15px 0px; background-color: #{btnColor["buttonB"]};\"></div>"
+      _title << "<small id=\"toon_date\">#{resp["DATE"]}</small>"
+      _title << "<script>$('#title_area div').append(toonInfo[#{id}][0] + ' - #{resp["NAME"]}<br/><small style=\"font-size: 12px;\">' + toonInfo[#{id}][1] + '</small><br/><br/><b>#{resp["TITLE"]}</b>');</script>"
+
+      # 웹툰 출력
+      resp["IMAGES"].each_with_index do |img, idx|
+        url = $1.strip if img["URL"] =~ /http:\/\/([\w\W]*)/
+
+        if not File::exists?("html/images/#{url.gsub(/\//, "@")}")
+          _data = a.get("http://#{url}").body
+          if _data != nil
+            File.open("html/images/#{url.gsub(/\//, "@")}", "w") do |f|
+              f.write(_data)
+            end
+          end
+        end
+
+        if idx == 0
+          _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\" onload=\"location.replace('#title_area');\"/>"
+        else
+          _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\"/>"
+        end
+      end
 
       _title << '</div>'
       _content << '</div>'

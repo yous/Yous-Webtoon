@@ -302,6 +302,244 @@ elsif site == "daum"
   str << '</script>'
 
   puts str
+
+# Yahoo 웹툰
+elsif site == "yahoo"
+  numList = Hash.new
+  toonInfo = Hash.new
+  lastNum = Hash.new
+  finishToon = []
+  reqList = Hash.new
+  tmpList = []
+
+  db.execute("SELECT toon_id FROM yahoo_numList ORDER BY toon_num_idx;") do |_toon_id|
+    tmpList.push(_toon_id[0]) unless tmpList.include?(_toon_id[0])
+  end
+
+  db.execute("SELECT toon_id, toon_num FROM yahoo_lastNum;") do |_toon_id, _lastNum|
+    lastNum[_toon_id] = _lastNum
+    finishToon.push(_toon_id)
+  end
+
+  db.execute("SELECT toon_id, toon_num FROM yahoo_numList ORDER BY toon_num_idx;") do |_toon_id, _toon_num|
+    if _toon_num.nil?
+      reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0
+    else
+      numList[_toon_id] = [] if numList[_toon_id].nil?
+      numList[_toon_id].push(_toon_num)
+    end
+  end
+
+  db.execute("SELECT toon_id, toon_title, toon_intro FROM yahoo_toonInfo;") do |_toon_id, _toon_title, _toon_intro|
+    if _toon_intro.nil?
+      reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0
+    elsif _toon_title.nil?
+      toonInfo[_toon_id] = [nil, _toon_intro]
+    else
+      toonInfo[_toon_id] = [_toon_title, _toon_intro]
+    end
+  end
+
+  # 연재
+  resp = a.get "http://kr.news.yahoo.com/service/cartoon/shelllist.htm?linkid=webtoon&kind=cont"
+
+  str = '<span class="table_toggle_button" id="table_toggle_button1" style="display: none;" onclick="show_table(1);">연재 웹툰</span>'
+  str << '<span class="table_toggle_button" id="table_toggle_button2" onclick="show_table(2);">완결 웹툰</span>'
+  str << '<span class="table_toggle_button" id="table_toggle_button3" onclick="show_table(3);">특집 웹툰</span>'
+  str << '<span class="site_button" onclick="site_change(\'daum\');"><u>D</u>aum</span>'
+  str << '<span class="site_button" onclick="site_change(\'naver\');"><u>N</u>aver</span><br/>'
+  str << '<table id="current_toonlist" class="toonlist">'
+  str << '<tr style="font-weight: bold;">'
+  str << '<td><span class="refreshBtn" onclick="putToonColor(0);">Re</span></td>'
+  str << '<td><span class="refreshBtn" onclick="putToonColor(1);">Re</span></td>'
+  str << '<td><span class="refreshBtn" onclick="putToonColor(2);">Re</span></td>'
+  str << '<td><span class="refreshBtn" onclick="putToonColor(3);">Re</span></td>'
+  str << '<td><span class="refreshBtn" onclick="putToonColor(4);">Re</span></td>'
+  str << '<td><span class="refreshBtn" onclick="putToonColor(5);">Re</span></td>'
+  str << '<td><span class="refreshBtn" onclick="putToonColor(6);">Re</span></td>'
+  str << '</tr>'
+  str << '<tr valign="top">'
+  str_td = ['<td id="day0">', '<td id="day1">', '<td id="day2">', '<td id="day3">', '<td id="day4">', '<td id="day5">', '<td id="day6">']
+
+  count = [0, 0, 0, 0, 0, 0, 0]
+  day = 0
+
+  while true
+    resp.search('//div[@id="cll"]/ol/li').each do |r|
+      _title = r.at('a[2]').inner_html.encode("UTF-8").strip
+      _titleId = $1.to_i if r.at('a[2]').attributes["href"].value =~ /http:\/\/kr\.news\.yahoo\.com\/service\/cartoon\/shelllist.htm\?linkid=toon_series&work_idx=(\d+)/
+      _color = (count[day] % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
+
+      if tmpList.index(_titleId).nil?
+        reqList[_titleId] = 0
+        if toonInfo[_titleId].nil?
+          toonInfo[_titleId] = [_title, nil]
+        else
+          toonInfo[_titleId][0] = _title
+        end
+      end
+
+      str_td[day] << "<div id=\"#{_titleId}\" name=\"#{_titleId}\" class=\"current_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon(#{_titleId});\">#{_title}</div>"
+      count[day] += 1
+      day = (day + 1) % 7
+    end
+
+    if resp.search('//div[@id="pa0"]/span[@class="nxt"]').length > 0
+      resp = a.get resp.at('//div[@id="pa0"]/span[@class="nxt"]/a').attributes["href"].value
+    else
+      break
+    end
+  end
+
+  str_td.each do |v|
+    str << v + "</td>"
+  end
+
+  str << '</tr></table>'
+
+  # 완결
+  resp = a.get "http://kr.news.yahoo.com/service/cartoon/shelllist.htm?linkid=webtoon&kind=done"
+
+  str << '<table id="finished_toonlist" class="toonlist" style="display: none;"><tr valign="top">'
+  str_td = ["<td>", "<td>", "<td>", "<td>", "<td>", "<td>", "<td>"]
+
+  count = 0
+
+  while true
+    resp.search('//div[@id="cll"]/ol/li').each do |r|
+      _title = r.at('a[2]').inner_html.encode("UTF-8").strip.force_encoding("UTF-8")
+      _titleId = $1.to_i if r.at('a[2]').attributes["href"].value =~ /http:\/\/kr\.news\.yahoo\.com\/service\/cartoon\/shelllist.htm\?linkid=toon_series&work_idx=(\d+)/
+      _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
+
+      if tmpList.index(_titleId).nil?
+        reqList[_titleId] = -1
+        if toonInfo[_titleId].nil?
+          toonInfo[_titleId] = [_title, nil]
+        else
+          toonInfo[_titleId][0] = _title
+        end
+      end
+      if finishToon.index(_titleId).nil? and reqList[_titleId].nil?
+        finishToon.push(_titleId)
+        reqList[_titleId] = -1
+      end
+
+      str_td[count % 7] << "<div id=\"#{_titleId}\" name=\"#{_titleId}\" class=\"finished_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon(#{_titleId});\">#{_title}</div>"
+      count += 1
+    end
+
+    if resp.search('//div[@id="pa0"]/span[@class="nxt"]').length > 0
+      resp = a.get resp.at('//div[@id="pa0"]/span[@class="nxt"]/a').attributes["href"].value
+    else
+      break
+    end
+  end
+
+  str_td.each do |v|
+    str << v + "</td>"
+  end
+
+  str << '</tr></table>'
+
+  # 특집
+  resp = a.get "http://kr.news.yahoo.com/service/cartoon/shelllist.htm?linkid=webtoon&kind=special"
+
+  str << '<table id="special_toonlist" class="toonlist" style="display: none;">'
+  str << '<tr style="font-weight: bold;">'
+  str << '<td><span class="refreshBtn" onclick="putToonColor(7);">Re</span></td>'
+  str << '<td><span class="refreshBtn" onclick="putToonColor(8);">Re</span></td>'
+  str << '<td><span class="refreshBtn" onclick="putToonColor(9);">Re</span></td>'
+  str << '<td><span class="refreshBtn" onclick="putToonColor(10);">Re</span></td>'
+  str << '<td><span class="refreshBtn" onclick="putToonColor(11);">Re</span></td>'
+  str << '<td><span class="refreshBtn" onclick="putToonColor(12);">Re</span></td>'
+  str << '<td><span class="refreshBtn" onclick="putToonColor(13);">Re</span></td>'
+  str << '</tr>'
+  str << '<tr valign="top">'
+  str_td = ['<td id="day7">', '<td id="day8">', '<td id="day9">', '<td id="day10">', '<td id="day11">', '<td id="day12">', '<td id="day13">']
+
+  count = [0, 0, 0, 0, 0, 0, 0]
+  day = 0
+
+  while true
+    resp.search('//div[@id="cll"]/ol/li').each do |r|
+      _title = r.at('a[2]').inner_html.encode("UTF-8").strip
+      _titleId = $1.to_i if r.at('a[2]').attributes["href"].value =~ /http:\/\/kr\.news\.yahoo\.com\/service\/cartoon\/shelllist.htm\?linkid=toon_series&work_idx=(\d+)/
+      _color = (count[day] % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
+
+      if tmpList.index(_titleId).nil?
+        reqList[_titleId] = 0
+        if toonInfo[_titleId].nil?
+          toonInfo[_titleId] = [_title, nil]
+        else
+          toonInfo[_titleId][0] = _title
+        end
+      end
+
+      str_td[day] << "<div id=\"#{_titleId}\" name=\"#{_titleId}\" class=\"current_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon(#{_titleId});\">#{_title}</div>"
+      count[day] += 1
+      day = (day + 1) % 7
+    end
+
+    if resp.search('//div[@id="pa0"]/span[@class="nxt"]').length > 0
+      resp = a.get resp.at('//div[@id="pa0"]/span[@class="nxt"]/a').attributes["href"].value
+    else
+      break
+    end
+  end
+
+  str_td.each do |v|
+    str << v + "</td>"
+  end
+
+  str << '</tr></table><br/><br/>'
+
+  # reqList 처리
+  str << '<script>'
+  reqList.keys.each do |v|
+    num_resp = a.get("http://#{localhost}/getNum?site=yahoo&id=#{v}").body.strip.split("\n").map(&:strip)
+    numList[v] = num_resp[0].split()[1..-1].map(&:to_i)
+    toonInfo[v][1] = (num_resp[1].nil?) ? nil : num_resp[1].force_encoding("UTF-8").gsub('"', "&quot;").gsub("'", "&#39;").gsub("<", "&lt;").gsub(">", "&gt;").gsub(/&lt;br\/?&gt;/, "<br/>")
+    lastNum[v] = numList[v][-1]
+
+    str << "$.get(\"/displayToon?site=yahoo&id=#{v}&num=#{numList[v][0]}\");"
+    (0...numList[v].length).each do |i|
+      db.execute("UPDATE yahoo_numList SET toon_num=? WHERE toon_id=? AND toon_num_idx=?;", numList[v][i], v, i)
+      db.execute("INSERT INTO yahoo_numList (toon_id, toon_num_idx, toon_num) SELECT ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM yahoo_numList WHERE toon_id=? AND toon_num_idx=?);", v, i, numList[v][i], v, i)
+      db.execute("UPDATE yahoo_toonInfo SET toon_title=?, toon_intro=? WHERE toon_id=?;", toonInfo[v][0], toonInfo[v][1], v)
+      db.execute("INSERT INTO yahoo_toonInfo (toon_id, toon_title, toon_intro) SELECT ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM yahoo_toonInfo WHERE toon_id=?);", v, toonInfo[v][0], toonInfo[v][1], v)
+    end
+    if reqList[v] == -1 # 완결
+      db.execute("UPDATE yahoo_lastNum SET toon_num=? WHERE toon_id=?;", numList[v][-1], v)
+      db.execute("INSERT INTO yahoo_lastNum (toon_id, toon_num) SELECT ?, ? WHERE NOT EXISTS (SELECT 1 FROM yahoo_lastNum WHERE toon_id=?);", v, numList[v][-1], v)
+    end
+  end
+  str << 'resizeWidth();'
+
+  # 웹툰 정보 입력
+  str << "numList={#{numList.keys.map {|v| "#{v}:[#{numList[v].join(",")}]"}.join(",")}};"
+  str << "toonInfo={#{toonInfo.keys.map {|v| "#{v}:['#{toonInfo[v].join("','")}']"}.join(",")}};"
+  str << "lastNum={#{lastNum.keys.map {|v| "#{v}:#{lastNum[v]}"}.join(",")}};"
+  str << "finishToon=[#{finishToon.join(",")}];"
+
+  # toon background-color 처리
+  if session["user_id"] != nil and session["user_id"] != ""
+    toonBM = Hash.new
+
+    db.execute("SELECT toon_id, toon_num FROM yahoo_bm WHERE id=? ORDER BY toon_id;", session["user_id"]) do |_toon_id, _toon_num|
+      toonBM[_toon_id] = _toon_num
+    end
+
+    str << "toonBM={#{toonBM.keys.map {|v| "#{v}:#{toonBM[v]}"}.join(",")}};"
+
+    str << '$("#loading").html("<big><b> Loading</b></big>");'
+    str << '$("#loading").css("display", "inline");'
+    str << 'loading(10);'
+    str << "putToonColor();"
+  end
+
+  str << '</script>'
+
+  puts str
 end
 
 db.close
