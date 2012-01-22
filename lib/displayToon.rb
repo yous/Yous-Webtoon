@@ -253,7 +253,7 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
       str << _title
       str << '<br/>'
       str << _content
-      str << "<script>setTimeout(\"location.replace('#title_area');\", 100);</script>"
+      str << "<script>setTimeout(\"location.replace('#title_area');\", 500);</script>"
 
     # Daum 웹툰
     elsif site == "daum"
@@ -376,7 +376,7 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
       str << '<br/>'
       str << _content
       str << '<br/><br/>'
-      str << "<script>setTimeout(\"location.replace('#title_area');\", 100);</script>"
+      str << "<script>setTimeout(\"location.replace('#title_area');\", 500);</script>"
 
     # Yahoo 웹툰
     elsif site == "yahoo"
@@ -417,7 +417,7 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
       str << '<br/>'
       str << _content
       str << '<br/><br/>'
-      str << "<script>setTimeout(\"location.replace('#title_area');\", 100);</script>"
+      str << "<script>setTimeout(\"location.replace('#title_area');\", 500);</script>"
     end
     str
   end
