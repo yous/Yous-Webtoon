@@ -22,7 +22,7 @@
     }
     this.src = function() { return "http://comic.naver.com/webtoon/detail.nhn?titleId=" + id + "&seq=" + num; };
     this.inputNum = function() { return num; };
-    this.toonlist_area_init = function() { return '<span id="Naver" style="color: ' + btnColor["link"] + '; cursor: pointer; margin: 10px;" onclick="site_change(\'naver\');"><u>N</u>aver</span>'; };
+    this.toonlist_area_init = function() { return '<span style="color: ' + btnColor["link"] + '; cursor: pointer; margin: 10px;" onclick="site_change(\'naver\');"><u>N</u>aver</span>'; };
     this.saveBM = function(_add, _finish)
     {
       $.post("/saveBM.cgi", {site: site, add: _add, toon_id: id, toon_num: num, finish: _finish});
@@ -154,7 +154,7 @@
           return i + 1;
       }
     };
-    this.toonlist_area_init = function() { return '<span id="Daum" style="color: ' + btnColor["link"] + '; cursor: pointer; margin: 10px;" onclick="site_change(\'daum\');"><u>D</u>aum</span>'; };
+    this.toonlist_area_init = function() { return '<span style="color: ' + btnColor["link"] + '; cursor: pointer; margin: 10px;" onclick="site_change(\'daum\');"><u>D</u>aum</span>'; };
     this.saveBM = function(_add, _finish)
     {
       var req_numList = numList[id].join(" ");
@@ -1051,16 +1051,12 @@ function bodyKeyDown(e, lr_arrow)
   {
     switch (event.keyCode) {
       case 78: // Shift + N
-        if (document.getElementById("Naver"))
-          $("#Naver").trigger("click");
-        else if (site != "naver")
-          $("#site_button").trigger("click");
+        if (site != "naver")
+          site_change("naver");
         break;
       case 68: // Shift + D
-        if (document.getElementById("Daum"))
-          $("#Daum").trigger("click");
-        else if (site != "daum")
-          $("#site_button").trigger("click");
+        if (site != "daum")
+          site_change("daum");
         break;
       case 89: // Shift + Y
         if (site != "yahoo")
