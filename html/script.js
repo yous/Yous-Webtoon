@@ -380,6 +380,13 @@ function resizeWidth()
     for (i = 0; i < toon2.length; i++)
       toon2[i].style.width = parseInt(parseInt(main_area.style.width) / 7 - 2) + "px";
   }
+  // only for Yahoo 웹툰
+  if (document.getElementById("special_toonlist"))
+  {
+    toon = document.getElementById("special_toonlist").getElementsByTagName("div");
+    for (i = 0; i < toon.length; i++)
+      toon[i].style.width = parseInt(parseInt(main_area.style.width) / 7 - 2) + "px";
+  }
 
   try {
     document.getElementById("remote").style.top = parseInt(window.innerHeight / 2 - 160) + "px";
@@ -754,19 +761,51 @@ function toggle_play_pause(opt)
 }
 
 // table display 토글
-function show_table()
+function show_table(opt /* only for Yahoo 웹툰 */)
 {
-  if ($("#finished_toonlist").css("display") == "none")
+  if (opt == undefined)
   {
-    $("#current_toonlist").css("display", "none");
-    $("#finished_toonlist").css("display", "table");
-    $("#table_toggle_button").html("연재 웹툰");
+    if ($("#finished_toonlist").css("display") == "none")
+    {
+      $("#current_toonlist").css("display", "none");
+      $("#finished_toonlist").css("display", "table");
+      $("#table_toggle_button").html("연재 웹툰");
+    }
+    else
+    {
+      $("#finished_toonlist").css("display", "none");
+      $("#current_toonlist").css("display", "table");
+      $("#table_toggle_button").html("완결 웹툰");
+    }
   }
-  else
+  else // Yahoo 웹툰
   {
-    $("#finished_toonlist").css("display", "none");
-    $("#current_toonlist").css("display", "table");
-    $("#table_toggle_button").html("완결 웹툰");
+    switch (opt) {
+      case 1:
+        $("#current_toonlist").css("display", "table");
+        $("#finished_toonlist").css("display", "none");
+        $("#special_toonlist").css("display", "none");
+        $("#table_toggle_button1").css("display", "none");
+        $("#table_toggle_button2").css("display", "block");
+        $("#table_toggle_button3").css("display", "block");
+        break;
+      case 2:
+        $("#current_toonlist").css("display", "none");
+        $("#finished_toonlist").css("display", "table");
+        $("#special_toonlist").css("display", "none");
+        $("#table_toggle_button1").css("display", "block");
+        $("#table_toggle_button2").css("display", "none");
+        $("#table_toggle_button3").css("display", "block");
+        break;
+      case 3:
+        $("#current_toonlist").css("display", "none");
+        $("#finished_toonlist").css("display", "none");
+        $("#special_toonlist").css("display", "table");
+        $("#table_toggle_button1").css("display", "block");
+        $("#table_toggle_button2").css("display", "block");
+        $("#table_toggle_button3").css("display", "none");
+        break;
+    }
   }
 }
 
@@ -990,6 +1029,10 @@ function bodyKeyDown(e, lr_arrow)
           $("#Daum").trigger("click");
         else if (site != "daum")
           $("#site_button").trigger("click");
+        break;
+      case 89: // Shift + Y
+        if (site != "yahoo")
+          site_change("yahoo");
         break;
     }
   }
