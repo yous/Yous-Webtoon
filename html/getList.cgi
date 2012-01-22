@@ -50,9 +50,10 @@ if site == "naver"
   # 연재
   resp = a.get "http://comic.naver.com/webtoon/weekday.nhn"
 
-  str = '<span id="table_toggle_button" style="float: left; cursor: pointer; text-decoration: underline; color: ' + btnColor["link"] + ';" onclick="show_table();">완결 웹툰</span>'
-  str << '<span id="site_button" style="float: right; cursor: pointer; color: ' + btnColor["link"] + ';" onclick="site_change(\'daum\');"><u>D</u>aum</span><br/>'
-  str << '<table id="current_toonlist">'
+  str = '<span class="table_toggle_button" onclick="show_table();">완결 웹툰</span>'
+  str << '<span class="site_button" onclick="site_change(\'yahoo\');"><u>Y</u>ahoo</span>'
+  str << '<span class="site_button" onclick="site_change(\'daum\');"><u>D</u>aum</span><br/>'
+  str << '<table id="current_toonlist" class="toonlist">'
   str << '<tr style="font-weight: bold;">'
   str << '<td>월<span class="refreshBtn" onclick="putToonColor(0);">Re</span></td>'
   str << '<td>화<span class="refreshBtn" onclick="putToonColor(1);">Re</span></td>'
@@ -93,7 +94,7 @@ if site == "naver"
   # 완결
   resp = a.get 'http://comic.naver.com/webtoon/finish.nhn'
 
-  str << '<table id="finished_toonlist" style="display: none;"><tr valign="top">'
+  str << '<table id="finished_toonlist" class="toonlist" style="display: none;"><tr valign="top">'
   str_td = ["<td>", "<td>", "<td>", "<td>", "<td>", "<td>", "<td>"]
 
   count = 0
@@ -190,9 +191,10 @@ elsif site == "daum"
   # 연재
   resp = a.get "http://cartoon.media.daum.net/webtoon/week"
 
-  str = '<span id="table_toggle_button" style="float: left; cursor: pointer; text-decoration: underline; color: ' + btnColor["link"] + ';" onclick="show_table();">완결 웹툰</span>'
-  str << '<span id="site_button" style="float: right; cursor: pointer; color: ' + btnColor["link"] + ';" onclick="site_change(\'naver\');"><u>N</u>aver</span><br/>'
-  str << '<table id="current_toonlist">'
+  str = '<span class="table_toggle_button" onclick="show_table();">완결 웹툰</span>'
+  str << '<span class="site_button" onclick="site_change(\'yahoo\');"><u>Y</u>ahoo</span>'
+  str << '<span class="site_button" onclick="site_change(\'naver\');"><u>N</u>aver</span><br/>'
+  str << '<table id="current_toonlist" class="toonlist">'
   str << '<tr style="font-weight: bold;">'
   str << '<td>월<span class="refreshBtn" onclick="putToonColor(0);">Re</span></td>'
   str << '<td>화<span class="refreshBtn" onclick="putToonColor(1);">Re</span></td>'
@@ -230,7 +232,7 @@ elsif site == "daum"
   # 완결
   resp = a.get 'http://cartoon.media.daum.net/webtoon/finished'
 
-  str << '<table id="finished_toonlist" style="display: none;"><tr valign="top">'
+  str << '<table id="finished_toonlist" class="toonlist" style="display: none;"><tr valign="top">'
   str_td = ["<td>", "<td>", "<td>", "<td>", "<td>", "<td>", "<td>"]
 
   count = 0

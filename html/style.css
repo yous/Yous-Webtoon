@@ -20,6 +20,21 @@ input::-moz-focus-inner {
   padding-top: 0px;
   padding-bottom: 0px;
 }
+.table_toggle_button {
+  float: left;
+  color: #0066CC;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+.site_button {
+  float: right;
+  color: #0066CC;
+  cursor: pointer;
+  margin-left: 5px;
+  margin-right: 5px;
+}
 #main_area {
   margin: 5px;
 }
@@ -88,7 +103,7 @@ img {
   display: block;
   margin: 0 auto;
 }
-#current_toonlist, #finished_toonlist {
+.toonlist {
   border-spacing: 0px;
 }
 .current_toon, .finished_toon {
