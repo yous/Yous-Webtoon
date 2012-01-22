@@ -14,8 +14,9 @@ add = (cgi.has_key?("add")) ? cgi.params["add"][0] : nil
 toon_id = (cgi.has_key?("toon_id")) ? cgi.params["toon_id"][0] : nil
 toon_num = (cgi.has_key?("toon_num")) ? cgi.params["toon_num"][0].to_i : nil
 finish = (cgi.has_key?("finish")) ? cgi.params["finish"][0] : nil
-# only for Daum 웹툰
+# only for Daum, Yahoo 웹툰
 numList = (cgi.has_key?("numList")) ? cgi.params["numList"][0].split.map(&:to_i) : nil
+# only for Daum 웹툰
 dateList = (cgi.has_key?("dateList")) ? cgi.params["dateList"][0].split : nil
 
 session = CGI::Session.new(cgi, "session_key" => "SSID", "prefix" => "rubysess.", "tmpdir" => File.join(File.dirname(__FILE__), "/../sess"))
@@ -56,6 +57,22 @@ if session["user_id"] != nil and session["user_id"] != "" and add != nil and too
     if finish != "no"
       db.execute("UPDATE daum_lastNum SET toon_num=? WHERE toon_id=?;", finish.to_i, toon_id)
       db.execute("INSERT INTO daum_lastNum (toon_id, toon_num) SELECT ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_lastNum WHERE toon_id=?);", toon_id, finish.to_i, toon_id)
+    end
+  # Yahoo 웹툰
+  elsif site == "yahoo" and numList != nil
+    (0...numList.length).each do |i|
+      db.execute("UPDATE yahoo_numList SET toon_num=? WHERE toon_id=? AND toon_num_idx=?;", numList[i], toon_id.to_i, i)
+      db.execute("INSERT INTO yahoo_numList (toon_id, toon_num_idx, toon_num) SELECT ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM yahoo_numList WHERE toon_id=? AND toon_num_idx=?);", toon_id.to_i, i, numList[i], toon_id.to_i, i)
+    end
+    if add == "yes"
+      db.execute("UPDATE yahoo_bm SET toon_num=? WHERE id=? AND toon_id=?;", toon_num, session["user_id"], toon_id.to_i)
+      db.execute("INSERT INTO yahoo_bm (id, toon_id, toon_num) SELECT ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM yahoo_bm WHERE id=? AND toon_id=?);", session["user_id"], toon_id.to_i, toon_num, session["user_id"], toon_id.to_i)
+    else
+      db.execute("DELETE FROM yahoo_bm WHERE id=? AND toon_id=?;", session["user_id"], toon_id.to_i)
+    end
+    if finish != "no"
+      db.execute("UPDATE yahoo_lastNum SET toon_num=? WHERE toon_id=?;", finish.to_i, toon_id.to_i)
+      db.execute("INSERT INTO yahoo_lastNum (toon_id, toon_num) SELECT ?, ? WHERE NOT EXISTS (SELECT 1 FROM yahoo_lastNum WHERE toon_id=?);", toon_id.to_i, finish.to_i, toon_id.to_i)
     end
   end
 end
