@@ -21,6 +21,10 @@ db.execute("CREATE TABLE IF NOT EXISTS daum_bm (id INTEGER, toon_id VARCHAR(255)
 db.execute("CREATE TABLE IF NOT EXISTS daum_lastNum (toon_id VARCHAR(255), toon_num INTEGER);")
 db.execute("CREATE TABLE IF NOT EXISTS daum_numList (toon_id VARCHAR(255), toon_num_idx INTEGER, toon_num INTEGER, toon_date VARCHAR(10));")
 db.execute("CREATE TABLE IF NOT EXISTS daum_toonInfo (toon_id VARCHAR(255), toon_writer VARCHAR(255), toon_intro VARCHAR(255));")
+db.execute("CREATE TABLE IF NOT EXISTS yahoo_bm (id INTEGER, toon_id INTEGER, toon_num INTEGER);")
+db.execute("CREATE TABLE IF NOT EXISTS yahoo_lastNum (toon_id INTEGER PRIMARY KEY, toon_num INTEGER);")
+db.execute("CREATE TABLE IF NOT EXISTS yahoo_numList (toon_id INTEGER, toon_num_idx INTEGER, toon_num INTEGER);")
+db.execute("CREATE TABLE IF NOT EXISTS yahoo_toonInfo (toon_id INTEGER, toon_title VARCHAR(255), toon_intro VARCHAR(255));")
 
 a = Mechanize.new
 
