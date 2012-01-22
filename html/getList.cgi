@@ -118,7 +118,7 @@ if site == "naver"
   str << '<script>'
   reqList.keys.each do |v|
     str << "$.get(\"/displayToon?site=naver&id=#{v}&num=1\");"
-    db.execute("INSERT INTO naver_tmpList (toon_id) SELECT :toon_id WHERE NOT EXISTS (SELECT 1 FROM naver_tmpList WHERE toon_id=:toon_id);", "toon_id" => v)
+    db.execute("INSERT INTO naver_tmpList (toon_id) SELECT ? WHERE NOT EXISTS (SELECT 1 FROM naver_tmpList WHERE toon_id=?);", v, v)
   end
   str << 'resizeWidth();'
 
@@ -267,13 +267,13 @@ elsif site == "daum"
     str << "$.get(\"/displayToon?site=daum&id=#{v}&num=#{numList[v][0]}\");"
     (0...numList[v].length).each do |i|
       db.execute("UPDATE daum_numList SET toon_num=?, toon_date=? WHERE toon_id=? AND toon_num_idx=?;", numList[v][i], dateList[v][i], v, i)
-      db.execute("INSERT INTO daum_numList (toon_id, toon_num_idx, toon_num, toon_date) SELECT :toon_id, :toon_num_idx, ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_numList WHERE toon_id=:toon_id AND toon_num_idx=:toon_num_idx);", numList[v][i], dateList[v][i], "toon_id" => v, "toon_num_idx" => i)
+      db.execute("INSERT INTO daum_numList (toon_id, toon_num_idx, toon_num, toon_date) SELECT ?, ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_numList WHERE toon_id=? AND toon_num_idx=?);", v, i, numList[v][i], dateList[v][i], v, i)
       db.execute("UPDATE daum_toonInfo SET toon_writer=?, toon_intro=? WHERE toon_id=?;", toonInfo[v][0], toonInfo[v][1], v)
-      db.execute("INSERT INTO daum_toonInfo (toon_id, toon_writer, toon_intro) SELECT :toon_id, ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_toonInfo WHERE toon_id=:toon_id);", toonInfo[v][0], toonInfo[v][1], "toon_id" => v)
+      db.execute("INSERT INTO daum_toonInfo (toon_id, toon_writer, toon_intro) SELECT ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_toonInfo WHERE toon_id=?);", v, toonInfo[v][0], toonInfo[v][1], v)
     end
     if reqList[v] == -1 # 완결
       db.execute("UPDATE daum_lastNum SET toon_num=? WHERE toon_id=?;", numList[v][-1], v)
-      db.execute("INSERT INTO daum_lastNum (toon_id, toon_num) SELECT :toon_id, ? WHERE NOT EXISTS (SELECT 1 FROM daum_lastNum WHERE toon_id=:toon_id);", numList[v][-1], "toon_id" => v)
+      db.execute("INSERT INTO daum_lastNum (toon_id, toon_num) SELECT ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_lastNum WHERE toon_id=?);", v, numList[v][-1], v)
     end
   end
   str << 'resizeWidth();'
