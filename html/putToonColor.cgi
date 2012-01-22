@@ -151,10 +151,20 @@ elsif site == "daum"
     day_BM.each do |v|
       unless finishToon.include?(v)
         resp = a.get("http://#{localhost}/getNum?site=daum&id=#{v}").body.strip.split("\n")[0].split()
-        numList[v] = resp.drop(1).map(&:to_i)
+        numList[v] = []
+        dateList[v] = []
+        resp.drop(1).each do |item|
+          numList[v].push(item.split(",")[0].to_i)
+          dateList[v].push(item.split(",")[1])
+        end
         lastNum[v] = numList[v][-1]
         str << "numList['#{v}']=[#{numList[v].join(",")}];"
         str << "lastNum['#{v}']=#{lastNum[v]};"
+        str << "dateList['#{v}']=['#{dateList[v].join("','")}'];"
+        (0...numList[v].length).each do |i|
+          db.execute("UPDATE daum_numList SET toon_num=?, toon_date=? WHERE toon_id=? AND toon_num_idx=?;", numList[v][i], dateList[v][i], v, i)
+          db.execute("INSERT INTO daum_numList (toon_id, toon_num_idx, toon_num, toon_date) SELECT ?, ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_numList WHERE toon_id=? AND toon_num_idx=?);", v, i, numList[v][i], dateList[v][i], v, i)
+        end
         db.execute("INSERT INTO daum_lastNum (toon_id, toon_num) VALUES (?, ?);", v, lastNum[v])
         finishToon.push(v)
         str << "finishToon.push('#{v}');"
