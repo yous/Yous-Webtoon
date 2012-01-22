@@ -24,7 +24,6 @@ input::-moz-focus-inner {
   float: left;
   color: #0066CC;
   cursor: pointer;
-  text-decoration: underline;
   margin-left: 5px;
   margin-right: 5px;
 }
