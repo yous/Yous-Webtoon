@@ -188,4 +188,84 @@ elsif site == "daum"
   str << "</script>"
 
   puts str
+
+# Yahoo 웹툰
+elsif site == "yahoo"
+  day_BM = day_BM.map(&:to_i)
+  toonBM = Hash.new
+  numList = Hash.new
+  lastNum = Hash.new
+  finishToon = []
+  reqList = Hash.new
+
+  db.execute("SELECT toon_id, toon_num FROM yahoo_numList ORDER BY toon_num_idx;") do |_toon_id, _toon_num|
+    numList[_toon_id] = [] if numList[_toon_id] == nil
+    numList[_toon_id].push(_toon_num)
+  end
+
+  db.execute("SELECT toon_id, toon_num FROM yahoo_bm WHERE id=? ORDER BY toon_id;", session["user_id"]) do |_toon_id, _toon_num|
+    toonBM[_toon_id] = _toon_num
+    db.execute("SELECT toon_num FROM yahoo_lastNum WHERE toon_id=?;", _toon_id) do |_lastNum|
+      lastNum[_toon_id] = _lastNum[0]
+      finishToon.push(_toon_id)
+    end
+  end
+
+  col_str = ""
+  str = "<script>"
+
+  if finish == "n"
+    day_BM.each do |v|
+      if finishToon.include?(v)
+        finishToon.delete(v)
+        str << "finishToon.splice(finishToon.indexOf('#{v}'),1);"
+        db.execute("DELETE FROM yahoo_lastNum WHERE toon_id=?;", v)
+      end
+      resp = a.get("http://#{localhost}/getNum?site=yahoo&id=#{v}").body.strip.split("\n")[0].split()
+      numList[v] = resp.drop(1).map(&:to_i)
+      lastNum[v] = numList[v][-1]
+      str << "numList[#{v}]=[#{numList[v].join(",")}];"
+      str << "lastNum[#{v}]=#{lastNum[v]};"
+      if toonBM[v] < lastNum[v]
+        reqList[v] = numList[v][numList[v].index(toonBM[v]) + 1]
+        col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
+      else
+        col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved"]}');"
+      end
+    end
+  else
+    day_BM.each do |v|
+      unless finishToon.include?(v)
+        resp = a.get("http://#{localhost}/getNum?site=yahoo&id=#{v}").body.strip.split("\n")[0].split()
+        numList[v] = resp.drop(1).map(&:to_i)
+        lastNum[v] = numList[v][-1]
+        str << "numList[#{v}]=[#{numList[v].join(",")}];"
+        str << "lastNum[#{v}]=#{lastNum[v]};"
+        (0...numList[v].length).each do |i|
+          db.execute("UPDATE yahoo_numList SET toon_num=? WHERE toon_id=? AND toon_num_idx=?;", numList[v][i], v, i)
+          db.execute("INSERT INTO yahoo_numList (toon_id, toon_num_idx, toon_num) SELECT ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM yahoo_numList WHERE toon_id=? AND toon_num_idx=?);", v, i, numList[v][i], v, i)
+        end
+        db.execute("INSERT INTO yahoo_lastNum (toon_id, toon_num) VALUES (?, ?);", v, lastNum[v])
+        finishToon.push(v)
+        str << "finishToon.push(#{v});"
+      end
+      if toonBM[v] < lastNum[v]
+        reqList[v] = numList[v][numList[v].index(toonBM[v]) + 1]
+        col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
+      else
+        col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_finish"]}');"
+      end
+    end
+  end
+
+  str << col_str
+
+  # reqList 처리
+  reqList.keys.each do |v|
+    str << "$.get(\"/displayToon?site=yahoo&id=#{v}&num=#{reqList[v]}\");"
+  end
+
+  str << "</script>"
+
+  puts str
 end

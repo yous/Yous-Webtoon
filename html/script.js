@@ -444,42 +444,82 @@ function putToonColor(day)
 {
   if (day == null)
   {
-    var day = ((new Date()).getDay() + 6) % 7;
-    // getDay() -> 0 : 일, 1 : 월, 2 : 화, ... , 6 : 토
-    // HTML td -> 0 : 월, 1 : 화, 2 : 수, ... , 6 : 일
-    var day_BM = new Object();
-    for (i = 1; i <= 7; i++)
+    if (site == "yahoo") // special_toonlist
     {
-      var day_toon = $("#day" + String((day + i) % 7) + " div");
-      day_BM[i] = [];
-      for (j = 0; j < day_toon.length; j++)
+      var day = 0;
+      var day_BM = new Object();
+      for (i = 0; i < 14; i++)
       {
-        if (toonBM[day_toon[j].id] != undefined)
-          day_BM[i].push(day_toon[j].id);
+        var day_toon = $("#day" + String(day + i) + " div");
+        day_BM[i] = [];
+        for (j = 0; j < day_toon.length; j++)
+        {
+          if (toonBM[day_toon[j].id] != undefined)
+            day_BM[i].push(day_toon[j].id);
+        }
       }
-    }
 
-    var count = 0;
-    for (i = 7; i >= 1; i--)
-    {
+      var count = 0;
+      for (i = 0; i < 14; i++)
+      {
+        $.post(
+          "/putToonColor.cgi",
+          {site: site, finish: "n", day_BM: day_BM[i].join(",")},
+          function (data) { count += 1; if (count == 15) { $("#loading").css("display", "none"); } $("#display_area").append(data); }
+        );
+      }
+
+      var finish_BM = [];
+      for (_id in toonBM)
+      {
+        if ($("#" + String(_id)).attr("class") == "finished_toon")
+          finish_BM.push(_id);
+      }
       $.post(
         "/putToonColor.cgi",
-        {site: site, finish: "n", day_BM: day_BM[i].join(",")},
+        {site: site, finish: "y", day_BM: finish_BM.join(",")},
+        function (data) { count += 1; if (count == 15) { $("#loading").css("display", "none"); } $("#display_area").append(data); }
+      );
+    }
+    else
+    {
+      var day = ((new Date()).getDay() + 6) % 7;
+      // getDay() -> 0 : 일, 1 : 월, 2 : 화, ... , 6 : 토
+      // HTML td -> 0 : 월, 1 : 화, 2 : 수, ... , 6 : 일
+      var day_BM = new Object();
+      for (i = 1; i <= 7; i++)
+      {
+        var day_toon = $("#day" + String((day + i) % 7) + " div");
+        day_BM[i] = [];
+        for (j = 0; j < day_toon.length; j++)
+        {
+          if (toonBM[day_toon[j].id] != undefined)
+            day_BM[i].push(day_toon[j].id);
+        }
+      }
+
+      var count = 0;
+      for (i = 7; i >= 1; i--)
+      {
+        $.post(
+          "/putToonColor.cgi",
+          {site: site, finish: "n", day_BM: day_BM[i].join(",")},
+          function (data) { count += 1; if (count == 8) { $("#loading").css("display", "none"); } $("#display_area").append(data); }
+        );
+      }
+
+      var finish_BM = [];
+      for (_id in toonBM)
+      {
+        if ($("#" + String(_id)).attr("class") == "finished_toon")
+          finish_BM.push(_id);
+      }
+      $.post(
+        "/putToonColor.cgi",
+        {site: site, finish: "y", day_BM: finish_BM.join(",")},
         function (data) { count += 1; if (count == 8) { $("#loading").css("display", "none"); } $("#display_area").append(data); }
       );
     }
-
-    var finish_BM = [];
-    for (_id in toonBM)
-    {
-      if ($("#" + String(_id)).attr("class") == "finished_toon")
-        finish_BM.push(_id);
-    }
-    $.post(
-      "/putToonColor.cgi",
-      {site: site, finish: "y", day_BM: finish_BM.join(",")},
-      function (data) { count += 1; if (count == 8) { $("#loading").css("display", "none"); } $("#display_area").append(data); }
-    );
   }
   else
   {
