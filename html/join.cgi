@@ -14,26 +14,21 @@ user_pw = (cgi.has_key?("user_pw")) ? cgi.params["user_pw"][0] : nil
 db = PGconn.open(:dbname => "yous")
 db.exec("CREATE TABLE usr (id SERIAL, usr_id VARCHAR, usr_pw VARCHAR);") rescue nil
 
-check = true
+check = false
 
 str = "<script>"
-if user_id == nil or user_id.length < 3
+if user_id.nil? or user_id.length < 3
   str << "alert('ID must be longer than 3');"
-  check = false
 elsif not user_id =~ /^[A-Za-z0-9_-]+$/
   str << "alert('You can use only A~Z, a~z, 0~9, _, -');"
-  check = false
 elsif not user_id =~ /^[A-Za-z0-9][A-Za-z0-9_-]*$/
   str << "alert('ID must starts with A~Z, a~z, 0~9');"
-  check = false
-elsif user_pw == nil or user_pw.length < 3
+elsif user_pw.nil? or user_pw.length < 3
   str << "alert('Password must be longer than 3');"
-  check = false
+elsif db.exec("SELECT id FROM usr WHERE usr_id=$1::VARCHAR;", [user_id]).count > 0
+  str << "alert('ID Already Exists!');"
 else
-  db.exec("SELECT id FROM usr WHERE usr_id=$1::VARCHAR;", [user_id]).each do |row|
-    str << "alert('ID Already Exists!');"
-    check = false
-  end
+  check = true
 end
 
 if not check
