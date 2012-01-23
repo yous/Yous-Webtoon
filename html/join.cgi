@@ -2,7 +2,7 @@
 # encoding: utf-8
 require 'rubygems'
 require 'cgi'
-require 'sqlite3'
+require 'pg'
 require 'digest/sha1'
 
 puts "Content-Type: text/html; charset=utf-8\n\n"
@@ -11,8 +11,8 @@ cgi = CGI.new
 user_id = (cgi.has_key?("user_id")) ? cgi.params["user_id"][0] : nil
 user_pw = (cgi.has_key?("user_pw")) ? cgi.params["user_pw"][0] : nil
 
-db = SQLite3::Database.new(File.join(File.dirname(__FILE__), "/../db/webtoon.db"))
-db.execute("CREATE TABLE IF NOT EXISTS usr (id INTEGER PRIMARY KEY, usr_id VARCHAR(255), usr_pw VARCHAR(255));")
+db = PGconn.open(:dbname => "yous")
+db.exec("CREATE TABLE usr (id SERIAL, usr_id VARCHAR, usr_pw VARCHAR);") rescue nil
 
 check = true
 
@@ -30,7 +30,7 @@ elsif user_pw == nil or user_pw.length < 3
   str << "alert('Password must be longer than 3');"
   check = false
 else
-  db.execute("SELECT id FROM usr WHERE usr_id=?;", user_id) do |_id|
+  db.exec("SELECT id FROM usr WHERE usr_id=$1::VARCHAR;", [user_id]).each do |row|
     str << "alert('ID Already Exists!');"
     check = false
   end
@@ -43,7 +43,7 @@ if not check
   str << "</script>"
   puts str
 else
-  db.execute("INSERT INTO usr (usr_id, usr_pw) VALUES (?, ?);", user_id, Digest::SHA1.hexdigest("YoUs" + user_pw + "wEbt00N").force_encoding("UTF-8"))
+  db.exec("INSERT INTO usr (usr_id, usr_pw) VALUES ($1::VARCHAR, $2::VARCHAR);", [user_id, Digest::SHA1.hexdigest("YoUs" + user_pw + "wEbt00N").force_encoding("UTF-8")])
   str = "<script>"
   str << "alert('Hello, #{user_id}!');"
   str << "toggle_login(false);"

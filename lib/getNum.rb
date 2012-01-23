@@ -2,7 +2,7 @@
 require "rubygems"
 require "webrick"
 require "mechanize"
-require "sqlite3"
+require "pg"
 
 class GetNum < WEBrick::HTTPServlet::AbstractServlet
   def do_GET(req, res)
@@ -75,12 +75,13 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
       numList = []
       tmp_numList = []
 
-      db = SQLite3::Database.new("db/webtoon.db")
-      db.execute("CREATE TABLE IF NOT EXISTS yahoo_numList (toon_id INTEGER, toon_num_idx INTEGER, toon_num INTEGER);")
-      db.execute("SELECT toon_num FROM yahoo_numList WHERE toon_id=? ORDER BY toon_num_idx;", id) do |_toon_num|
-        numList.push(_toon_num[0])
+      db = PGconn.open(:dbname => "yous")
+      db.exec("CREATE TABLE yahoo_numlist (toon_id INTEGER, toon_num_idx INTEGER, toon_num INTEGER);") rescue nil
+      db.exec("SELECT toon_num FROM yahoo_numlist WHERE toon_id=$1 ORDER BY toon_num_idx;", [id]).each do |row|
+        _toon_num = row["toon_num"].to_i
+        numList.push(_toon_num)
       end
-      db.execute("SELECT toon_num FROM yahoo_lastNum WHERE toon_id=?;", id) do |_toon_num|
+      db.exec("SELECT toon_num FROM yahoo_lastnum WHERE toon_id=$1;", [id]).each do |row|
         str_finish = "y "
       end
       db.close

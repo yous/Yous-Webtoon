@@ -4,7 +4,7 @@ require 'rubygems'
 require 'mechanize'
 require 'cgi'
 require 'cgi/session'
-require 'sqlite3'
+require 'pg'
 
 puts "Content-Type: text/html; charset=utf-8\n\n"
 
@@ -13,18 +13,18 @@ site = cgi.params["site"][0]
 
 session = CGI::Session.new(cgi, "session_key" => "SSID", "prefix" => "rubysess.", "tmpdir" => File.join(File.dirname(__FILE__), "/../sess"))
 
-db = SQLite3::Database.new("../db/webtoon.db")
-db.execute("CREATE TABLE IF NOT EXISTS naver_bm (id INTEGER, toon_id INTEGER, toon_num INTEGER);")
-db.execute("CREATE TABLE IF NOT EXISTS naver_lastNum (toon_id INTEGER PRIMARY KEY, toon_num INTEGER);")
-db.execute("CREATE TABLE IF NOT EXISTS naver_tmpList (toon_id INTEGER PRIMARY KEY);")
-db.execute("CREATE TABLE IF NOT EXISTS daum_bm (id INTEGER, toon_id VARCHAR(255), toon_num INTEGER);")
-db.execute("CREATE TABLE IF NOT EXISTS daum_lastNum (toon_id VARCHAR(255), toon_num INTEGER);")
-db.execute("CREATE TABLE IF NOT EXISTS daum_numList (toon_id VARCHAR(255), toon_num_idx INTEGER, toon_num INTEGER, toon_date VARCHAR(10));")
-db.execute("CREATE TABLE IF NOT EXISTS daum_toonInfo (toon_id VARCHAR(255), toon_writer VARCHAR(255), toon_intro VARCHAR(255));")
-db.execute("CREATE TABLE IF NOT EXISTS yahoo_bm (id INTEGER, toon_id INTEGER, toon_num INTEGER);")
-db.execute("CREATE TABLE IF NOT EXISTS yahoo_lastNum (toon_id INTEGER PRIMARY KEY, toon_num INTEGER);")
-db.execute("CREATE TABLE IF NOT EXISTS yahoo_numList (toon_id INTEGER, toon_num_idx INTEGER, toon_num INTEGER);")
-db.execute("CREATE TABLE IF NOT EXISTS yahoo_toonInfo (toon_id INTEGER, toon_title VARCHAR(255), toon_intro VARCHAR(255));")
+db = PGconn.open(:dbname => "yous")
+db.exec("CREATE TABLE naver_bm (id INTEGER, toon_id INTEGER, toon_num INTEGER);") rescue nil
+db.exec("CREATE TABLE naver_lastnum (toon_id INTEGER PRIMARY KEY, toon_num INTEGER);") rescue nil
+db.exec("CREATE TABLE naver_tmplist (toon_id INTEGER PRIMARY KEY);") rescue nil
+db.exec("CREATE TABLE daum_bm (id INTEGER, toon_id VARCHAR, toon_num INTEGER);") rescue nil
+db.exec("CREATE TABLE daum_lastnum (toon_id VARCHAR, toon_num INTEGER);") rescue nil
+db.exec("CREATE TABLE daum_numlist (toon_id VARCHAR, toon_num_idx INTEGER, toon_num INTEGER, toon_date VARCHAR(10));") rescue nil
+db.exec("CREATE TABLE daum_tooninfo (toon_id VARCHAR, toon_writer VARCHAR, toon_intro VARCHAR);") rescue nil
+db.exec("CREATE TABLE yahoo_bm (id INTEGER, toon_id INTEGER, toon_num INTEGER);") rescue nil
+db.exec("CREATE TABLE yahoo_lastnum (toon_id INTEGER PRIMARY KEY, toon_num INTEGER);") rescue nil
+db.exec("CREATE TABLE yahoo_numlist (toon_id INTEGER, toon_num_idx INTEGER, toon_num INTEGER);") rescue nil
+db.exec("CREATE TABLE yahoo_tooninfo (toon_id INTEGER, toon_title VARCHAR, toon_intro VARCHAR);") rescue nil
 
 a = Mechanize.new
 
@@ -43,8 +43,9 @@ if site == "naver"
   reqList = Hash.new
   tmpList = []
 
-  db.execute("SELECT toon_id FROM naver_tmpList ORDER BY toon_id;") do |_toon_id|
-    tmpList.push(_toon_id[0])
+  db.exec("SELECT toon_id FROM naver_tmplist ORDER BY toon_id;").each do |row|
+    _toon_id = row["toon_id"].to_i
+    tmpList.push(_toon_id)
   end
 
   # 연재
@@ -118,7 +119,7 @@ if site == "naver"
   str << '<script>'
   reqList.keys.each do |v|
     str << "$.get(\"/displayToon?site=naver&id=#{v}&num=1\");"
-    db.execute("INSERT INTO naver_tmpList (toon_id) SELECT ? WHERE NOT EXISTS (SELECT 1 FROM naver_tmpList WHERE toon_id=?);", v, v)
+    db.exec("INSERT INTO naver_tmplist (toon_id) SELECT $1 WHERE NOT EXISTS (SELECT 1 FROM naver_tmplist WHERE toon_id=$1);", [v])
   end
   str << 'resizeWidth();'
 
@@ -128,10 +129,13 @@ if site == "naver"
     lastNum = Hash.new
     finishToon = []
 
-    db.execute("SELECT toon_id, toon_num FROM naver_bm WHERE id=?;", session["user_id"]) do |_toon_id, _toon_num|
+    db.exec("SELECT toon_id, toon_num FROM naver_bm WHERE id=$1;", [session["user_id"]]).each do |row|
+      _toon_id = row["toon_id"].to_i
+      _toon_num = row["toon_num"].to_i
       toonBM[_toon_id] = _toon_num
-      db.execute("SELECT toon_num FROM naver_lastNum WHERE toon_id=?;", _toon_id) do |_lastNum|
-        lastNum[_toon_id] = _lastNum[0]
+      db.exec("SELECT toon_num FROM naver_lastnum WHERE toon_id=$1;", [_toon_id]).each do |sec_row|
+        _lastNum = sec_row["toon_num"].to_i
+        lastNum[_toon_id.to_i] = _lastNum
         finishToon.push(_toon_id)
       end
     end
@@ -160,27 +164,36 @@ elsif site == "daum"
   reqList = Hash.new
   tmpList = []
 
-  db.execute("SELECT toon_id FROM daum_numList ORDER BY toon_num_idx;") do |_toon_id|
-    tmpList.push(_toon_id[0]) unless tmpList.include?(_toon_id[0])
+  db.exec("SELECT toon_id FROM daum_numlist ORDER BY toon_num_idx;").each do |row|
+    _toon_id = row["toon_id"]
+    tmpList.push(_toon_id) unless tmpList.include?(_toon_id)
   end
 
-  db.execute("SELECT toon_id, toon_num FROM daum_lastNum;") do |_toon_id, _lastNum|
-    lastNum[_toon_id] = _lastNum
+  db.exec("SELECT toon_id, toon_num FROM daum_lastnum;").each do |row|
+    _toon_id = row["toon_id"]
+    _toon_num = row["toon_num"].to_i
+    lastNum[_toon_id] = _toon_num
     finishToon.push(_toon_id)
   end
 
-  db.execute("SELECT toon_id, toon_num, toon_date FROM daum_numList ORDER BY toon_num_idx;") do |_toon_id, _toon_num, _toon_date|
+  db.exec("SELECT toon_id, toon_num, toon_date FROM daum_numlist ORDER BY toon_num_idx;").each do |row|
+    _toon_id = row["toon_id"]
+    _toon_num = row["toon_num"]
+    _toon_date = row["toon_date"]
     if _toon_num.nil? or _toon_date.nil?
       reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0
     else
       numList[_toon_id] = [] if numList[_toon_id] == nil
-      numList[_toon_id].push(_toon_num)
+      numList[_toon_id].push(_toon_num.to_i)
       dateList[_toon_id] = [] if dateList[_toon_id] == nil
       dateList[_toon_id].push(_toon_date)
     end
   end
 
-  db.execute("SELECT toon_id, toon_writer, toon_intro FROM daum_toonInfo;") do |_toon_id, _toon_writer, _toon_intro|
+  db.exec("SELECT toon_id, toon_writer, toon_intro FROM daum_tooninfo;").each do |row|
+    _toon_id = row["toon_id"]
+    _toon_writer = row["toon_writer"]
+    _toon_intro = row["toon_intro"]
     if _toon_writer.nil? or _toon_intro.nil?
       reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0
     else
@@ -257,6 +270,7 @@ elsif site == "daum"
   reqList.keys.each do |v|
     numList[v] = []
     dateList[v] = []
+    puts v
     num_resp = a.get("http://#{localhost}/getNum?site=daum&id=#{v}").body.strip.split("\n").map {|item| item.strip.force_encoding("UTF-8") }
     num_resp[0].split()[1..-1].map {|item|
       numList[v].push(item.split(",")[0].to_i)
@@ -266,14 +280,14 @@ elsif site == "daum"
 
     str << "$.get(\"/displayToon?site=daum&id=#{v}&num=#{numList[v][0]}\");"
     (0...numList[v].length).each do |i|
-      db.execute("UPDATE daum_numList SET toon_num=?, toon_date=? WHERE toon_id=? AND toon_num_idx=?;", numList[v][i], dateList[v][i], v, i)
-      db.execute("INSERT INTO daum_numList (toon_id, toon_num_idx, toon_num, toon_date) SELECT ?, ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_numList WHERE toon_id=? AND toon_num_idx=?);", v, i, numList[v][i], dateList[v][i], v, i)
-      db.execute("UPDATE daum_toonInfo SET toon_writer=?, toon_intro=? WHERE toon_id=?;", toonInfo[v][0], toonInfo[v][1], v)
-      db.execute("INSERT INTO daum_toonInfo (toon_id, toon_writer, toon_intro) SELECT ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_toonInfo WHERE toon_id=?);", v, toonInfo[v][0], toonInfo[v][1], v)
+      db.exec("UPDATE daum_numlist SET toon_num=$1, toon_date=$2::VARCHAR WHERE toon_id=$3::VARCHAR AND toon_num_idx=$4;", [numList[v][i], dateList[v][i], v, i])
+      db.exec("INSERT INTO daum_numlist (toon_id, toon_num_idx, toon_num, toon_date) SELECT $1::VARCHAR, $2, $3, $4::VARCHAR WHERE NOT EXISTS (SELECT 1 FROM daum_numlist WHERE toon_id=$1 AND toon_num_idx=$2);", [v, i, numList[v][i], dateList[v][i]])
+      db.exec("UPDATE daum_tooninfo SET toon_writer=$1::VARCHAR, toon_intro=$2::VARCHAR WHERE toon_id=$3;", [toonInfo[v][0], toonInfo[v][1], v])
+      db.exec("INSERT INTO daum_tooninfo (toon_id, toon_writer, toon_intro) SELECT $1::VARCHAR, $2::VARCHAR, $3::VARCHAR WHERE NOT EXISTS (SELECT 1 FROM daum_tooninfo WHERE toon_id=$1);", [v, toonInfo[v][0], toonInfo[v][1]])
     end
     if reqList[v] == -1 # 완결
-      db.execute("UPDATE daum_lastNum SET toon_num=? WHERE toon_id=?;", numList[v][-1], v)
-      db.execute("INSERT INTO daum_lastNum (toon_id, toon_num) SELECT ?, ? WHERE NOT EXISTS (SELECT 1 FROM daum_lastNum WHERE toon_id=?);", v, numList[v][-1], v)
+      db.exec("UPDATE daum_lastnum SET toon_num=$1 WHERE toon_id=$2::VARCHAR;", [numList[v][-1], v])
+      db.exec("INSERT INTO daum_lastnum (toon_id, toon_num) SELECT $1::VARCHAR, $2 WHERE NOT EXISTS (SELECT 1 FROM daum_lastnum WHERE toon_id=$1);", [v, numList[v][-1]])
     end
   end
   str << 'resizeWidth();'
@@ -289,7 +303,9 @@ elsif site == "daum"
   if session["user_id"] != nil and session["user_id"] != ""
     toonBM = Hash.new
 
-    db.execute("SELECT toon_id, toon_num FROM daum_bm WHERE id=? ORDER BY toon_id;", session["user_id"]) do |_toon_id, _toon_num|
+    db.exec("SELECT toon_id, toon_num FROM daum_bm WHERE id=$1 ORDER BY toon_id;", [session["user_id"]]).each do |row|
+      _toon_id = row["toon_id"]
+      _toon_num = row["toon_num"].to_i
       toonBM[_toon_id] = _toon_num
     end
 
@@ -314,25 +330,33 @@ elsif site == "yahoo"
   reqList = Hash.new
   tmpList = []
 
-  db.execute("SELECT toon_id FROM yahoo_numList ORDER BY toon_num_idx;") do |_toon_id|
-    tmpList.push(_toon_id[0]) unless tmpList.include?(_toon_id[0])
+  db.exec("SELECT toon_id FROM yahoo_numlist ORDER BY toon_num_idx;").each do |row|
+    _toon_id = row["toon_id"].to_i
+    tmpList.push(_toon_id) unless tmpList.include?(_toon_id)
   end
 
-  db.execute("SELECT toon_id, toon_num FROM yahoo_lastNum;") do |_toon_id, _lastNum|
-    lastNum[_toon_id] = _lastNum
+  db.exec("SELECT toon_id, toon_num FROM yahoo_lastnum;").each do |row|
+    _toon_id = row["toon_id"].to_i
+    _toon_num = row["toon_num"].to_i
+    lastNum[_toon_id] = _toon_num
     finishToon.push(_toon_id)
   end
 
-  db.execute("SELECT toon_id, toon_num FROM yahoo_numList ORDER BY toon_num_idx;") do |_toon_id, _toon_num|
+  db.exec("SELECT toon_id, toon_num FROM yahoo_numlist ORDER BY toon_num_idx;").each do |row|
+    _toon_id = row["toon_id"].to_i
+    _toon_num = row["toon_num"]
     if _toon_num.nil?
       reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0
     else
       numList[_toon_id] = [] if numList[_toon_id].nil?
-      numList[_toon_id].push(_toon_num)
+      numList[_toon_id].push(_toon_num.to_i)
     end
   end
 
-  db.execute("SELECT toon_id, toon_title, toon_intro FROM yahoo_toonInfo;") do |_toon_id, _toon_title, _toon_intro|
+  db.exec("SELECT toon_id, toon_title, toon_intro FROM yahoo_tooninfo;").each do |row|
+    _toon_id = row["toon_id"].to_i
+    _toon_title = row["toon_title"]
+    _toon_intro = row["toon_intro"]
     if _toon_intro.nil?
       reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0
     elsif _toon_title.nil?
@@ -505,14 +529,14 @@ elsif site == "yahoo"
 
     str << "$.get(\"/displayToon?site=yahoo&id=#{v}&num=#{numList[v][0]}\");"
     (0...numList[v].length).each do |i|
-      db.execute("UPDATE yahoo_numList SET toon_num=? WHERE toon_id=? AND toon_num_idx=?;", numList[v][i], v, i)
-      db.execute("INSERT INTO yahoo_numList (toon_id, toon_num_idx, toon_num) SELECT ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM yahoo_numList WHERE toon_id=? AND toon_num_idx=?);", v, i, numList[v][i], v, i)
-      db.execute("UPDATE yahoo_toonInfo SET toon_title=?, toon_intro=? WHERE toon_id=?;", toonInfo[v][0], toonInfo[v][1], v)
-      db.execute("INSERT INTO yahoo_toonInfo (toon_id, toon_title, toon_intro) SELECT ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM yahoo_toonInfo WHERE toon_id=?);", v, toonInfo[v][0], toonInfo[v][1], v)
+      db.exec("UPDATE yahoo_numlist SET toon_num=$1 WHERE toon_id=$2 AND toon_num_idx=$3;", [numList[v][i], v, i])
+      db.exec("INSERT INTO yahoo_numlist (toon_id, toon_num_idx, toon_num) SELECT $1, $2, $3 WHERE NOT EXISTS (SELECT 1 FROM yahoo_numlist WHERE toon_id=$1 AND toon_num_idx=$2);", [v, i, numList[v][i]])
+      db.exec("UPDATE yahoo_tooninfo SET toon_title=$1::VARCHAR, toon_intro=$2::VARCHAR WHERE toon_id=$3;", [toonInfo[v][0], toonInfo[v][1], v])
+      db.exec("INSERT INTO yahoo_tooninfo (toon_id, toon_title, toon_intro) SELECT $1, $2::VARCHAR, $3::VARCHAR WHERE NOT EXISTS (SELECT 1 FROM yahoo_tooninfo WHERE toon_id=$1);", [v, toonInfo[v][0], toonInfo[v][1]])
     end
     if reqList[v] == -1 # 완결
-      db.execute("UPDATE yahoo_lastNum SET toon_num=? WHERE toon_id=?;", numList[v][-1], v)
-      db.execute("INSERT INTO yahoo_lastNum (toon_id, toon_num) SELECT ?, ? WHERE NOT EXISTS (SELECT 1 FROM yahoo_lastNum WHERE toon_id=?);", v, numList[v][-1], v)
+      db.exec("UPDATE yahoo_lastnum SET toon_num=$1 WHERE toon_id=$2;", [numList[v][-1], v])
+      db.exec("INSERT INTO yahoo_lastnum (toon_id, toon_num) SELECT $1, $2 WHERE NOT EXISTS (SELECT 1 FROM yahoo_lastnum WHERE toon_id=$1);", [v, numList[v][-1]])
     end
   end
   str << 'resizeWidth();'
@@ -527,7 +551,9 @@ elsif site == "yahoo"
   if session["user_id"] != nil and session["user_id"] != ""
     toonBM = Hash.new
 
-    db.execute("SELECT toon_id, toon_num FROM yahoo_bm WHERE id=? ORDER BY toon_id;", session["user_id"]) do |_toon_id, _toon_num|
+    db.exec("SELECT toon_id, toon_num FROM yahoo_bm WHERE id=$1 ORDER BY toon_id;", [session["user_id"]]).each do |row|
+      _toon_id = row["toon_id"].to_i
+      _toon_num = row["toon_num"].to_i
       toonBM[_toon_id] = _toon_num
     end
 

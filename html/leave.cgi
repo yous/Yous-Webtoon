@@ -3,7 +3,7 @@
 require 'rubygems'
 require 'cgi'
 require 'cgi/session'
-require 'sqlite3'
+require 'pg'
 require 'digest/sha1'
 
 puts "Content-Type: text/html; charset=utf-8\n\n"
@@ -13,10 +13,10 @@ user_pw = (cgi.has_key?("user_pw")) ? cgi.params["user_pw"][0] : nil
 
 session = CGI::Session.new(cgi, "session_key" => "SSID", "prefix" => "rubysess.", "tmpdir" => File.join(File.dirname(__FILE__), "/../sess"))
 
-db = SQLite3::Database.new(File.join(File.dirname(__FILE__), "/../db/webtoon.db"))
-db.execute("CREATE TABLE IF NOT EXISTS usr (id INTEGER PRIMARY KEY, usr_id VARCHAR(255), usr_pw VARCHAR(255));")
-db.execute("CREATE TABLE IF NOT EXISTS naver_bm (id INTEGER, toon_id INTEGER, toon_num INTEGER);")
-db.execute("CREATE TABLE IF NOT EXISTS daum_bm (id INTEGER, toon_id VARCHAR(255), toon_num INTEGER);")
+db = PGconn.open(:dbname => "yous")
+db.exec("CREATE TABLE usr (id SERIAL, usr_id VARCHAR, usr_pw VARCHAR);") rescue nil
+db.exec("CREATE TABLE naver_bm (id INTEGER, toon_id INTEGER, toon_num INTEGER);") rescue nil
+db.exec("CREATE TABLE daum_bm (id INTEGER, toon_id VARCHAR, toon_num INTEGER);") rescue nil
 
 if session["user_id"] != nil and session["user_id"] != ""
   if user_pw == nil or user_pw == ""
@@ -27,10 +27,11 @@ if session["user_id"] != nil and session["user_id"] != ""
     puts str
   else
     check = true
-    db.execute("SELECT id FROM usr WHERE id=? AND usr_pw=?;", session["user_id"], Digest::SHA1.hexdigest("YoUs" + user_pw + "wEbt00N").force_encoding("UTF-8")) do |_id|
-      db.execute("DELETE FROM usr WHERE id=?;", _id[0])
-      db.execute("DELETE FROM naver_bm WHERE id=?;", _id[0])
-      db.execute("DELETE FROM daum_bm WHERE id=?;", _id[0])
+    db.execute("SELECT id FROM usr WHERE id=$1 AND usr_pw=$2::VARCHAR;", [session["user_id"], Digest::SHA1.hexdigest("YoUs" + user_pw + "wEbt00N").force_encoding("UTF-8")]).each do |row|
+      _id = row["id"].to_i
+      db.exec("DELETE FROM usr WHERE id=$1;", [_id])
+      db.exec("DELETE FROM naver_bm WHERE id=$1;", [_id])
+      db.exec("DELETE FROM daum_bm WHERE id=$1;", [_id])
       session["user_id"] = nil
       session.delete
       str = "<script>"
