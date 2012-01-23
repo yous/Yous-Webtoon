@@ -19,7 +19,7 @@ db.exec("CREATE TABLE naver_bm (id INTEGER, toon_id INTEGER, toon_num INTEGER);"
 db.exec("CREATE TABLE daum_bm (id INTEGER, toon_id VARCHAR, toon_num INTEGER);") rescue nil
 
 if session["user_id"] != nil and session["user_id"] != ""
-  if user_pw == nil or user_pw == ""
+  if user_pw.nil? or user_pw == ""
     str = "<script>"
     str << "alert('Enter your Password Again!');"
     str << "$('#user_pw').focus();"

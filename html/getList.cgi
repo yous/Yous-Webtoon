@@ -80,7 +80,7 @@ if site == "naver"
         _new = (_a.search('img').length > 1) ? '(NEW)' : ''
         _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
-        reqList[_titleId] = 1 if tmpList.index(_titleId) == nil
+        reqList[_titleId] = 1 unless tmpList.include? _titleId
 
         str << "<div id=\"#{_titleId}\" name=\"#{_titleId}\" class=\"current_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}#{_new}#{_up}\" onclick=\"viewToon(#{_titleId});\">#{_title}<small>#{_new}#{_up}</small></div>"
         count += 1
@@ -106,7 +106,7 @@ if site == "naver"
     _title = _a.attributes["title"].value
     _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
-    reqList[_titleId] = 1 if tmpList.index(_titleId) == nil
+    reqList[_titleId] = 1 unless tmpList.include? _titleId
 
     str_td[count % 7] << "<div id=\"#{_titleId}\" name=\"#{_titleId}\" class=\"finished_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon(#{_titleId});\">#{_title}</div>"
     count += 1
@@ -183,9 +183,9 @@ elsif site == "daum"
     if _toon_num.nil? or _toon_date.nil?
       reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0
     else
-      numList[_toon_id] = [] if numList[_toon_id] == nil
+      numList[_toon_id] = [] if numList[_toon_id].nil?
       numList[_toon_id].push(_toon_num.to_i)
-      dateList[_toon_id] = [] if dateList[_toon_id] == nil
+      dateList[_toon_id] = [] if dateList[_toon_id].nil?
       dateList[_toon_id].push(_toon_date)
     end
   end
@@ -230,7 +230,7 @@ elsif site == "daum"
         _title = v1.attributes["title"].value
         _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
-        reqList[_titleId] = 0 if tmpList.index(_titleId) == nil
+        reqList[_titleId] = 0 unless tmpList.include? _titleId
 
         str << "<div id=\"#{_titleId}\" name=\"#{_titleId}\" class=\"current_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon('#{_titleId}');\">#{_title}</div>"
         count += 1
@@ -256,7 +256,7 @@ elsif site == "daum"
     _title = r.at('p').attributes["title"].value
     _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
-    reqList[_titleId] = -1 if tmpList.index(_titleId) == nil
+    reqList[_titleId] = -1 unless tmpList.include? _titleId
 
     str_td[count % 7] << "<div id=\"#{_titleId}\" name=\"#{_titleId}\" class=\"finished_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon('#{_titleId}');\">#{_title}</div>"
     count += 1
@@ -396,7 +396,7 @@ elsif site == "yahoo"
       _titleId = $1.to_i if r.at('a[2]').attributes["href"].value =~ /http:\/\/kr\.news\.yahoo\.com\/service\/cartoon\/shelllist.htm\?linkid=toon_series&work_idx=(\d+)/
       _color = (count[day] % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
-      if tmpList.index(_titleId).nil?
+      if not tmpList.include? _titleId
         reqList[_titleId] = 0
         if toonInfo[_titleId].nil?
           toonInfo[_titleId] = [_title, nil]
@@ -437,7 +437,7 @@ elsif site == "yahoo"
       _titleId = $1.to_i if r.at('a[2]').attributes["href"].value =~ /http:\/\/kr\.news\.yahoo\.com\/service\/cartoon\/shelllist.htm\?linkid=toon_series&work_idx=(\d+)/
       _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
-      if tmpList.index(_titleId).nil?
+      if not tmpList.include? _titleId
         reqList[_titleId] = -1
         if toonInfo[_titleId].nil?
           toonInfo[_titleId] = [_title, nil]
@@ -445,7 +445,7 @@ elsif site == "yahoo"
           toonInfo[_titleId][0] = _title
         end
       end
-      if finishToon.index(_titleId).nil? and reqList[_titleId].nil?
+      if (not finishToon.include? _titleId) and reqList[_titleId].nil?
         finishToon.push(_titleId)
         reqList[_titleId] = -1
       end
@@ -492,7 +492,7 @@ elsif site == "yahoo"
       _titleId = $1.to_i if r.at('a[2]').attributes["href"].value =~ /http:\/\/kr\.news\.yahoo\.com\/service\/cartoon\/shelllist.htm\?linkid=toon_series&work_idx=(\d+)/
       _color = (count[day] % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
-      if tmpList.index(_titleId).nil?
+      if not tmpList.include? _titleId
         reqList[_titleId] = 0
         if toonInfo[_titleId].nil?
           toonInfo[_titleId] = [_title, nil]
