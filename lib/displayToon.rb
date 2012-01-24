@@ -196,19 +196,22 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
                   end
                 end
               end
-              if count <= 1
-                _content << "<hr id=\"anchor_0\" style=\"width: 80%; height: 1px; border: 0px;\"/>" if count == 0
-                _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\" style=\"display: inline; width: 470px; height: 670px;\" onload=\"location.replace('#title_area');\">"
-                count += 1
-              else
-                _content << ((count % 2 == 0) ? "<br/><br/><br/><hr id=\"anchor_#{count / 2}\" style=\"width: 80%; height: 1px; border: 0px;\"/>" : "")
-                _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\" style=\"display: inline; width: 470px; height: 670px;\">"
-                count += 1
+              if count % 2 == 0
+                if count <= 1
+                  _content << "<hr id=\"anchor_0\" style=\"width: 80%; height: 1px; border: 0px;\"/>"
+                else
+                  _content << "</div><br/><br/><br/>"
+                  _content << "<hr id=\"anchor_#{count / 2}\" style=\"width: 80%; height: 1px; border: 0px;\"/>"
+                end
+                _content << "<div style=\"position: relative; margin: 0 auto; width: 900px; height: 650px;\">"
               end
+              _content << "<div style=\"position: absolute; width: 450px; height: 650px; left: #{(count % 2 == 0) ? 0 : 450}px;\">"
+              _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\"#{(count <= 1) ? " onload=\"location.replace('#title_area');\"" : ""}/></div>"
+              count += 1
             end
           end
         end
-        _content << '<br/>'
+        _content << '</div><br/>'
       end
 
       # 작가 블로그, 다른 작품 출력
