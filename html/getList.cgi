@@ -144,7 +144,7 @@ if site == "naver"
     str << "lastNum={#{lastNum.keys.map {|v| "#{v}:#{lastNum[v]}"}.join(",")}};"
     str << "finishToon=[#{finishToon.join(",")}];"
 
-    str << '$("#loading").html("<big><b> Loading</b></big>");'
+    str << '$("#loading").html(" Loading");'
     str << '$("#loading").css("display", "inline");'
     str << 'loading(10);'
     str << "putToonColor();"
@@ -311,7 +311,7 @@ elsif site == "daum"
 
     str << "toonBM={#{toonBM.keys.map {|v| "'#{v}':#{toonBM[v]}"}.join(",")}};"
 
-    str << '$("#loading").html("<big><b> Loading</b></big>");'
+    str << '$("#loading").html(" Loading");'
     str << '$("#loading").css("display", "inline");'
     str << 'loading(10);'
     str << "putToonColor();"
@@ -559,7 +559,7 @@ elsif site == "yahoo"
 
     str << "toonBM={#{toonBM.keys.map {|v| "#{v}:#{toonBM[v]}"}.join(",")}};"
 
-    str << '$("#loading").html("<big><b> Loading</b></big>");'
+    str << '$("#loading").html(" Loading");'
     str << '$("#loading").css("display", "inline");'
     str << 'loading(10);'
     str << "putToonColor();"

@@ -13,6 +13,7 @@
         resizeWidth();
         toonlist_area_init();
         $(this).bind("keydown", function(e) { bodyKeyDown(e, true); });
+        $("#main_title").bind("click", function() { toonlist_area_init(); });
         $("#login_area").bind("focusin", function() { $(document).unbind("keydown");$(document).bind("keydown", function(e) { loginKeyDown(e); }); });
         $("#login_area").bind("focusout", function() { $(document).unbind("keydown");$(document).bind("keydown", function(e) { bodyKeyDown(e, true); }); });
         if (navigator.appVersion.indexOf("MSIE") != -1)
@@ -33,7 +34,7 @@
   </head>
   <body>
     <div id="main_area">
-      <big><b>Yous</b> Webtoon Viewer</big><span id="loading" style="display: none;"><big><b> Loading</b></big></span>
+      <span id="main_title"><span style="font-weight: bold;">Yous</span> Webtoon Viewer</span><span id="loading" style="display: none;"> Loading</span>
       <div id="toonlist_area"></div>
       <div id="display_area"></div>
     </div>
@@ -44,7 +45,7 @@
     </div>
     <table id="remote">
       <tr>
-        <td colspan="4"><b>북마크</b></td>
+        <td colspan="4" style="font-weight: bold;">북마크</td>
       </tr>
       <tr>
         <td colspan="2"><input type="button" id="saveBM" value="저장" onclick="add_bookmark();" disabled="true"/><br/><small>(E)</small></td>

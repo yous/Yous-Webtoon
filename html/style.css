@@ -37,6 +37,14 @@ input::-moz-focus-inner {
 #main_area {
   margin: 5px;
 }
+#main_title {
+  font-size: large;
+  cursor: pointer;
+}
+#loading {
+  font-size: large;
+  font-weight: bold;
+}
 .refreshBtn {
   float: right;
   font-weight: normal;

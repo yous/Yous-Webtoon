@@ -402,7 +402,7 @@ function loading(n)
     return;
   if ($("#loading").css("display") == "none")
     return;
-  setTimeout('$("#loading big b").append(".");', 1000);
+  setTimeout('$("#loading").append(".");', 1000);
   setTimeout("loading(" + (n - 1) + ");", 1000);
 }
 
@@ -523,7 +523,7 @@ function putToonColor(day)
   }
   else
   {
-    $("#loading").html("<big><b> Loading</b></big>");
+    $("#loading").html(" Loading");
     $("#loading").css("display", "inline");
     loading(5);
     var day_toon = $("#day" + String(day) + " div");
