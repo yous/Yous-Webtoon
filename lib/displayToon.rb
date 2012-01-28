@@ -3,7 +3,6 @@ require "rubygems"
 require "webrick"
 require "mechanize"
 require "json"
-require "iconv"
 
 class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
   def do_GET(req, res)
@@ -383,7 +382,7 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
 
     # Yahoo 웹툰
     elsif site == "yahoo"
-      resp = JSON.parse(Iconv::iconv("UTF-8", "EUC-KR", a.get("http://kr.news.yahoo.com/cartoon/series/get_series.php?sidx=#{num}").body.gsub(/<!-[^>]+>/, "").gsub('SEQ', '"SEQ"').gsub('URL', '"URL"'))[0])
+      resp = JSON.parse(a.get("http://kr.news.yahoo.com/cartoon/series/get_series.php?sidx=#{num}").body.force_encoding("CP949").encode("UTF-8").gsub(/<!-[^>]+>/, "").gsub('SEQ', '"SEQ"').gsub('URL', '"URL"'))
 
       _title = '<div id="title_area">'
       _content = '<div id="content_area">'
