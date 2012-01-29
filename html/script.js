@@ -1062,7 +1062,10 @@ function viewToon(_id, _num)
     else if (site == "stoo")
       _num = Stoo.first_num();
   }
-  num = parseInt(_num);
+  if (site == "stoo")
+    num = _num;
+  else
+    num = parseInt(_num);
 
   if (typeof(lastNum[id]) == "undefined")
   {
