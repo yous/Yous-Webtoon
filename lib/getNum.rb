@@ -70,6 +70,9 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
 
     # Yahoo 웹툰
     elsif site == "yahoo"
+      a.default_encoding = "CP949"
+      a.force_default_encoding = true
+
       str_finish = ""
       str_intro = ""
       numList = []
