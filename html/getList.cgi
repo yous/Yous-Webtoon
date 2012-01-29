@@ -277,7 +277,7 @@ elsif site == "daum"
     numList[v] = []
     dateList[v] = []
     puts v
-    num_resp = a.get("http://#{localhost}/getNum?site=daum&id=#{v}").body.strip.split("\n").map {|item| item.strip.force_encoding("UTF-8") }
+    num_resp = a.get("http://#{localhost}/getNum?site=daum&id=#{v}").body.split("\n").map {|item| item.strip.force_encoding("UTF-8") }
     num_resp[0].split()[1..-1].map {|item|
       numList[v].push(item.split(",")[0].to_i)
       dateList[v].push(item.split(",")[1])
@@ -529,7 +529,7 @@ elsif site == "yahoo"
   # reqList 처리
   str << '<script>'
   reqList.keys.each do |v|
-    num_resp = a.get("http://#{localhost}/getNum?site=yahoo&id=#{v}").body.strip.split("\n").map(&:strip)
+    num_resp = a.get("http://#{localhost}/getNum?site=yahoo&id=#{v}").body.split("\n").map(&:strip)
     numList[v] = num_resp[0].split()[1..-1].map(&:to_i)
     toonInfo[v][1] = (num_resp[1].nil?) ? nil : num_resp[1].force_encoding("UTF-8").gsub('"', "&quot;").gsub("'", "&#39;").gsub("<", "&lt;").gsub(">", "&gt;").gsub(/&lt;br\/?&gt;/, "<br/>")
     lastNum[v] = numList[v][-1]
