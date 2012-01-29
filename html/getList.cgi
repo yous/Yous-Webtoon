@@ -135,7 +135,7 @@ if site == "naver"
       toonBM[_toon_id] = _toon_num
       db.exec("SELECT toon_num FROM naver_lastnum WHERE toon_id=$1;", [_toon_id]).each do |sec_row|
         _lastNum = sec_row["toon_num"].to_i
-        lastNum[_toon_id.to_i] = _lastNum
+        lastNum[_toon_id] = _lastNum
         finishToon.push(_toon_id)
       end
     end
