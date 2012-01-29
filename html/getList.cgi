@@ -80,7 +80,7 @@ if site == "naver"
       v.search('ul/li/div[@class="thumb"]').each do |v1|
         _a = v1.at('a')
         _titleId = $1.to_i if _a.attr("href") =~ /\/webtoon\/list\.nhn\?titleId=(\d+)/
-        _title = _a.attributes["title"].value
+        _title = _a.attr("title")
         _up = (_a.search('em').length != 0) ? '(UP)' : ''
         _new = (_a.search('img').length > 1) ? '(NEW)' : ''
         _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
@@ -108,7 +108,7 @@ if site == "naver"
   resp.search('//div[@class="thumb"]').each do |r|
     _a = r.at('a')
     _titleId = $1.to_i if _a.attr("href") =~ /\/webtoon\/list\.nhn\?titleId=(\d+)/
-    _title = _a.attributes["title"].value
+    _title = _a.attr("title")
     _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
     reqList[_titleId] = 1 unless tmpList.include? _titleId
@@ -229,7 +229,7 @@ elsif site == "daum"
       str << "<td id=\"day#{day}\">"
       v.search('ul/li/a').each do |v1|
         _titleId = $1 if v1.attr("href") =~ /\/webtoon\/view\/(.+)$/
-        _title = v1.attributes["title"].value
+        _title = v1.attr("title")
         _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
         reqList[_titleId] = 0 unless tmpList.include? _titleId
@@ -255,7 +255,7 @@ elsif site == "daum"
   resp.search('//ul[@class="list_type_image list_incount list_year"]/li').each do |r|
     next if r.attributes["class"].value == "line_dot"
     _titleId = $1 if r.at('a').attr("href") =~ /\/webtoon\/view\/(.+)$/
-    _title = r.at('p').attributes["title"].value
+    _title = r.at('p').attr("title")
     _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
     reqList[_titleId] = -1 unless tmpList.include? _titleId
@@ -625,7 +625,7 @@ elsif site == "stoo"
   resp.search('//ul[@id="serialcm"]/li').each do |r|
     _a = r.at('dl/dt[@class="desc"]/a')
     _titleId = $1.to_i if _a.attr("href") =~ /\/cartoon\/ctlist\.htm\?sc1=cartoon&sc2=ing&sc3=(\d+)/
-    _title = _a.attributes["title"].value.gsub(/<br\/?>/, " ")
+    _title = _a.attr("title").gsub(/<br\/?>/, " ")
     _color = (count[day] % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
     reqList[_titleId] = 1 unless tmpList.include? _titleId
@@ -649,7 +649,7 @@ elsif site == "stoo"
   resp.search('//ul[@id="endcm"]/li').each do |r|
     _a = r.at('dl/dt[@class="desc"]/a')
     _titleId = $1.to_i if _a.attr("href") =~ /\/cartoon\/ctlist\.htm\?sc1=cartoon&sc2=end&sc3=(\d+)/
-    _title = _a.attributes["title"].value.gsub(/<br\/?>/, " ")
+    _title = _a.attr("title").gsub(/<br\/?>/, " ")
     _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
     reqList[_titleId] = -1 unless tmpList.include? _titleId

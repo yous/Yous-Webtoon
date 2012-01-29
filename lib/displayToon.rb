@@ -429,7 +429,7 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
       _content = '<div id="content_area">'
 
       # 웹툰 제목, 작가, 설명 출력
-      comic_title = resp.at('//div[@id="content"]/div[@class="location"]/strong/a').attributes["title"].value
+      comic_title = resp.at('//div[@id="content"]/div[@class="location"]/strong/a').attr("title")
       _title << "<div style=\"padding: 15px 0px 15px 0px; background-color: #{btnColor["buttonB"]};\"></div>"
 
       # 웹툰 회, 날짜 출력
