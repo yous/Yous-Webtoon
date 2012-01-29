@@ -578,6 +578,7 @@ function toonlist_area_init()
   str += Yahoo.toonlist_area_init();
   str += "<script>id=null;num=null;site=null;change_remote();</script>";
   $("#toonlist_area").html(str);
+  $("#display_area").html("");
 }
 
 // Flash 있을 때 toonlist_area height 설정 토글
