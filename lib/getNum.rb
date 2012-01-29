@@ -24,7 +24,7 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
 
       resp.search('//div[@id="header"]/div[@id="submenu"]/ul[@class="submenu"]/li').each do |v|
         v.search('a[@class="current"]').each do |e|
-          str << case e.attributes["href"].value
+          str << case e.attr("href")
           when "/webtoon/weekday.nhn" then "n "
           when "/webtoon/finish.nhn" then "y "
           else "x "
@@ -32,7 +32,7 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
         end
       end
       resp.search('//div[@class="btn_area"]').each do |v|
-        if v.at('span[@class="pre"]/a').attributes["href"].value =~ /\/webtoon\/detail\.nhn\?titleId=\d+&seq=(\d+)/
+        if v.at('span[@class="pre"]/a').attr("href") =~ /\/webtoon\/detail\.nhn\?titleId=\d+&seq=(\d+)/
           str << "#{$1.to_i + 1}"
         else
           str << "1"
@@ -98,7 +98,7 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
       check = true
       while check
         resp.search('//div[@id="cth"]/ol/li').each do |r|
-          if r.at('a[2]').attributes["href"].value =~ /http:\/\/kr\.news\.yahoo\.com\/service\/cartoon\/shellview2\.htm\?linkid=series_cartoon&sidx=(\d+)/
+          if r.at('a[2]').attr("href") =~ /http:\/\/kr\.news\.yahoo\.com\/service\/cartoon\/shellview2\.htm\?linkid=series_cartoon&sidx=(\d+)/
             if numList.include?($1.to_i)
               check = false
               break
@@ -108,7 +108,7 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
           end
         end
         if check and resp.search('//div[@id="pa0"]/span[@class="nxt"]').length > 0
-          resp = a.get resp.at('//div[@id="pa0"]/span[@class="nxt"]/a').attributes["href"].value
+          resp = a.get resp.at('//div[@id="pa0"]/span[@class="nxt"]/a').attr("href")
         else
           break
         end
