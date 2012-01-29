@@ -169,11 +169,6 @@ elsif site == "daum"
   reqList = Hash.new
   tmpList = []
 
-  db.exec("SELECT toon_id FROM daum_numlist ORDER BY toon_num_idx;").each do |row|
-    _toon_id = row["toon_id"]
-    tmpList.push(_toon_id) unless tmpList.include?(_toon_id)
-  end
-
   db.exec("SELECT toon_id, toon_num FROM daum_lastnum;").each do |row|
     _toon_id = row["toon_id"]
     _toon_num = row["toon_num"].to_i
@@ -185,6 +180,7 @@ elsif site == "daum"
     _toon_id = row["toon_id"]
     _toon_num = row["toon_num"]
     _toon_date = row["toon_date"]
+    tmpList.push(_toon_id) unless tmpList.include? _toon_id
     if _toon_num.nil? or _toon_date.nil?
       reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0
     else
@@ -336,11 +332,6 @@ elsif site == "yahoo"
   reqList = Hash.new
   tmpList = []
 
-  db.exec("SELECT toon_id FROM yahoo_numlist ORDER BY toon_num_idx;").each do |row|
-    _toon_id = row["toon_id"].to_i
-    tmpList.push(_toon_id) unless tmpList.include?(_toon_id)
-  end
-
   db.exec("SELECT toon_id, toon_num FROM yahoo_lastnum;").each do |row|
     _toon_id = row["toon_id"].to_i
     _toon_num = row["toon_num"].to_i
@@ -351,6 +342,7 @@ elsif site == "yahoo"
   db.exec("SELECT toon_id, toon_num FROM yahoo_numlist ORDER BY toon_num_idx;").each do |row|
     _toon_id = row["toon_id"].to_i
     _toon_num = row["toon_num"]
+    tmpList.push(_toon_id) unless tmpList.include? _toon_id
     if _toon_num.nil?
       reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0
     else
@@ -363,13 +355,8 @@ elsif site == "yahoo"
     _toon_id = row["toon_id"].to_i
     _toon_title = row["toon_title"]
     _toon_intro = row["toon_intro"]
-    if _toon_intro.nil?
-      reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0
-    elsif _toon_title.nil?
-      toonInfo[_toon_id] = [nil, _toon_intro]
-    else
-      toonInfo[_toon_id] = [_toon_title, _toon_intro]
-    end
+    reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0 if _toon_intro.nil? or _toon_title.nil?
+    toonInfo[_toon_id] = [_toon_title, _toon_intro]
   end
 
   # 연재
