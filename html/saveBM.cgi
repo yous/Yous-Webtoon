@@ -28,6 +28,9 @@ db.exec("CREATE TABLE naver_lastnum (toon_id INTEGER PRIMARY KEY, toon_num INTEG
 db.exec("CREATE TABLE daum_bm (id INTEGER, toon_id VARCHAR, toon_num INTEGER);") rescue nil
 db.exec("CREATE TABLE daum_lastnum (toon_id VARCHAR, toon_num INTEGER);") rescue nil
 db.exec("CREATE TABLE daum_numlist (toon_id VARCHAR, toon_num_idx INTEGER, toon_num INTEGER, toon_date VARCHAR(10));") rescue nil
+db.exec("CREATE TABLE stoo_bm (id INTEGER, toon_id INTEGER, toon_num VARCHAR);") rescue nil
+db.exec("CREATE TABLE stoo_lastnum (toon_id INTEGER, toon_num VARCHAR);") rescue nil
+db.exec("CREATE TABLE stoo_numlist (toon_id INTEGER, toon_num_idx INTEGER, toon_num VARCHAR);") rescue nil
 
 if session["user_id"] != nil and session["user_id"] != "" and add != nil and toon_id != nil and toon_num != nil and finish != nil
   # Naver 웹툰
@@ -73,6 +76,22 @@ if session["user_id"] != nil and session["user_id"] != "" and add != nil and too
     if finish != "no"
       db.exec("UPDATE yahoo_lastnum SET toon_num=$1 WHERE toon_id=$2;", [finish.to_i, toon_id.to_i])
       db.exec("INSERT INTO yahoo_lastnum (toon_id, toon_num) SELECT $1, $2 WHERE NOT EXISTS (SELECT 1 FROM yahoo_lastnum WHERE toon_id=$1);", [toon_id.to_i, finish.to_i])
+    end
+  # Stoo 웹툰
+  elsif site == "stoo" and numList != nil
+    numList.each_with_index do |num, idx|
+      db.exec("UPDATE stoo_numlist SET toon_num=$1::VARCHAR WHERE toon_id=$2 AND toon_num_idx=$3;", [num, toon_id.to_i, idx])
+      db.exec("INSERT INTO stoo_numlist (toon_id, toon_num_idx, toon_num) SELECT $1, $2, $3::VARCHAR WHERE NOT EXISTS (SELECT 1 FROM stoo_numlist WHERE toon_id=$1 AND toon_num_idx=$2);", [toon_id.to_i, idx, num])
+    end
+    if add == "yes"
+      db.exec("UPDATE stoo_bm SET toon_num=$1::VARCHAR WHERE id=$2 AND toon_id=$3;", [toon_num, session["user_id"], toon_id.to_i])
+      db.exec("INSERT INTO stoo_bm (id, toon_id, toon_num) SELECT $1, $2, $3::VARCHAR WHERE NOT EXISTS (SELECT 1 FROM stoo_bm WHERE id=$1 AND toon_id=$2);", [session["user_id"], toon_id.to_i, toon_num])
+    else
+      db.exec("DELETE FROM stoo_bm WHERE id=$1 AND toon_id=$2;", [session["user_id"], toon_id.to_i])
+    end
+    if finish != "no"
+      db.exec("UPDATE stoo_lastnum SET toon_num=$1::VARCHAR WHERE toon_id=$2;", [finish.to_i, toon_id.to_i])
+      db.exec("INSERT INTO stoo_lastnum (toon_id, toon_num) SELECT $1, $2::VARCHAR WHERE NOT EXISTS (SELECT 1 FROM stoo_lastnum WHERE toon_id=$1);", [toon_id.to_i, finish.to_i])
     end
   end
 end

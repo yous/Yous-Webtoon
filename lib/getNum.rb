@@ -117,6 +117,68 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
       numList += tmp_numList.reverse
 
       ((str_finish == "") ? "n " : str_finish) + numList.join(" ") + "\n" + str_intro
+
+    # Stoo 웹툰
+    elsif site == "stoo"
+      str_finish = ""
+      str_writer = ""
+      str_intro = ""
+      numList = []
+      tmp_numList = []
+
+      db = PGconn.open(:dbname => "yous")
+      db.exec("CREATE TABLE stoo_numlist (toon_id INTEGER, toon_num_idx INTEGER, toon_num VARCHAR);") rescue nil
+      db.exec("SELECT toon_num FROM stoo_numlist WHERE toon_id=$1 ORDER BY toon_num_idx;", [id]).each do |row|
+        _toon_num = row["toon_num"]
+        numList.push(_toon_num)
+      end
+      db.exec("SELECT toon_num FROM stoo_lastnum WHERE toon_id=$1;", [id]).each do |row|
+        str_finish = "y "
+      end
+      db.close
+
+      _lastNum = (_lastNum.nil?) ? "" : _lastNum
+
+      resp = a.get "http://stoo.asiae.co.kr/cartoon/ctlist.htm?sc2=#{(str_finish == "y ") ? "end" : "ing"}&sc3=#{id}"
+      if resp.at('//div[@id="content"]/div[@class="ct_topdesc"]/div[@class="rt"]/dl[2]/dd').inner_html == "" or resp.at('//div[@id="content"]/div[@class="ct_topdesc"]/div[@class="rt"]/dl[4]/dd').inner_html == ""
+        resp = a.get "http://stoo.asiae.co.kr/cartoon/ctlist.htm?sc2=end&sc3=#{id}"
+      end
+
+      resp.search('//div[@id="content"]/div[@class="ct_topdesc"]/div[@class="rt"]').each do |r|
+        str_writer = r.at('dl[2]/dd').inner_html.encode("UTF-8").strip
+        str_intro = r.at('dl[4]/dd').inner_html.encode("UTF-8").strip.gsub("\r", "").gsub("\n", "")
+      end
+
+      page = 1
+      resp = a.get "http://stoo.asiae.co.kr/cartoon/ctlist.php?strForm=s_list&sc3=#{id}&pg=#{page}"
+
+      check = true
+      while check
+        resp.search('//table/tr/td').each do |td|
+          if td.at('a[2]').attr("href") =~ /\/cartoon\/ctview\.htm\?sc2=[\w\W]*&sc3=#{id}&tpg=[\w\W]+&id=([\w\W]*)/
+            if numList.include? $1
+              check = false
+              break
+            else
+              tmp_numList.push($1)
+            end
+          end
+        end
+        if check and resp.search('//div[@class="pagination"]/a[@class="arrow next"]').attr("href").value =~ /javascript\s*:\s*s_list\(\s*'(\d+)'\s*,\s*'[\w\W]*'\s*,\s*'[\w\W]*'\s*,\s*'[\w\W]*'\s*,\s*'[\w\W]*'\s*\)/
+          if $1.to_i == page
+            break
+          else
+            page = $1.to_i
+            resp = a.get "http://stoo.asiae.co.kr/cartoon/ctlist.php?strForm=s_list&sc3=#{id}&pg=#{page}"
+          end
+        else
+          break
+        end
+      end
+
+      numList += tmp_numList.reverse
+
+      ((str_finish == "") ? "n " : str_finish) + numList.join(" ") + "\n" + str_writer + "\n" + str_intro
     end
   end
 end

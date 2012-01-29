@@ -420,6 +420,61 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
       str << _content
       str << '<br/><br/>'
       str << "<script>setTimeout(\"location.replace('#title_area');\", 500);</script>"
+
+    # Stoo 웹툰
+    elsif site == "stoo"
+      resp = a.get "http://stoo.asiae.co.kr/cartoon/ctview.htm?sc3=#{id}&id=#{num}"
+
+      _title = '<div id="title_area">'
+      _content = '<div id="content_area">'
+
+      # 웹툰 제목, 작가, 설명 출력
+      comic_title = resp.at('//div[@id="content"]/div[@class="location"]/strong/a').attributes["title"].value
+      _title << "<div style=\"padding: 15px 0px 15px 0px; background-color: #{btnColor["buttonB"]};\"></div>"
+
+      # 웹툰 회, 날짜 출력
+      resp.search('//div[@id="content"]/div[@class="cttop"]').each do |r|
+        title = r.at('h3/span').inner_html.encode("UTF-8").strip.gsub("<", "&lt;").gsub(">", "&gt;").gsub('"', "&quot;").gsub("'", "&#39;")
+        date = "#{$1}.#{$2}.#{$3}" if r.at('span[@class="date"]').inner_html.encode("UTF-8") =~ /(\d+)년\s+(\d+)월\s+(\d+)일/
+        _title << "<small id=\"toon_date\">#{date}</small>"
+      end
+      _title << "<script>$('#title_area div').append('#{comic_title} - ' + toonInfo[#{id}][0] + '<br/><small style=\"font-size: 12px;\">' + toonInfo[#{id}][1] + '</small><br/><br/><b>#{title}</b>');</script>"
+
+      # 웹툰 출력
+      while true
+        resp.search('//div[@id="content"]/div[@class="ct_box"]/div[@class="ctview"]/img').each_with_index do |img, idx|
+          url = $1.strip if img.attr("src") =~ /http:\/\/([\w\W]*)/
+
+          if not File::exists?("html/images/#{url.gsub(/\//, "@")}")
+            _data = a.get("http://#{url}").body
+            if _data != nil
+              File.open("html/images/#{url.gsub(/\//, "@")}", "w") do |f|
+                f.write(_data)
+              end
+            end
+          end
+
+          if idx == 0
+            _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\" onload=\"location.replace('#title_area');\"/>"
+          else
+            _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\"/>"
+          end
+        end
+        if resp.search('//div[@id="content"]/div[@class="ct_box"]/div[@class="ctview"]/p').length > 0 and resp.at('//div[@id="content"]/div[@class="ct_box"]/div[@class="ctview"]/p/a[2]').attr("href") =~ /(\/cartoon\/ctview\.htm\?[\w\W]*)/
+          resp = a.get "http://stoo.asiae.co.kr#{$1}"
+        else
+          break
+        end
+      end
+
+      _title << '</div>'
+      _content << '</div>'
+
+      str << _title
+      str << '<br/>'
+      str << _content
+      str << '<br/><br/>'
+      str << "<script>setTimeout(\"location.replace('#title_area');\", 500);</script>"
     end
     str
   end
