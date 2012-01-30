@@ -33,6 +33,9 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
     if site == "naver"
       resp = a.get "http://comic.naver.com/webtoon/detail.nhn?titleId=#{id}&seq=#{num}"
 
+      # 성인 인증 웹툰
+      return nil if resp.search('//div[@id="log_adult"]').length > 0
+
       _title = '<div id="title_area">'
       _content = '<div id="content_area">'
 
