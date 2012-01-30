@@ -14,21 +14,6 @@ site = cgi.params["site"][0]
 session = CGI::Session.new(cgi, "session_key" => "SSID", "prefix" => "rubysess.", "tmpdir" => File.join(File.dirname(__FILE__), "/../sess"))
 
 db = PGconn.open(:dbname => "yous")
-db.exec("CREATE TABLE naver_bm (id INTEGER, toon_id INTEGER, toon_num INTEGER);") rescue nil
-db.exec("CREATE TABLE naver_lastnum (toon_id INTEGER PRIMARY KEY, toon_num INTEGER);") rescue nil
-db.exec("CREATE TABLE naver_tmplist (toon_id INTEGER PRIMARY KEY);") rescue nil
-db.exec("CREATE TABLE daum_bm (id INTEGER, toon_id VARCHAR, toon_num INTEGER);") rescue nil
-db.exec("CREATE TABLE daum_lastnum (toon_id VARCHAR, toon_num INTEGER);") rescue nil
-db.exec("CREATE TABLE daum_numlist (toon_id VARCHAR, toon_num_idx INTEGER, toon_num INTEGER, toon_date VARCHAR(10));") rescue nil
-db.exec("CREATE TABLE daum_tooninfo (toon_id VARCHAR, toon_writer VARCHAR, toon_intro VARCHAR);") rescue nil
-db.exec("CREATE TABLE yahoo_bm (id INTEGER, toon_id INTEGER, toon_num INTEGER);") rescue nil
-db.exec("CREATE TABLE yahoo_lastnum (toon_id INTEGER PRIMARY KEY, toon_num INTEGER);") rescue nil
-db.exec("CREATE TABLE yahoo_numlist (toon_id INTEGER, toon_num_idx INTEGER, toon_num INTEGER);") rescue nil
-db.exec("CREATE TABLE yahoo_tooninfo (toon_id INTEGER, toon_title VARCHAR, toon_intro VARCHAR);") rescue nil
-db.exec("CREATE TABLE stoo_bm (id INTEGER, toon_id INTEGER, toon_num VARCHAR);") rescue nil
-db.exec("CREATE TABLE stoo_lastnum (toon_id INTEGER PRIMARY KEY, toon_num VARCHAR);") rescue nil
-db.exec("CREATE TABLE stoo_numlist (toon_id INTEGER, toon_num_idx INTEGER, toon_num VARCHAR);") rescue nil
-db.exec("CREATE TABLE stoo_tooninfo (toon_id INTEGER, toon_writer VARCHAR, toon_intro VARCHAR);") rescue nil
 
 a = Mechanize.new
 
@@ -44,6 +29,10 @@ btnColor = {
 
 # Naver 웹툰
 if site == "naver"
+  db.exec("CREATE TABLE naver_bm (id INTEGER, toon_id INTEGER, toon_num INTEGER);") rescue nil
+  db.exec("CREATE TABLE naver_lastnum (toon_id INTEGER PRIMARY KEY, toon_num INTEGER);") rescue nil
+  db.exec("CREATE TABLE naver_tmplist (toon_id INTEGER PRIMARY KEY);") rescue nil
+
   reqList = Hash.new
   tmpList = []
 
@@ -161,6 +150,11 @@ if site == "naver"
 
 # Daum 웹툰
 elsif site == "daum"
+  db.exec("CREATE TABLE daum_bm (id INTEGER, toon_id VARCHAR, toon_num INTEGER);") rescue nil
+  db.exec("CREATE TABLE daum_lastnum (toon_id VARCHAR PRIMARY KEY, toon_num INTEGER);") rescue nil
+  db.exec("CREATE TABLE daum_numlist (toon_id VARCHAR, toon_num_idx INTEGER, toon_num INTEGER, toon_date VARCHAR(10));") rescue nil
+  db.exec("CREATE TABLE daum_tooninfo (toon_id VARCHAR PRIMARY KEY, toon_writer VARCHAR, toon_intro VARCHAR);") rescue nil
+
   numList = Hash.new
   dateList = Hash.new
   toonInfo = Hash.new
@@ -325,6 +319,11 @@ elsif site == "daum"
 
 # Yahoo 웹툰
 elsif site == "yahoo"
+  db.exec("CREATE TABLE yahoo_bm (id INTEGER, toon_id INTEGER, toon_num INTEGER);") rescue nil
+  db.exec("CREATE TABLE yahoo_lastnum (toon_id INTEGER PRIMARY KEY, toon_num INTEGER);") rescue nil
+  db.exec("CREATE TABLE yahoo_numlist (toon_id INTEGER, toon_num_idx INTEGER, toon_num INTEGER);") rescue nil
+  db.exec("CREATE TABLE yahoo_tooninfo (toon_id INTEGER PRIMARY KEY, toon_title VARCHAR, toon_intro VARCHAR);") rescue nil
+
   numList = Hash.new
   toonInfo = Hash.new
   lastNum = Hash.new
@@ -565,6 +564,11 @@ elsif site == "yahoo"
 
 # Stoo 웹툰
 elsif site == "stoo"
+  db.exec("CREATE TABLE stoo_bm (id INTEGER, toon_id INTEGER, toon_num VARCHAR);") rescue nil
+  db.exec("CREATE TABLE stoo_lastnum (toon_id INTEGER PRIMARY KEY, toon_num VARCHAR);") rescue nil
+  db.exec("CREATE TABLE stoo_numlist (toon_id INTEGER, toon_num_idx INTEGER, toon_num VARCHAR);") rescue nil
+  db.exec("CREATE TABLE stoo_tooninfo (toon_id INTEGER PRIMARY KEY, toon_writer VARCHAR, toon_intro VARCHAR);") rescue nil
+
   numList = Hash.new
   toonInfo = Hash.new
   lastNum = Hash.new
