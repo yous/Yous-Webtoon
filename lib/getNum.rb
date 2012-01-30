@@ -79,6 +79,7 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
       tmp_numList = []
 
       db = PGconn.open(:dbname => "yous")
+      db.exec("CREATE TABLE yahoo_lastnum (toon_id INTEGER PRIMARY KEY, toon_num INTEGER);") rescue nil
       db.exec("CREATE TABLE yahoo_numlist (toon_id INTEGER, toon_num_idx INTEGER, toon_num INTEGER);") rescue nil
       db.exec("SELECT toon_num FROM yahoo_numlist WHERE toon_id=$1 ORDER BY toon_num_idx;", [id]).each do |row|
         _toon_num = row["toon_num"].to_i
@@ -127,6 +128,7 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
       tmp_numList = []
 
       db = PGconn.open(:dbname => "yous")
+      db.exec("CREATE TABLE stoo_lastnum (toon_id INTEGER PRIMARY KEY, toon_num VARCHAR);") rescue nil
       db.exec("CREATE TABLE stoo_numlist (toon_id INTEGER, toon_num_idx INTEGER, toon_num VARCHAR);") rescue nil
       db.exec("SELECT toon_num FROM stoo_numlist WHERE toon_id=$1 ORDER BY toon_num_idx;", [id]).each do |row|
         _toon_num = row["toon_num"]
