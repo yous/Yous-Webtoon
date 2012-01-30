@@ -17,6 +17,8 @@ db = PGconn.open(:dbname => "yous")
 db.exec("CREATE TABLE usr (id SERIAL, usr_id VARCHAR, usr_pw VARCHAR);") rescue nil
 db.exec("CREATE TABLE naver_bm (id INTEGER, toon_id INTEGER, toon_num INTEGER);") rescue nil
 db.exec("CREATE TABLE daum_bm (id INTEGER, toon_id VARCHAR, toon_num INTEGER);") rescue nil
+db.exec("CREATE TABLE yahoo_bm (id INTEGER, toon_id INTEGER, toon_num INTEGER);") rescue nil
+db.exec("CREATE TABLE stoo_bm (id INTEGER, toon_id INTEGER, toon_num VARCHAR);") rescue nil
 
 if session["user_id"] != nil and session["user_id"] != ""
   if user_pw.nil? or user_pw == ""
@@ -32,6 +34,8 @@ if session["user_id"] != nil and session["user_id"] != ""
       db.exec("DELETE FROM usr WHERE id=$1;", [_id])
       db.exec("DELETE FROM naver_bm WHERE id=$1;", [_id])
       db.exec("DELETE FROM daum_bm WHERE id=$1;", [_id])
+      db.exec("DELETE FROM yahoo_bm WHERE id=$1;", [_id])
+      db.exec("DELETE FROM stoo_bm WHERE id=$1;", [_id])
       session["user_id"] = nil
       session.delete
       str = "<script>"
