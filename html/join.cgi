@@ -12,7 +12,7 @@ user_id = (cgi.has_key?("user_id")) ? cgi.params["user_id"][0] : nil
 user_pw = (cgi.has_key?("user_pw")) ? cgi.params["user_pw"][0] : nil
 
 db = PGconn.open(:dbname => "yous")
-db.exec("CREATE TABLE usr (id SERIAL, usr_id VARCHAR, usr_pw VARCHAR);") rescue nil
+db.exec("CREATE TABLE usr (id SERIAL PRIMARY KEY, usr_id VARCHAR NOT NULL UNIQUE, usr_pw VARCHAR NOT NULL);") rescue nil
 
 check = false
 
