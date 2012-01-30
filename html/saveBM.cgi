@@ -53,10 +53,9 @@ if session["user_id"] != nil and session["user_id"] != "" and add != nil and too
   # Daum 웹툰
   elsif site == "daum" and numList != nil
     toon_num = toon_num.to_i
-    numList = numList.map(&:to_i)
-    (0...numList.length).each do |i|
-      db.exec("UPDATE daum_numlist SET toon_num=$1, toon_date=$2::VARCHAR WHERE toon_id=$3::VARCHAR AND toon_num_idx=$4;", [numList[i], dateList[i], toon_id, i])
-      db.exec("INSERT INTO daum_numlist (toon_id, toon_num_idx, toon_num, toon_date) SELECT $1::VARCHAR, $2, $3, $4::VARCHAR WHERE NOT EXISTS (SELECT 1 FROM daum_numlist WHERE toon_id=$1 AND toon_num_idx=$2);", [toon_id, i, numList[i], dateList[i]])
+    numList.map(&:to_i).each_with_index do |num, idx|
+      db.exec("UPDATE daum_numlist SET toon_num=$1, toon_date=$2::VARCHAR WHERE toon_id=$3::VARCHAR AND toon_num_idx=$4;", [num, dateList[idx], toon_id, idx])
+      db.exec("INSERT INTO daum_numlist (toon_id, toon_num_idx, toon_num, toon_date) SELECT $1::VARCHAR, $2, $3, $4::VARCHAR WHERE NOT EXISTS (SELECT 1 FROM daum_numlist WHERE toon_id=$1 AND toon_num_idx=$2);", [toon_id, idx, num, dateList[idx]])
     end
     if add == "yes"
       db.exec("UPDATE daum_bm SET toon_num=$1 WHERE id=$2 AND toon_id=$3::VARCHAR;", [toon_num, session["user_id"], toon_id])
@@ -72,10 +71,9 @@ if session["user_id"] != nil and session["user_id"] != "" and add != nil and too
   elsif site == "yahoo" and numList != nil
     toon_id = toon_id.to_i
     toon_num = toon_num.to_i
-    numList = numList.map(&:to_i)
-    (0...numList.length).each do |i|
-      db.exec("UPDATE yahoo_numlist SET toon_num=$1 WHERE toon_id=$2 AND toon_num_idx=$3;", [numList[i], toon_id, i])
-      db.exec("INSERT INTO yahoo_numlist (toon_id, toon_num_idx, toon_num) SELECT $1, $2, $3 WHERE NOT EXISTS (SELECT 1 FROM yahoo_numlist WHERE toon_id=$1 AND toon_num_idx=$2);", [toon_id, i, numList[i]])
+    numList.map(&:to_i).each_with_index do |num, idx|
+      db.exec("UPDATE yahoo_numlist SET toon_num=$1 WHERE toon_id=$2 AND toon_num_idx=$3;", [num, toon_id, idx])
+      db.exec("INSERT INTO yahoo_numlist (toon_id, toon_num_idx, toon_num) SELECT $1, $2, $3 WHERE NOT EXISTS (SELECT 1 FROM yahoo_numlist WHERE toon_id=$1 AND toon_num_idx=$2);", [toon_id, idx, num])
     end
     if add == "yes"
       db.exec("UPDATE yahoo_bm SET toon_num=$1 WHERE id=$2 AND toon_id=$3;", [toon_num, session["user_id"], toon_id])
