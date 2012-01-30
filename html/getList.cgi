@@ -267,7 +267,12 @@ elsif site == "daum"
   reqList.keys.each do |v|
     numList[v] = []
     dateList[v] = []
-    num_resp = a.get("http://#{localhost}/getNum?site=daum&id=#{v}").body.split("\n").map {|item| item.strip.force_encoding("UTF-8") }
+    num_resp = a.get("http://#{localhost}/getNum?site=daum&id=#{v}").body
+
+    # 로그인 필요한 웹툰
+    next if num_resp == ""
+
+    num_resp = num_resp.split("\n").map {|item| item.strip.force_encoding("UTF-8") }
     num_resp[0].split()[1..-1].map {|item|
       numList[v].push(item.split(",")[0].to_i)
       dateList[v].push(item.split(",")[1])

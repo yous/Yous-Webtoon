@@ -49,6 +49,9 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
       str_finish = ""
       resp = a.get "http://cartoon.media.daum.net/webtoon/view/#{id}"
 
+      # 로그인 필요한 웹툰
+      return "" if resp.search('//div[@id="wrap"]/div[@id="content"]/form[@id="loginForm"]').length > 0
+
       resp.search('//div[@id="daumContent"]/div[@id="cMain"]').each do |r|
         r.search('div[@id="mCenter"]/div[@class="area_toon_info"]').each do |v|
           str_writer.push(v.at('div[@class="wrap_cont"]/dl[1]/dd/a').inner_html.strip)

@@ -264,6 +264,9 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
     elsif site == "daum"
       resp = a.get "http://cartoon.media.daum.net/webtoon/viewer/#{num}"
 
+      # 로그인 필요한 웹툰
+      return nil if resp.search('//div[@id="wrap"]/div[@id="content"]/form[@id="loginForm"]').length > 0
+
       _title = '<div id="title_area">'
       _content = '<div id="content_area">'
 
