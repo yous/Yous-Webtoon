@@ -14,7 +14,23 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
     res.body = process(site, id) if site != nil and id != nil
   end
 
+  def db_init(db, site)
+    case site
+    when "yahoo"
+      db.exec("CREATE TABLE yahoo_lastnum (toon_id INTEGER PRIMARY KEY, toon_num INTEGER NOT NULL);") rescue nil
+      db.exec("CREATE TABLE yahoo_numlist (toon_id INTEGER NOT NULL, toon_num_idx INTEGER NOT NULL, toon_num INTEGER NOT NULL, CONSTRAINTS id_idx UNIQUE (toon_id, toon_num_idx));") rescue nil
+    when "stoo"
+      db.exec("CREATE TABLE stoo_lastnum (toon_id INTEGER PRIMARY KEY, toon_num VARCHAR NOT NULL);") rescue nil
+      db.exec("CREATE TABLE stoo_numlist (toon_id INTEGER NOT NULL, toon_num_idx INTEGER NOT NULL, toon_num VARCHAR NOT NULL, CONSTRAINTS id_idx UNIQUE (toon_id, toon_num_idx));") rescue nil
+    end
+  end
+
   def process(site, id)
+    if site == "yahoo" or site == "stoo"
+      db = PGconn.open(:dbname => "yous")
+      db_init(db, site)
+    end
+
     a = Mechanize.new
 
     # Naver 웹툰
@@ -81,9 +97,6 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
       numList = []
       tmp_numList = []
 
-      db = PGconn.open(:dbname => "yous")
-      db.exec("CREATE TABLE yahoo_lastnum (toon_id INTEGER PRIMARY KEY, toon_num INTEGER NOT NULL);") rescue nil
-      db.exec("CREATE TABLE yahoo_numlist (toon_id INTEGER NOT NULL, toon_num_idx INTEGER NOT NULL, toon_num INTEGER NOT NULL, CONSTRAINTS id_idx UNIQUE (toon_id, toon_num_idx));") rescue nil
       db.exec("SELECT toon_num FROM yahoo_numlist WHERE toon_id=$1 ORDER BY toon_num_idx;", [id]).each do |row|
         _toon_num = row["toon_num"].to_i
         numList.push(_toon_num)
@@ -130,9 +143,6 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
       numList = []
       tmp_numList = []
 
-      db = PGconn.open(:dbname => "yous")
-      db.exec("CREATE TABLE stoo_lastnum (toon_id INTEGER PRIMARY KEY, toon_num VARCHAR NOT NULL);") rescue nil
-      db.exec("CREATE TABLE stoo_numlist (toon_id INTEGER NOT NULL, toon_num_idx INTEGER NOT NULL, toon_num VARCHAR NOT NULL, CONSTRAINTS id_idx UNIQUE (toon_id, toon_num_idx));") rescue nil
       db.exec("SELECT toon_num FROM stoo_numlist WHERE toon_id=$1 ORDER BY toon_num_idx;", [id]).each do |row|
         _toon_num = row["toon_num"]
         numList.push(_toon_num)

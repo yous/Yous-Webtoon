@@ -6,6 +6,26 @@ require 'cgi'
 require 'cgi/session'
 require 'pg'
 
+def db_init(db, site)
+  case site
+  when "naver"
+    db.exec("CREATE TABLE naver_bm (id INTEGER REFERENCES usr(id) ON DELETE CASCADE NOT NULL, toon_id INTEGER NOT NULL, toon_num INTEGER NOT NULL, CONSTRAINT naver_id_toon UNIQUE (id, toon_id));") rescue nil
+    db.exec("CREATE TABLE naver_lastnum (toon_id INTEGER PRIMARY KEY, toon_num INTEGER NOT NULL);") rescue nil
+  when "daum"
+    db.exec("CREATE TABLE daum_bm (id INTEGER REFERENCES usr(id) ON DELETE CASCADE NOT NULL, toon_id VARCHAR NOT NULL, toon_num INTEGER NOT NULL, CONSTRAINT daum_id_toon UNIQUE (id, toon_id));") rescue nil
+    db.exec("CREATE TABLE daum_lastnum (toon_id VARCHAR PRIMARY KEY, toon_num INTEGER NOT NULL);") rescue nil
+    db.exec("CREATE TABLE daum_numlist (toon_id VARCHAR NOT NULL, toon_num_idx INTEGER NOT NULL, toon_num INTEGER NOT NULL, toon_date VARCHAR(10), CONSTRAINT daum_id_idx UNIQUE (toon_id, toon_num_idx));") rescue nil
+  when "yahoo"
+    db.exec("CREATE TABLE yahoo_bm (id INTEGER REFERENCES usr(id) ON DELETE CASCADE NOT NULL, toon_id INTEGER NOT NULL, toon_num INTEGER NOT NULL, CONSTRAINT yahoo_id_toon UNIQUE (id, toon_id));") rescue nil
+    db.exec("CREATE TABLE yahoo_lastnum (toon_id INTEGER PRIMARY KEY, toon_num INTEGER NOT NULL);") rescue nil
+    db.exec("CREATE TABLE yahoo_numlist (toon_id INTEGER NOT NULL, toon_num_idx INTEGER NOT NULL, toon_num INTEGER NOT NULL, CONSTRAINT yahoo_id_idx UNIQUE (toon_id, toon_num_idx));") rescue nil
+  when "stoo"
+    db.exec("CREATE TABLE stoo_bm (id INTEGER REFERENCES usr(id) ON DELETE CASCADE NOT NULL, toon_id INTEGER NOT NULL, toon_num VARCHAR NOT NULL, CONSTRAINT stoo_id_toon UNIQUE (id, toon_id));") rescue nil
+    db.exec("CREATE TABLE stoo_lastnum (toon_id INTEGER PRIMARY KEY, toon_num VARCHAR NOT NULL);") rescue nil
+    db.exec("CREATE TABLE stoo_numlist (toon_id INTEGER NOT NULL, toon_num_idx INTEGER NOT NULL, toon_num VARCHAR NOT NULL, CONSTRAINT stoo_id_idx UNIQUE (toon_id, toon_num_idx));") rescue nil
+  end
+end
+
 puts "Content-Type: text/html; charset=utf-8\n\n"
 
 cgi = CGI.new
@@ -16,17 +36,7 @@ day_BM = cgi.params["day_BM"][0].split(",")
 session = CGI::Session.new(cgi, "session_key" => "SSID", "prefix" => "rubysess.", "tmpdir" => File.join(File.dirname(__FILE__), "/../sess"))
 
 db = PGconn.open(:dbname => "yous")
-db.exec("CREATE TABLE naver_bm (id INTEGER REFERENCES usr(id) ON DELETE CASCADE NOT NULL, toon_id INTEGER NOT NULL, toon_num INTEGER NOT NULL, CONSTRAINT naver_id_toon UNIQUE (id, toon_id));") rescue nil
-db.exec("CREATE TABLE naver_lastnum (toon_id INTEGER PRIMARY KEY, toon_num INTEGER NOT NULL);") rescue nil
-db.exec("CREATE TABLE daum_bm (id INTEGER REFERENCES usr(id) ON DELETE CASCADE NOT NULL, toon_id VARCHAR NOT NULL, toon_num INTEGER NOT NULL, CONSTRAINT daum_id_toon UNIQUE (id, toon_id));") rescue nil
-db.exec("CREATE TABLE daum_lastnum (toon_id VARCHAR PRIMARY KEY, toon_num INTEGER NOT NULL);") rescue nil
-db.exec("CREATE TABLE daum_numlist (toon_id VARCHAR NOT NULL, toon_num_idx INTEGER NOT NULL, toon_num INTEGER NOT NULL, toon_date VARCHAR(10), CONSTRAINT daum_id_idx UNIQUE (toon_id, toon_num_idx));") rescue nil
-db.exec("CREATE TABLE yahoo_bm (id INTEGER REFERENCES usr(id) ON DELETE CASCADE NOT NULL, toon_id INTEGER NOT NULL, toon_num INTEGER NOT NULL, CONSTRAINT yahoo_id_toon UNIQUE (id, toon_id));") rescue nil
-db.exec("CREATE TABLE yahoo_lastnum (toon_id INTEGER PRIMARY KEY, toon_num INTEGER NOT NULL);") rescue nil
-db.exec("CREATE TABLE yahoo_numlist (toon_id INTEGER NOT NULL, toon_num_idx INTEGER NOT NULL, toon_num INTEGER NOT NULL, CONSTRAINT yahoo_id_idx UNIQUE (toon_id, toon_num_idx));") rescue nil
-db.exec("CREATE TABLE stoo_bm (id INTEGER REFERENCES usr(id) ON DELETE CASCADE NOT NULL, toon_id INTEGER NOT NULL, toon_num VARCHAR NOT NULL, CONSTRAINT stoo_id_toon UNIQUE (id, toon_id));") rescue nil
-db.exec("CREATE TABLE stoo_lastnum (toon_id INTEGER PRIMARY KEY, toon_num VARCHAR NOT NULL);") rescue nil
-db.exec("CREATE TABLE stoo_numlist (toon_id INTEGER NOT NULL, toon_num_idx INTEGER NOT NULL, toon_num VARCHAR NOT NULL, CONSTRAINT stoo_id_idx UNIQUE (toon_id, toon_num_idx));") rescue nil
+db_init(db, site)
 
 a = Mechanize.new
 
