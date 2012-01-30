@@ -14,6 +14,7 @@ site = cgi.params["site"][0]
 session = CGI::Session.new(cgi, "session_key" => "SSID", "prefix" => "rubysess.", "tmpdir" => File.join(File.dirname(__FILE__), "/../sess"))
 
 db = PGconn.open(:dbname => "yous")
+db.exec("CREATE TABLE usr (id SERIAL PRIMARY KEY, usr_id VARCHAR NOT NULL UNIQUE, usr_pw VARCHAR NOT NULL);") rescue nil
 
 a = Mechanize.new
 
