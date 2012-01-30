@@ -717,8 +717,8 @@ elsif site == "stoo"
       end
     end
 
-    str << "toonBM={#{toonBM.keys.map {|v| "#{v}:#{toonBM[v]}"}.join(",")}};"
-    str << "lastNum={#{lastNum.keys.map {|v| "#{v}:#{lastNum[v]}"}.join(",")}};"
+    str << "toonBM={#{toonBM.keys.map {|v| "#{v}:'#{toonBM[v]}'"}.join(",")}};"
+    str << "lastNum={#{lastNum.keys.map {|v| "#{v}:'#{lastNum[v]}'"}.join(",")}};"
     str << "finishToon=[#{finishToon.join(",")}];"
 
     str << '$("#loading").html(" Loading");'
