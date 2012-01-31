@@ -431,6 +431,9 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
     elsif site == "stoo"
       resp = a.get "http://stoo.asiae.co.kr/cartoon/ctview.htm?sc3=#{id}&id=#{num}"
 
+      # 성인 인증 웹툰
+      return nil if resp.at('script').inner_html =~ /document\.location\.href\s*=\s*\"http:\/\/user\.asiae\.co\.kr\/19_login\.htm\"\s*;/
+
       _title = '<div id="title_area">'
       _content = '<div id="content_area">'
 
