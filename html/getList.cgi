@@ -455,7 +455,7 @@ elsif site == "yahoo"
           toonInfo[_titleId][0] = _title
         end
       end
-      if (not finishToon.include? _titleId) and reqList[_titleId].nil?
+      if not finishToon.include? _titleId
         finishToon.push(_titleId)
         reqList[_titleId] = -1
       end
