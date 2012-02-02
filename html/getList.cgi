@@ -270,6 +270,10 @@ elsif site == "daum"
     _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
     reqList[_titleId] = -1 unless tmpList.include? _titleId
+    if not finishToon.include? _titleId
+      finishToon.push(_titleId)
+      reqList[_titleId] = -1
+    end
 
     str_td[count % 7] << "<div id=\"#{_titleId}\" name=\"#{_titleId}\" class=\"finished_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon('#{_titleId}');\">#{_title}</div>"
     count += 1
@@ -669,6 +673,10 @@ elsif site == "stoo"
     _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
     reqList[_titleId] = -1 unless tmpList.include? _titleId
+    if not finishToon.include? _titleId
+      finishToon.push(_titleId)
+      reqList[_titleId] = -1
+    end
 
     str_td[count % 7] << "<div id=\"#{_titleId}\" name=\"#{_titleId}\" class=\"finished_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon(#{_titleId});\">#{_title}</div>"
     count += 1
