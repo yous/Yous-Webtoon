@@ -39,7 +39,7 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
       resp = a.get "http://comic.naver.com/webtoon/detail.nhn?titleId=#{id}"
 
       resp.search('//div[@id="header"]/div[@id="submenu"]/ul[@class="submenu"]/li').each do |v|
-        v.search('a[@class="current"]').each do |e|
+        v.search('./a[@class="current"]').each do |e|
           str << case e.attr("href")
           when "/webtoon/weekday.nhn" then "n "
           when "/webtoon/finish.nhn" then "y "
@@ -48,7 +48,7 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
         end
       end
       resp.search('//div[@class="btn_area"]').each do |v|
-        if v.at('span[@class="pre"]/a').attr("href") =~ /\/webtoon\/detail\.nhn\?titleId=\d+&seq=(\d+)/
+        if v.at('./span[@class="pre"]/a').attr("href") =~ /\/webtoon\/detail\.nhn\?titleId=\d+&seq=(\d+)/
           str << "#{$1.to_i + 1}"
         else
           str << "1"
@@ -69,11 +69,11 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
       return "" if resp.search('//div[@id="wrap"]/div[@id="content"]/form[@id="loginForm"]').length > 0
 
       resp.search('//div[@id="daumContent"]/div[@id="cMain"]/div[@id="mCenter"]').each do |r|
-        r.search('div[@class="area_toon_info"]').each do |v|
-          v.search('div[@class="wrap_cont"]/dl[1]/dd/a').each do |_writer|
+        r.search('./div[@class="area_toon_info"]').each do |v|
+          v.search('./div[@class="wrap_cont"]/dl[1]/dd/a').each do |_writer|
             str_writer.push(_writer.inner_html.strip)
           end
-          str_toonInfo = v.at('div[@class="wrap_more"]/dl[@class="list_intro"]/dd').inner_html.strip
+          str_toonInfo = v.at('./div[@class="wrap_more"]/dl[@class="list_intro"]/dd').inner_html.strip
         end
         r.at('./script[2]').inner_html.strip.split(";").map(&:strip).
           find_all {|v| v =~ /data1\.push\([\w\W]*\)/}.
@@ -117,7 +117,7 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
       check = true
       while check
         resp.search('//div[@id="cth"]/ol/li').each do |r|
-          if r.at('a[2]').attr("href") =~ /http:\/\/kr\.news\.yahoo\.com\/service\/cartoon\/shellview2\.htm\?linkid=series_cartoon&sidx=(\d+)/
+          if r.at('./a').attr("href") =~ /http:\/\/kr\.news\.yahoo\.com\/service\/cartoon\/shellview2\.htm\?linkid=series_cartoon&sidx=(\d+)/
             if numList.include?($1.to_i)
               check = false
               break
@@ -162,8 +162,8 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
       end
 
       resp.search('//div[@id="content"]/div[@class="ct_topdesc"]/div[@class="rt"]').each do |r|
-        str_writer = r.at('dl[2]/dd').inner_html.encode("UTF-8").strip
-        str_intro = r.at('dl[4]/dd').inner_html.encode("UTF-8").strip.gsub("\r", "").gsub("\n", "")
+        str_writer = r.at('./dl[1]/dd').inner_html.encode("UTF-8").strip
+        str_intro = r.at('./dl[3]/dd').inner_html.encode("UTF-8").strip.gsub("\r", "").gsub("\n", "")
       end
 
       page = 1
@@ -172,7 +172,7 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
       check = true
       while check
         resp.search('//table/tr/td').each do |td|
-          if td.at('a[2]').attr("href") =~ /\/cartoon\/ctview\.htm\?sc2=[\w\W]*&sc3=#{id}&tpg=[\w\W]+&id=([\w\W]*)/
+          if td.at('./a[2]').attr("href") =~ /\/cartoon\/ctview\.htm\?sc2=[\w\W]*&sc3=#{id}&tpg=[\w\W]+&id=([\w\W]*)/
             if numList.include? $1
               check = false
               break

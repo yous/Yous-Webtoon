@@ -41,18 +41,18 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
 
       # 웹툰 제목, 작가, 설명 출력
       resp.search('//div[@class="dsc"]').each do |r|
-        comic_title, writer = $1, $2 if r.at('h2').inner_html =~ /([\w\W]*)<em>([\w\W]*)<\/em>/
+        comic_title, writer = $1, $2 if r.at('./h2').inner_html =~ /([\w\W]*)<em>([\w\W]*)<\/em>/
         if resp.body =~ /<p class="txt">([\w\W]*)<\/p>[\w\W]*<ul class="btn_group">[\w\W]*<div class="tit_area">/
           comic_text = $1.gsub(/^<br\/?>/i, "").gsub(/<br\/?>$/i, "").gsub("<", "&lt;").gsub(">", "&gt;").gsub('"', "&quot;").gsub("'", "&#39;").gsub(/&lt;br\/?&gt;/i, "<br/>").force_encoding("UTF-8")
         end
-        #comic_text = r.at('p[@class="txt"]').inner_html.strip().gsub(/^<br\/?>/i, "").gsub(/<br\/?>$/i, "").gsub(/<br\/?>/i, " ")
+        #comic_text = r.at('./p[@class="txt"]').inner_html.strip().gsub(/^<br\/?>/i, "").gsub(/<br\/?>$/i, "").gsub(/<br\/?>/i, " ")
         comic_title = comic_title.strip()
         writer = writer.strip().gsub(/^<span>\s*/i, "").gsub(/\s*<\/span>/i, "")
         _title << "<div style=\"padding: 15px 0px 15px 0px; background-color: #{btnColor["buttonB"]};\">#{comic_title} - #{writer}<br/><small style=\"font-size: 12px;\">#{comic_text}</small><br/><br/>"
       end
       # 웹툰 회 제목, 날짜 출력
       resp.search('//div[@class="view_area"]').each do |r|
-        r1 = (r.at('div[@class="btn_me"]/div[@class="pme2"]/script') or r.at('div[@class="btn_me2"]/div[@class="pme2"]/script'))
+        r1 = (r.at('./div[@class="btn_me"]/div[@class="pme2"]/script') or r.at('./div[@class="btn_me2"]/div[@class="pme2"]/script'))
         if r1.inner_html =~ /"title"\s*:\s*"([\w\W]*)"\s*,[\w\W]*"tag"/
           title = $1.gsub("<", "&lt;").gsub(">", "&gt;").gsub('"', "&quot;").gsub("'", "&#39;")
         end
@@ -62,7 +62,7 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
 
       # BGM 출력
       resp.search('//div[@id="bgm_player"]').each do |r|
-        r.search('script').each do |e|
+        r.search('./script').each do |e|
           bgmURL = $1 if e.inner_html =~ /showMusicPlayer\("http:\/\/(.*)"\);/
           if not File::exists?("html/images/#{bgmURL.gsub(/\//, "@")}")
             _data = a.get("http://#{bgmURL}").body
@@ -186,8 +186,8 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
       # 만화책 형식의 웹툰
       resp.search('//div[@class="view_group"]').each do |r|
         count = 0
-        r.search('div[@class="book_viewer"]/div[@class="flip-cached_page"]/div').each do |v|
-          v.search('img').each do |e|
+        r.search('./div[@class="book_viewer"]/div[@class="flip-cached_page"]/div').each do |v|
+          v.search('./img').each do |e|
             if e.attributes["class"].to_s =~ /real_url\(http:\/\/(.*)\)/
               url = $1
               if not File::exists?("html/images/#{url.gsub(/\//, "@")}")
@@ -273,7 +273,7 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
       # 웹툰 제목, 작가, 설명 출력
       comic_title = ""
       resp.search('//div[@class="episode_info"]').each do |r|
-        comic_title = r.at('a[@class="title"]').inner_html.strip()
+        comic_title = r.at('./a[@class="title"]').inner_html.strip()
         _title << "<div style=\"padding: 15px 0px 15px 0px; background-color: #{btnColor["buttonB"]};\"></div>"
       end
       # 웹툰 회, 날짜 출력
@@ -432,7 +432,7 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
       resp = a.get "http://stoo.asiae.co.kr/cartoon/ctview.htm?sc3=#{id}&id=#{num}"
 
       # 성인 인증 웹툰
-      return nil if resp.at('script').inner_html =~ /document\.location\.href\s*=\s*\"http:\/\/user\.asiae\.co\.kr\/19_login\.htm\"\s*;/
+      return nil if resp.at('./script').inner_html =~ /document\.location\.href\s*=\s*\"http:\/\/user\.asiae\.co\.kr\/19_login\.htm\"\s*;/
 
       _title = '<div id="title_area">'
       _content = '<div id="content_area">'
@@ -443,8 +443,8 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
 
       # 웹툰 회, 날짜 출력
       resp.search('//div[@id="content"]/div[@class="cttop"]').each do |r|
-        title = r.at('h3/span').inner_html.encode("UTF-8").strip.gsub("<", "&lt;").gsub(">", "&gt;").gsub('"', "&quot;").gsub("'", "&#39;")
-        date = "#{$1}.#{$2}.#{$3}" if r.at('span[@class="date"]').inner_html.encode("UTF-8") =~ /(\d+)년\s+(\d+)월\s+(\d+)일/
+        title = r.at('./h3/span').inner_html.encode("UTF-8").strip.gsub("<", "&lt;").gsub(">", "&gt;").gsub('"', "&quot;").gsub("'", "&#39;")
+        date = "#{$1}.#{$2}.#{$3}" if r.at('./span[@class="date"]').inner_html.encode("UTF-8") =~ /(\d+)년\s+(\d+)월\s+(\d+)일/
         _title << "<small id=\"toon_date\">#{date}</small>"
       end
       _title << "<script>$('#title_area div').append('#{comic_title} - ' + toonInfo[#{id}][0] + '<br/><small style=\"font-size: 12px;\">' + toonInfo[#{id}][1] + '</small><br/><br/><b>#{title}</b>');</script>"

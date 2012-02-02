@@ -86,14 +86,14 @@ if site == "naver"
 
   resp.search('//div[@class="list_area daily_all"]').each do |r|
     day = 0
-    r.search('div/div[@class="col_inner"]').each do |v|
+    r.search('./div/div[@class="col_inner"]').each do |v|
       str << "<td id=\"day#{day}\">"
-      v.search('ul/li/div[@class="thumb"]').each do |v1|
-        _a = v1.at('a')
+      v.search('./ul/li/div[@class="thumb"]').each do |v1|
+        _a = v1.at('./a')
         _titleId = $1.to_i if _a.attr("href") =~ /\/webtoon\/list\.nhn\?titleId=(\d+)/
         _title = _a.attr("title")
-        _up = (_a.search('em').length != 0) ? '(UP)' : ''
-        _new = (_a.search('img').length > 1) ? '(NEW)' : ''
+        _up = (_a.search('./em').length != 0) ? '(UP)' : ''
+        _new = (_a.search('./img').length > 1) ? '(NEW)' : ''
         _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
         reqList[_titleId] = 1 unless tmpList.include? _titleId
@@ -117,7 +117,7 @@ if site == "naver"
   count = 0
 
   resp.search('//div[@class="thumb"]').each do |r|
-    _a = r.at('a')
+    _a = r.at('./a')
     _titleId = $1.to_i if _a.attr("href") =~ /\/webtoon\/list\.nhn\?titleId=(\d+)/
     _title = _a.attr("title")
     _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
@@ -236,9 +236,9 @@ elsif site == "daum"
 
   resp.search('//div[@class="area_toonlist area_bg"]').each do |r|
     day = 0
-    r.search('div/div[@class="bg_line"]').each do |v|
+    r.search('./div/div[@class="bg_line"]').each do |v|
       str << "<td id=\"day#{day}\">"
-      v.search('ul/li/a').each do |v1|
+      v.search('./ul/li/a').each do |v1|
         _titleId = $1 if v1.attr("href") =~ /\/webtoon\/view\/(.+)$/
         _title = v1.attr("title")
         _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
@@ -265,8 +265,8 @@ elsif site == "daum"
 
   resp.search('//ul[@class="list_type_image list_incount list_year"]/li').each do |r|
     next if r.attributes["class"].value == "line_dot"
-    _titleId = $1 if r.at('a').attr("href") =~ /\/webtoon\/view\/(.+)$/
-    _title = r.at('p').attr("title")
+    _titleId = $1 if r.at('./a').attr("href") =~ /\/webtoon\/view\/(.+)$/
+    _title = r.at('./p').attr("title")
     _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
     reqList[_titleId] = -1 unless tmpList.include? _titleId
@@ -401,8 +401,8 @@ elsif site == "yahoo"
 
   while true
     resp.search('//div[@id="cll"]/ol/li').each do |r|
-      _title = r.at('a[2]').inner_html.encode("UTF-8").strip
-      _titleId = $1.to_i if r.at('a[2]').attr("href") =~ /http:\/\/kr\.news\.yahoo\.com\/service\/cartoon\/shelllist.htm\?linkid=toon_series&work_idx=(\d+)/
+      _title = r.at('./a').inner_html.encode("UTF-8").strip
+      _titleId = $1.to_i if r.at('./a').attr("href") =~ /http:\/\/kr\.news\.yahoo\.com\/service\/cartoon\/shelllist.htm\?linkid=toon_series&work_idx=(\d+)/
       _color = (count[day] % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
       if not tmpList.include? _titleId
@@ -442,8 +442,8 @@ elsif site == "yahoo"
 
   while true
     resp.search('//div[@id="cll"]/ol/li').each do |r|
-      _title = r.at('a[2]').inner_html.encode("UTF-8").strip.force_encoding("UTF-8")
-      _titleId = $1.to_i if r.at('a[2]').attr("href") =~ /http:\/\/kr\.news\.yahoo\.com\/service\/cartoon\/shelllist.htm\?linkid=toon_series&work_idx=(\d+)/
+      _title = r.at('./a').inner_html.encode("UTF-8").strip.force_encoding("UTF-8")
+      _titleId = $1.to_i if r.at('./a').attr("href") =~ /http:\/\/kr\.news\.yahoo\.com\/service\/cartoon\/shelllist.htm\?linkid=toon_series&work_idx=(\d+)/
       _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
       if not tmpList.include? _titleId
@@ -497,8 +497,8 @@ elsif site == "yahoo"
 
   while true
     resp.search('//div[@id="cll"]/ol/li').each do |r|
-      _title = r.at('a[2]').inner_html.encode("UTF-8").strip
-      _titleId = $1.to_i if r.at('a[2]').attr("href") =~ /http:\/\/kr\.news\.yahoo\.com\/service\/cartoon\/shelllist.htm\?linkid=toon_series&work_idx=(\d+)/
+      _title = r.at('./a').inner_html.encode("UTF-8").strip
+      _titleId = $1.to_i if r.at('./a').attr("href") =~ /http:\/\/kr\.news\.yahoo\.com\/service\/cartoon\/shelllist.htm\?linkid=toon_series&work_idx=(\d+)/
       _color = (count[day] % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
       if not tmpList.include? _titleId
@@ -638,7 +638,7 @@ elsif site == "stoo"
   day = 0
 
   resp.search('//ul[@id="serialcm"]/li').each do |r|
-    _a = r.at('dl/dt[@class="desc"]/a')
+    _a = r.at('./dl/dt[@class="desc"]/a')
     _titleId = $1.to_i if _a.attr("href") =~ /\/cartoon\/ctlist\.htm\?sc1=cartoon&sc2=ing&sc3=(\d+)/
     _title = _a.attr("title").gsub(/<br\/?>/, " ")
     _color = (count[day] % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
@@ -662,7 +662,7 @@ elsif site == "stoo"
   count = 0
 
   resp.search('//ul[@id="endcm"]/li').each do |r|
-    _a = r.at('dl/dt[@class="desc"]/a')
+    _a = r.at('./dl/dt[@class="desc"]/a')
     _titleId = $1.to_i if _a.attr("href") =~ /\/cartoon\/ctlist\.htm\?sc1=cartoon&sc2=end&sc3=(\d+)/
     _title = _a.attr("title").gsub(/<br\/?>/, " ")
     _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]

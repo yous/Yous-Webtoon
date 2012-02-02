@@ -35,8 +35,8 @@ class GetOtherToon < WEBrick::HTTPServlet::AbstractServlet
         resp = a.get "http://comic.naver.com/artistTitle.nhn?artistId=#{artistId}&page=#{page}"
 
         resp.search('//ul[@class="authorList"]/li').each do |r|
-          titleId = $1 if r.at('h4[@class="title"]/a').attr("href").to_s =~ /\/webtoon\/detail\.nhn\?titleId=(\d+)/
-          title = r.at('h4[@class="title"]/a').inner_html.force_encoding("UTF-8")
+          titleId = $1 if r.at('./h4[@class="title"]/a').attr("href").to_s =~ /\/webtoon\/detail\.nhn\?titleId=(\d+)/
+          title = r.at('./h4[@class="title"]/a').inner_html.force_encoding("UTF-8")
           str << "<div id=\"#{titleId}\" style=\"background-color: #{btnColor["buttonB"]}; cursor: default; margin: 3px 0px 3px 0px;\" onclick=\"viewToon('#{titleId}');\">#{title}</div>"
         end
         page += 1
