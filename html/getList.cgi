@@ -187,7 +187,7 @@ elsif site == "daum"
     finishToon.push(_toon_id)
   end
 
-  db.exec("SELECT toon_id, toon_num, toon_date FROM daum_numlist ORDER BY toon_num_idx;").each do |row|
+  db.exec("SELECT toon_id, toon_num, toon_date FROM daum_numlist ORDER BY toon_id, toon_num_idx;").each do |row|
     _toon_id = row["toon_id"]
     _toon_num = row["toon_num"]
     _toon_date = row["toon_date"]
@@ -354,7 +354,7 @@ elsif site == "yahoo"
     finishToon.push(_toon_id)
   end
 
-  db.exec("SELECT toon_id, toon_num FROM yahoo_numlist ORDER BY toon_num_idx;").each do |row|
+  db.exec("SELECT toon_id, toon_num FROM yahoo_numlist ORDER BY toon_id, toon_num_idx;").each do |row|
     _toon_id = row["toon_id"].to_i
     _toon_num = row["toon_num"].to_i
     if _toon_num.nil?
@@ -597,7 +597,7 @@ elsif site == "stoo"
     finishToon.push(_toon_id)
   end
 
-  db.exec("SELECT toon_id, toon_num FROM stoo_numlist ORDER BY toon_num_idx;").each do |row|
+  db.exec("SELECT toon_id, toon_num FROM stoo_numlist ORDER BY toon_id, toon_num_idx;").each do |row|
     _toon_id = row["toon_id"].to_i
     _toon_num = row["toon_num"]
     if _toon_num.nil?

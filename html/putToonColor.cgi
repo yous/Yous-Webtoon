@@ -123,7 +123,7 @@ elsif site == "daum"
   finishToon = []
   reqList = Hash.new
 
-  db.exec("SELECT toon_id, toon_num, toon_date FROM daum_numlist ORDER BY toon_num_idx;").each do |row|
+  db.exec("SELECT toon_id, toon_num, toon_date FROM daum_numlist ORDER BY toon_id, toon_num_idx;").each do |row|
     _toon_id = row["toon_id"]
     _toon_num = row["toon_num"].to_i
     _toon_date = row["toon_date"]
@@ -223,7 +223,7 @@ elsif site == "yahoo"
   finishToon = []
   reqList = Hash.new
 
-  db.exec("SELECT toon_id, toon_num FROM yahoo_numlist ORDER BY toon_num_idx;").each do |row|
+  db.exec("SELECT toon_id, toon_num FROM yahoo_numlist ORDER BY toon_id, toon_num_idx;").each do |row|
     _toon_id = row["toon_id"].to_i
     _toon_num = row["toon_num"].to_i
     numList[_toon_id] = [] if numList[_toon_id].nil?
@@ -308,7 +308,7 @@ elsif site == "stoo"
   finishToon = []
   reqList = Hash.new
 
-  db.exec("SELECT toon_id, toon_num FROM stoo_numlist ORDER BY toon_num_idx;").each do |row|
+  db.exec("SELECT toon_id, toon_num FROM stoo_numlist ORDER BY toon_id, toon_num_idx;").each do |row|
     _toon_id = row["toon_id"].to_i
     _toon_num = row["toon_num"]
     numList[_toon_id] = [] if numList[_toon_id].nil?
