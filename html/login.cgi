@@ -12,7 +12,7 @@ user_pw = (cgi.has_key?("user_pw")) ? cgi.params["user_pw"][0] : nil
 
 if user_id != nil and user_pw != nil
   db = PGconn.open(:dbname => "yous")
-  db.exec("CREATE TABLE usr (id SERIAL PRIMARY KEY, usr_id VARCHAR NOT NULL UNIQUE, usr_pw VARCHAR NOT NULL);") rescue nil
+  db.exec("CREATE TABLE IF NOT EXISTS usr (id SERIAL PRIMARY KEY, usr_id VARCHAR NOT NULL UNIQUE, usr_pw VARCHAR NOT NULL);")
 
   session = CGI::Session.new(cgi, "session_key" => "SSID", "prefix" => "rubysess.", "tmpdir" => File.join(File.dirname(__FILE__), "/../sess"), "new_session" => true)
 
