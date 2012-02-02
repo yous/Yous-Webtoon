@@ -55,7 +55,7 @@ btnColor = {
 
 # Naver 웹툰
 if site == "naver"
-  reqList = Hash.new
+  reqList = []
   tmpList = []
 
   db.exec("SELECT toon_id FROM naver_tmplist ORDER BY toon_id;").each do |row|
@@ -96,7 +96,7 @@ if site == "naver"
         _new = (_a.search('./img').length > 1) ? '(NEW)' : ''
         _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
-        reqList[_titleId] = 1 unless tmpList.include? _titleId
+        reqList.push(_titleId) unless tmpList.include? _titleId
 
         str << "<div id=\"#{_titleId}\" name=\"#{_titleId}\" class=\"current_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}#{_new}#{_up}\" onclick=\"viewToon(#{_titleId});\">#{_title}<small>#{_new}#{_up}</small></div>"
         count += 1
@@ -122,7 +122,7 @@ if site == "naver"
     _title = _a.attr("title")
     _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
-    reqList[_titleId] = 1 unless tmpList.include? _titleId
+    reqList.push(_titleId) unless tmpList.include? _titleId
 
     str_td[count % 7] << "<div id=\"#{_titleId}\" name=\"#{_titleId}\" class=\"finished_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon(#{_titleId});\">#{_title}</div>"
     count += 1
@@ -133,7 +133,7 @@ if site == "naver"
 
   # reqList 처리
   str << '<script>'
-  reqList.keys.each do |v|
+  reqList.each do |v|
     str << "$.get(\"/displayToon?site=naver&id=#{v}&num=1\");"
     db.exec("INSERT INTO naver_tmplist (toon_id) SELECT $1 WHERE NOT EXISTS (SELECT 1 FROM naver_tmplist WHERE toon_id=$1);", [v])
   end
