@@ -356,7 +356,7 @@ elsif site == "yahoo"
 
   db.exec("SELECT toon_id, toon_num FROM yahoo_numlist ORDER BY toon_num_idx;").each do |row|
     _toon_id = row["toon_id"].to_i
-    _toon_num = row["toon_num"]
+    _toon_num = row["toon_num"].to_i
     tmpList.push(_toon_id) unless tmpList.include? _toon_id
     if _toon_num.nil?
       reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0
