@@ -189,9 +189,9 @@ elsif site == "daum"
 
   db.exec("SELECT toon_id, toon_num, toon_date FROM daum_numlist ORDER BY toon_id, toon_num_idx;").each do |row|
     _toon_id = row["toon_id"]
-    _toon_num = row["toon_num"]
+    _toon_num = row["toon_num"].to_i
     _toon_date = row["toon_date"]
-    if _toon_num.nil? or _toon_date.nil?
+    if _toon_date.nil?
       reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0
     else
       numList[_toon_id] = [] if numList[_toon_id].nil?
@@ -359,12 +359,8 @@ elsif site == "yahoo"
   db.exec("SELECT toon_id, toon_num FROM yahoo_numlist ORDER BY toon_id, toon_num_idx;").each do |row|
     _toon_id = row["toon_id"].to_i
     _toon_num = row["toon_num"].to_i
-    if _toon_num.nil?
-      reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0
-    else
-      numList[_toon_id] = [] if numList[_toon_id].nil?
-      numList[_toon_id].push(_toon_num.to_i)
-    end
+    numList[_toon_id] = [] if numList[_toon_id].nil?
+    numList[_toon_id].push(_toon_num.to_i)
     unless tmpList.include? _toon_id
       tmpList.push(_toon_id)
       res = db.exec("SELECT toon_title, toon_intro FROM yahoo_tooninfo WHERE toon_id=$1;", [_toon_id])
@@ -602,12 +598,8 @@ elsif site == "stoo"
   db.exec("SELECT toon_id, toon_num FROM stoo_numlist ORDER BY toon_id, toon_num_idx;").each do |row|
     _toon_id = row["toon_id"].to_i
     _toon_num = row["toon_num"]
-    if _toon_num.nil?
-      reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0
-    else
-      numList[_toon_id] = [] if numList[_toon_id].nil?
-      numList[_toon_id].push(_toon_num.to_i)
-    end
+    numList[_toon_id] = [] if numList[_toon_id].nil?
+    numList[_toon_id].push(_toon_num.to_i)
     unless tmpList.include? _toon_id
       tmpList.push(_toon_id)
       res = db.exec("SELECT toon_writer, toon_intro FROM stoo_tooninfo WHERE toon_id=$1;", [_toon_id])
