@@ -296,6 +296,7 @@ elsif site == "daum"
       dateList[v].push(item.split(",")[1])
     }
     toonInfo[v] = [num_resp[1], (num_resp[2].nil?) ? nil : num_resp[2].gsub('"', "&quot;").gsub("'", "&#39;").gsub("<", "&lt;").gsub(">", "&gt;")]
+    lastNum[v] = numList[v][-1]
 
     str << "$.get(\"/displayToon?site=daum&id=#{v}&num=#{numList[v][0]}\");"
     (0...numList[v].length).each do |i|
