@@ -192,7 +192,7 @@ elsif site == "daum"
     _toon_num = row["toon_num"].to_i
     _toon_date = row["toon_date"]
     if _toon_date.nil?
-      reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0
+      reqList[_toon_id] = false
     else
       numList[_toon_id] = [] if numList[_toon_id].nil?
       numList[_toon_id].push(_toon_num.to_i)
@@ -203,11 +203,11 @@ elsif site == "daum"
       tmpList.push(_toon_id)
       res = db.exec("SELECT toon_writer, toon_intro FROM daum_tooninfo WHERE toon_id=$1::VARCHAR;", [_toon_id])
       if res.count < 1
-        reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0
+        reqList[_toon_id] = false
       else
         _toon_writer = res[0]["toon_writer"]
         _toon_intro = res[0]["toon_intro"]
-        reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0 if _toon_writer.nil? or _toon_intro.nil?
+        reqList[_toon_id] = false if _toon_writer.nil? or _toon_intro.nil?
         toonInfo[_toon_id] = [_toon_writer, _toon_intro]
       end
     end
@@ -243,7 +243,7 @@ elsif site == "daum"
         _title = v1.attr("title")
         _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
-        reqList[_titleId] = 0 unless tmpList.include? _titleId
+        reqList[_titleId] = true unless tmpList.include? _titleId
 
         str << "<div id=\"#{_titleId}\" name=\"#{_titleId}\" class=\"current_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon('#{_titleId}');\">#{_title}</div>"
         count += 1
@@ -269,10 +269,9 @@ elsif site == "daum"
     _title = r.at('./p').attr("title")
     _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
-    reqList[_titleId] = -1 unless tmpList.include? _titleId
     if not finishToon.include? _titleId
       finishToon.push(_titleId)
-      reqList[_titleId] = -1
+      reqList[_titleId] = (tmpList.include? _titleId) ? false : true
     end
 
     str_td[count % 7] << "<div id=\"#{_titleId}\" name=\"#{_titleId}\" class=\"finished_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon('#{_titleId}');\">#{_title}</div>"
@@ -302,14 +301,14 @@ elsif site == "daum"
     toonInfo[v] = [num_resp[1], (num_resp[2].nil?) ? nil : num_resp[2].gsub('"', "&quot;").gsub("'", "&#39;").gsub("<", "&lt;").gsub(">", "&gt;")]
     lastNum[v] = numList[v][-1]
 
-    str << "$.get(\"/displayToon?site=daum&id=#{v}&num=#{numList[v][0]}\");"
+    str << "$.get(\"/displayToon?site=daum&id=#{v}&num=#{numList[v][0]}\");" if reqList[v]
     numList[v].each_with_index do |num, idx|
       db.exec("UPDATE daum_numlist SET toon_num=$1, toon_date=$2::VARCHAR WHERE toon_id=$3::VARCHAR AND toon_num_idx=$4;", [num, dateList[v][idx], v, idx])
       db.exec("INSERT INTO daum_numlist (toon_id, toon_num_idx, toon_num, toon_date) SELECT $1::VARCHAR, $2, $3, $4::VARCHAR WHERE NOT EXISTS (SELECT 1 FROM daum_numlist WHERE toon_id=$1 AND toon_num_idx=$2);", [v, idx, num, dateList[v][idx]])
       db.exec("UPDATE daum_tooninfo SET toon_writer=$1::VARCHAR, toon_intro=$2::VARCHAR WHERE toon_id=$3;", [toonInfo[v][0], toonInfo[v][1], v])
       db.exec("INSERT INTO daum_tooninfo (toon_id, toon_writer, toon_intro) SELECT $1::VARCHAR, $2::VARCHAR, $3::VARCHAR WHERE NOT EXISTS (SELECT 1 FROM daum_tooninfo WHERE toon_id=$1);", [v, toonInfo[v][0], toonInfo[v][1]])
     end
-    if reqList[v] == -1 # 완결
+    if finishToon.include? v # 완결
       db.exec("UPDATE daum_lastnum SET toon_num=$1 WHERE toon_id=$2::VARCHAR;", [numList[v][-1], v])
       db.exec("INSERT INTO daum_lastnum (toon_id, toon_num) SELECT $1::VARCHAR, $2 WHERE NOT EXISTS (SELECT 1 FROM daum_lastnum WHERE toon_id=$1);", [v, numList[v][-1]])
     end
@@ -370,11 +369,11 @@ elsif site == "yahoo"
       tmpList.push(_toon_id)
       res = db.exec("SELECT toon_title, toon_intro FROM yahoo_tooninfo WHERE toon_id=$1;", [_toon_id])
       if res.count < 1
-        reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0
+        reqList[_toon_id] = false
       else
         _toon_title = res[0]["toon_title"]
         _toon_intro = res[0]["toon_intro"]
-        reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0 if _toon_title.nil? or _toon_intro.nil?
+        reqList[_toon_id] = false if _toon_title.nil? or _toon_intro.nil?
         toonInfo[_toon_id] = [_toon_title, _toon_intro]
       end
     end
@@ -411,9 +410,7 @@ elsif site == "yahoo"
       _titleId = $1.to_i if r.at('./a').attr("href") =~ /http:\/\/kr\.news\.yahoo\.com\/service\/cartoon\/shelllist.htm\?linkid=toon_series&work_idx=(\d+)/
       _color = (count[day] % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
-      if not tmpList.include? _titleId
-        reqList[_titleId] = 0
-      end
+      reqList[_titleId] = true unless tmpList.include? _titleId
       if toonInfo[_titleId].nil?
         toonInfo[_titleId] = [_title, nil]
       else
@@ -452,12 +449,9 @@ elsif site == "yahoo"
       _titleId = $1.to_i if r.at('./a').attr("href") =~ /http:\/\/kr\.news\.yahoo\.com\/service\/cartoon\/shelllist.htm\?linkid=toon_series&work_idx=(\d+)/
       _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
-      if not tmpList.include? _titleId
-        reqList[_titleId] = -1
-      end
       if not finishToon.include? _titleId
         finishToon.push(_titleId)
-        reqList[_titleId] = -1
+        reqList[_titleId] = (tmpList.include? _titleId) ? false : true
       end
       if toonInfo[_titleId].nil?
         toonInfo[_titleId] = [_title, nil]
@@ -507,9 +501,7 @@ elsif site == "yahoo"
       _titleId = $1.to_i if r.at('./a').attr("href") =~ /http:\/\/kr\.news\.yahoo\.com\/service\/cartoon\/shelllist.htm\?linkid=toon_series&work_idx=(\d+)/
       _color = (count[day] % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
-      if not tmpList.include? _titleId
-        reqList[_titleId] = 0
-      end
+      reqList[_titleId] = true unless tmpList.include? _titleId
       if toonInfo[_titleId].nil?
         toonInfo[_titleId] = [_title, nil]
       else
@@ -542,14 +534,14 @@ elsif site == "yahoo"
     toonInfo[v][1] = (num_resp[1].nil?) ? nil : num_resp[1].force_encoding("UTF-8").gsub('"', "&quot;").gsub("'", "&#39;").gsub("<", "&lt;").gsub(">", "&gt;").gsub(/&lt;br\/?&gt;/, "<br/>")
     lastNum[v] = numList[v][-1]
 
-    str << "$.get(\"/displayToon?site=yahoo&id=#{v}&num=#{numList[v][0]}\");"
+    str << "$.get(\"/displayToon?site=yahoo&id=#{v}&num=#{numList[v][0]}\");" if reqList[v]
     numList[v].each_with_index do |num, idx|
       db.exec("UPDATE yahoo_numlist SET toon_num=$1 WHERE toon_id=$2 AND toon_num_idx=$3;", [num, v, idx])
       db.exec("INSERT INTO yahoo_numlist (toon_id, toon_num_idx, toon_num) SELECT $1, $2, $3 WHERE NOT EXISTS (SELECT 1 FROM yahoo_numlist WHERE toon_id=$1 AND toon_num_idx=$2);", [v, idx, num])
       db.exec("UPDATE yahoo_tooninfo SET toon_title=$1::VARCHAR, toon_intro=$2::VARCHAR WHERE toon_id=$3;", [toonInfo[v][0], toonInfo[v][1], v])
       db.exec("INSERT INTO yahoo_tooninfo (toon_id, toon_title, toon_intro) SELECT $1, $2::VARCHAR, $3::VARCHAR WHERE NOT EXISTS (SELECT 1 FROM yahoo_tooninfo WHERE toon_id=$1);", [v, toonInfo[v][0], toonInfo[v][1]])
     end
-    if reqList[v] == -1 # 완결
+    if finishToon.include? v # 완결
       db.exec("UPDATE yahoo_lastnum SET toon_num=$1 WHERE toon_id=$2;", [numList[v][-1], v])
       db.exec("INSERT INTO yahoo_lastnum (toon_id, toon_num) SELECT $1, $2 WHERE NOT EXISTS (SELECT 1 FROM yahoo_lastnum WHERE toon_id=$1);", [v, numList[v][-1]])
     end
@@ -609,11 +601,11 @@ elsif site == "stoo"
       tmpList.push(_toon_id)
       res = db.exec("SELECT toon_writer, toon_intro FROM stoo_tooninfo WHERE toon_id=$1;", [_toon_id])
       if res.count < 1
-        reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0
+        reqList[_toon_id] = false
       else
         _toon_writer = res[0]["toon_writer"]
         _toon_intro = res[0]["toon_intro"]
-        reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0 if _toon_writer.nil? or _toon_intro.nil?
+        reqList[_toon_id] = false if _toon_writer.nil? or _toon_intro.nil?
         toonInfo[_toon_id] = [_toon_writer, _toon_intro]
       end
     end
@@ -648,7 +640,7 @@ elsif site == "stoo"
     _title = _a.attr("title").gsub(/<br\/?>/, " ")
     _color = (count[day] % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
-    reqList[_titleId] = 1 unless tmpList.include? _titleId
+    reqList[_titleId] = true unless tmpList.include? _titleId
 
     str_td[day] << "<div id=\"#{_titleId}\" name=\"#{_titleId}\" class=\"current_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon(#{_titleId});\">#{_title}</div>"
     count[day] += 1
@@ -672,10 +664,9 @@ elsif site == "stoo"
     _title = _a.attr("title").gsub(/<br\/?>/, " ")
     _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
-    reqList[_titleId] = -1 unless tmpList.include? _titleId
     if not finishToon.include? _titleId
       finishToon.push(_titleId)
-      reqList[_titleId] = -1
+      reqList[_titleId] = (tmpList.include? _titleId) ? false : true
     end
 
     str_td[count % 7] << "<div id=\"#{_titleId}\" name=\"#{_titleId}\" class=\"finished_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon(#{_titleId});\">#{_title}</div>"
@@ -695,14 +686,14 @@ elsif site == "stoo"
     toonInfo[v] = [num_resp[1].force_encoding("UTF-8"), (num_resp[2].nil?) ? nil : num_resp[2].force_encoding("UTF-8").gsub('"', "&quot;").gsub("'", "&#39;").gsub("<", "&lt;").gsub(">", "&gt;").gsub(/&lt;br\/?&gt;/, "<br/>")]
     lastNum[v] = numList[v][-1]
 
-    str << "$.get(\"/displayToon?site=yahoo&id=#{v}&num=#{numList[v][0]}\");"
+    str << "$.get(\"/displayToon?site=yahoo&id=#{v}&num=#{numList[v][0]}\");" if reqList[v]
     numList[v].each_with_index do |num, idx|
       db.exec("UPDATE stoo_numlist SET toon_num=$1::VARCHAR WHERE toon_id=$2 AND toon_num_idx=$3;", [num, v, idx])
       db.exec("INSERT INTO stoo_numlist (toon_id, toon_num_idx, toon_num) SELECT $1, $2, $3::VARCHAR WHERE NOT EXISTS (SELECT 1 FROM stoo_numlist WHERE toon_id=$1 AND toon_num_idx=$2);", [v, idx, num])
       db.exec("UPDATE stoo_tooninfo SET toon_writer=$1::VARCHAR, toon_intro=$2::VARCHAR WHERE toon_id=$3;", [toonInfo[v][0], toonInfo[v][1], v])
       db.exec("INSERT INTO stoo_tooninfo (toon_id, toon_writer, toon_intro) SELECT $1, $2::VARCHAR, $3::VARCHAR WHERE NOT EXISTS (SELECT 1 FROM stoo_tooninfo WHERE toon_id=$1);", [v, toonInfo[v][0], toonInfo[v][1]])
     end
-    if reqList[v] == -1 # 완결
+    if finishToon.include? v # 완결
       db.exec("UPDATE stoo_lastnum SET toon_num=$1::VARCHAR WHERE toon_id=$2;", [numList[v][-1], v])
       db.exec("INSERT INTO stoo_lastnum (toon_id, toon_num) SELECT $1, $2::VARCHAR WHERE NOT EXISTS (SELECT 1 FROM yahoo_lastnum WHERE toon_id=$1);", [v, numList[v][-1]])
     end
