@@ -716,11 +716,6 @@ elsif site == "stoo"
       _toon_id = row["toon_id"].to_i
       _toon_num = row["toon_num"]
       toonBM[_toon_id] = _toon_num
-      db.exec("SELECT toon_num FROM stoo_lastnum WHERE toon_id=$1;", [_toon_id]).each do |sec_row|
-        _lastNum = sec_row["toon_num"]
-        lastNum[_toon_id] = _lastNum
-        finishToon.push(_toon_id)
-      end
     end
 
     str << "toonBM={#{toonBM.keys.map {|v| "#{v}:'#{toonBM[v]}'"}.join(",")}};"
