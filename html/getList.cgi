@@ -191,7 +191,6 @@ elsif site == "daum"
     _toon_id = row["toon_id"]
     _toon_num = row["toon_num"]
     _toon_date = row["toon_date"]
-    tmpList.push(_toon_id) unless tmpList.include? _toon_id
     if _toon_num.nil? or _toon_date.nil?
       reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0
     else
@@ -200,16 +199,17 @@ elsif site == "daum"
       dateList[_toon_id] = [] if dateList[_toon_id].nil?
       dateList[_toon_id].push(_toon_date)
     end
-  end
-
-  db.exec("SELECT toon_id, toon_writer, toon_intro FROM daum_tooninfo;").each do |row|
-    _toon_id = row["toon_id"]
-    _toon_writer = row["toon_writer"]
-    _toon_intro = row["toon_intro"]
-    if _toon_writer.nil? or _toon_intro.nil?
-      reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0
-    else
-      toonInfo[_toon_id] = [_toon_writer, _toon_intro]
+    unless tmpList.include? _toon_id
+      tmpList.push(_toon_id)
+      res = db.exec("SELECT toon_writer, toon_intro FROM daum_tooninfo WHERE toon_id=$1::VARCHAR;", [_toon_id])
+      if res.count < 1
+        reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0
+      else
+        _toon_writer = res[0]["toon_writer"]
+        _toon_intro = res[0]["toon_intro"]
+        reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0 if _toon_writer.nil? or _toon_intro.nil?
+        toonInfo[_toon_id] = [_toon_writer, _toon_intro]
+      end
     end
   end
 
@@ -357,21 +357,24 @@ elsif site == "yahoo"
   db.exec("SELECT toon_id, toon_num FROM yahoo_numlist ORDER BY toon_num_idx;").each do |row|
     _toon_id = row["toon_id"].to_i
     _toon_num = row["toon_num"].to_i
-    tmpList.push(_toon_id) unless tmpList.include? _toon_id
     if _toon_num.nil?
       reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0
     else
       numList[_toon_id] = [] if numList[_toon_id].nil?
       numList[_toon_id].push(_toon_num.to_i)
     end
-  end
-
-  db.exec("SELECT toon_id, toon_title, toon_intro FROM yahoo_tooninfo;").each do |row|
-    _toon_id = row["toon_id"].to_i
-    _toon_title = row["toon_title"]
-    _toon_intro = row["toon_intro"]
-    reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0 if _toon_intro.nil? or _toon_title.nil?
-    toonInfo[_toon_id] = [_toon_title, _toon_intro]
+    unless tmpList.include? _toon_id
+      tmpList.push(_toon_id)
+      res = db.exec("SELECT toon_title, toon_intro FROM yahoo_tooninfo WHERE toon_id=$1;", [_toon_id])
+      if res.count < 1
+        reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0
+      else
+        _toon_title = res[0]["toon_title"]
+        _toon_intro = res[0]["toon_intro"]
+        reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0 if _toon_title.nil? or _toon_intro.nil?
+        toonInfo[_toon_id] = [_toon_title, _toon_intro]
+      end
+    end
   end
 
   # 연재
@@ -597,21 +600,24 @@ elsif site == "stoo"
   db.exec("SELECT toon_id, toon_num FROM stoo_numlist ORDER BY toon_num_idx;").each do |row|
     _toon_id = row["toon_id"].to_i
     _toon_num = row["toon_num"]
-    tmpList.push(_toon_id) unless tmpList.include?(_toon_id)
     if _toon_num.nil?
       reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0
     else
       numList[_toon_id] = [] if numList[_toon_id].nil?
       numList[_toon_id].push(_toon_num.to_i)
     end
-  end
-
-  db.exec("SELECT toon_id, toon_writer, toon_intro FROM stoo_tooninfo;").each do |row|
-    _toon_id = row["toon_id"].to_i
-    _toon_writer = row["toon_writer"]
-    _toon_intro = row["toon_intro"]
-    reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0 if _toon_writer.nil? or _toon_intro.nil?
-    toonInfo[_toon_id] = [_toon_writer, _toon_intro]
+    unless tmpList.include? _toon_id
+      tmpList.push(_toon_id)
+      res = db.exec("SELECT toon_writer, toon_intro FROM stoo_tooninfo WHERE toon_id=$1;", [_toon_id])
+      if res.count < 1
+        reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0
+      else
+        _toon_writer = res[0]["toon_writer"]
+        _toon_intro = res[0]["toon_intro"]
+        reqList[_toon_id] = (finishToon.include? _toon_id) ? -1 : 0 if _toon_writer.nil? or _toon_intro.nil?
+        toonInfo[_toon_id] = [_toon_writer, _toon_intro]
+      end
+    end
   end
 
   resp = a.get "http://stoo.asiae.co.kr/cartoon/"
