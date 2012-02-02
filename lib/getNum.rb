@@ -27,7 +27,7 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
 
   def process(site, id)
     if site == "yahoo" or site == "stoo"
-      db = PGconn.open(:dbname => "yous")
+      db = PGconn.open(:dbname => "webtoon")
       db_init(db, site)
     end
 

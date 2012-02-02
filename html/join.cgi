@@ -11,7 +11,7 @@ cgi = CGI.new
 user_id = (cgi.has_key?("user_id")) ? cgi.params["user_id"][0] : nil
 user_pw = (cgi.has_key?("user_pw")) ? cgi.params["user_pw"][0] : nil
 
-db = PGconn.open(:dbname => "yous")
+db = PGconn.open(:dbname => "webtoon")
 db.exec("CREATE TABLE IF NOT EXISTS usr (id SERIAL PRIMARY KEY, usr_id VARCHAR NOT NULL UNIQUE, usr_pw VARCHAR NOT NULL);")
 
 check = false

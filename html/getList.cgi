@@ -37,7 +37,7 @@ site = cgi.params["site"][0]
 
 session = CGI::Session.new(cgi, "session_key" => "SSID", "prefix" => "rubysess.", "tmpdir" => File.join(File.dirname(__FILE__), "/../sess"))
 
-db = PGconn.open(:dbname => "yous")
+db = PGconn.open(:dbname => "webtoon")
 db.exec("CREATE TABLE IF NOT EXISTS usr (id SERIAL PRIMARY KEY, usr_id VARCHAR NOT NULL UNIQUE, usr_pw VARCHAR NOT NULL);")
 db_init(db, site)
 
