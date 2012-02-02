@@ -413,11 +413,11 @@ elsif site == "yahoo"
 
       if not tmpList.include? _titleId
         reqList[_titleId] = 0
-        if toonInfo[_titleId].nil?
-          toonInfo[_titleId] = [_title, nil]
-        else
-          toonInfo[_titleId][0] = _title
-        end
+      end
+      if toonInfo[_titleId].nil?
+        toonInfo[_titleId] = [_title, nil]
+      else
+        toonInfo[_titleId][0] = _title
       end
 
       str_td[day] << "<div id=\"#{_titleId}\" name=\"#{_titleId}\" class=\"current_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon(#{_titleId});\">#{_title}</div>"
@@ -454,15 +454,15 @@ elsif site == "yahoo"
 
       if not tmpList.include? _titleId
         reqList[_titleId] = -1
-        if toonInfo[_titleId].nil?
-          toonInfo[_titleId] = [_title, nil]
-        else
-          toonInfo[_titleId][0] = _title
-        end
       end
       if not finishToon.include? _titleId
         finishToon.push(_titleId)
         reqList[_titleId] = -1
+      end
+      if toonInfo[_titleId].nil?
+        toonInfo[_titleId] = [_title, nil]
+      else
+        toonInfo[_titleId][0] = _title
       end
 
       str_td[count % 7] << "<div id=\"#{_titleId}\" name=\"#{_titleId}\" class=\"finished_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon(#{_titleId});\">#{_title}</div>"
@@ -509,11 +509,11 @@ elsif site == "yahoo"
 
       if not tmpList.include? _titleId
         reqList[_titleId] = 0
-        if toonInfo[_titleId].nil?
-          toonInfo[_titleId] = [_title, nil]
-        else
-          toonInfo[_titleId][0] = _title
-        end
+      end
+      if toonInfo[_titleId].nil?
+        toonInfo[_titleId] = [_title, nil]
+      else
+        toonInfo[_titleId][0] = _title
       end
 
       str_td[day] << "<div id=\"#{_titleId}\" name=\"#{_titleId}\" class=\"current_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon(#{_titleId});\">#{_title}</div>"
