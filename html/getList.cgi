@@ -688,7 +688,7 @@ elsif site == "stoo"
     toonInfo[v] = [num_resp[1].force_encoding("UTF-8"), (num_resp[2].nil?) ? nil : num_resp[2].force_encoding("UTF-8").gsub('"', "&quot;").gsub("'", "&#39;").gsub("<", "&lt;").gsub(">", "&gt;").gsub(/&lt;br\/?&gt;/, "<br/>")]
     lastNum[v] = numList[v][-1]
 
-    str << "$.get(\"/displayToon?site=yahoo&id=#{v}&num=#{numList[v][0]}\");" if reqList[v]
+    str << "$.get(\"/displayToon?site=stoo&id=#{v}&num=#{numList[v][0]}\");" if reqList[v]
     numList[v].each_with_index do |num, idx|
       db.exec("UPDATE stoo_numlist SET toon_num=$1::VARCHAR WHERE toon_id=$2 AND toon_num_idx=$3;", [num, v, idx])
       db.exec("INSERT INTO stoo_numlist (toon_id, toon_num_idx, toon_num) SELECT $1, $2, $3::VARCHAR WHERE NOT EXISTS (SELECT 1 FROM stoo_numlist WHERE toon_id=$1 AND toon_num_idx=$2);", [v, idx, num])
