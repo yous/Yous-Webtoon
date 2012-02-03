@@ -437,11 +437,11 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
       _title = '<div id="title_area">'
       _content = '<div id="content_area">'
 
-      # 웹툰 제목, 작가, 설명 출력
+      # 웹툰 제목 출력
       comic_title = resp.at('//div[@id="content"]/div[@class="location"]/strong/a').attr("title")
       _title << "<div style=\"padding: 15px 0px 15px 0px; background-color: #{btnColor["buttonB"]};\"></div>"
 
-      # 웹툰 회, 날짜 출력
+      # 작가, 설명, 웹툰 회, 날짜 출력
       resp.search('//div[@id="content"]/div[@class="cttop"]').each do |r|
         title = r.at('./h3/span').inner_html.encode("UTF-8").strip.gsub("<", "&lt;").gsub(">", "&gt;").gsub('"', "&quot;").gsub("'", "&#39;")
         date = "#{$1}.#{$2}.#{$3}" if r.at('./span[@class="date"]').inner_html.encode("UTF-8") =~ /(\d+)년\s+(\d+)월\s+(\d+)일/
