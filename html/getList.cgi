@@ -711,8 +711,6 @@ elsif site == "stoo"
   # toonlist background-color 처리
   if session["user_id"] != nil and session["user_id"] != ""
     toonBM = Hash.new
-    lastNum = Hash.new
-    finishToon = []
 
     db.exec("SELECT toon_id, toon_num FROM stoo_bm WHERE id=$1;", [session["user_id"]]).each do |row|
       _toon_id = row["toon_id"].to_i
@@ -721,8 +719,6 @@ elsif site == "stoo"
     end
 
     str << "toonBM={#{toonBM.keys.map {|v| "#{v}:'#{toonBM[v]}'"}.join(",")}};"
-    str << "lastNum={#{lastNum.keys.map {|v| "#{v}:'#{lastNum[v]}'"}.join(",")}};"
-    str << "finishToon=[#{finishToon.join(",")}];"
 
     str << '$("#loading").html(" Loading");'
     str << '$("#loading").css("display", "inline");'
