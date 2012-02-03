@@ -128,7 +128,9 @@ if site == "naver"
     count += 1
   end
 
-  (0...str_td.length).each {|i| str << str_td[i] + "</td>" }
+  str_td.each do |v|
+    str << v + "</td>"
+  end
   str << '</tr></table><br/><br/>'
 
   # reqList 처리
