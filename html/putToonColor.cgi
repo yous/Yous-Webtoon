@@ -186,9 +186,9 @@ elsif site == "daum"
         str << "numList['#{v}']=[#{numList[v].join(",")}];"
         str << "lastNum['#{v}']=#{lastNum[v]};"
         str << "dateList['#{v}']=['#{dateList[v].join("','")}'];"
-        (0...numList[v].length).each do |i|
-          db.exec("UPDATE daum_numlist SET toon_num=$1, toon_date=$2::VARCHAR WHERE toon_id=$3::VARCHAR AND toon_num_idx=$4;", [numList[v][i], dateList[v][i], v, i])
-          db.exec("INSERT INTO daum_numlist (toon_id, toon_num_idx, toon_num, toon_date) SELECT $1::VARCHAR, $2, $3, $4::VARCHAR WHERE NOT EXISTS (SELECT 1 FROM daum_numlist WHERE toon_id=$1 AND toon_num_idx=$2);", [v, i, numList[v][i], dateList[v][i]])
+        numList[v].each_with_index do |num, idx|
+          db.exec("UPDATE daum_numlist SET toon_num=$1, toon_date=$2::VARCHAR WHERE toon_id=$3::VARCHAR AND toon_num_idx=$4;", [num, dateList[v][idx], v, idx])
+          db.exec("INSERT INTO daum_numlist (toon_id, toon_num_idx, toon_num, toon_date) SELECT $1::VARCHAR, $2, $3, $4::VARCHAR WHERE NOT EXISTS (SELECT 1 FROM daum_numlist WHERE toon_id=$1 AND toon_num_idx=$2);", [v, idx, num, dateList[v][idx]])
         end
         db.exec("INSERT INTO daum_lastnum (toon_id, toon_num) VALUES ($1::VARCHAR, $2);", [v, lastNum[v]])
         finishToon.push(v)
@@ -271,9 +271,9 @@ elsif site == "yahoo"
         lastNum[v] = numList[v][-1]
         str << "numList[#{v}]=[#{numList[v].join(",")}];"
         str << "lastNum[#{v}]=#{lastNum[v]};"
-        (0...numList[v].length).each do |i|
-          db.exec("UPDATE yahoo_numlist SET toon_num=$1 WHERE toon_id=$2 AND toon_num_idx=$3;", [numList[v][i], v, i])
-          db.exec("INSERT INTO yahoo_numlist (toon_id, toon_num_idx, toon_num) SELECT $1, $2, $3 WHERE NOT EXISTS (SELECT 1 FROM yahoo_numlist WHERE toon_id=$1 AND toon_num_idx=$2);", [v, i, numList[v][i]])
+        numList[v].each_with_index do |num, idx|
+          db.exec("UPDATE yahoo_numlist SET toon_num=$1 WHERE toon_id=$2 AND toon_num_idx=$3;", [num, v, idx])
+          db.exec("INSERT INTO yahoo_numlist (toon_id, toon_num_idx, toon_num) SELECT $1, $2, $3 WHERE NOT EXISTS (SELECT 1 FROM yahoo_numlist WHERE toon_id=$1 AND toon_num_idx=$2);", [v, idx, num])
         end
         db.exec("INSERT INTO yahoo_lastnum (toon_id, toon_num) VALUES ($1, $2);", [v, lastNum[v]])
         finishToon.push(v)
@@ -356,9 +356,9 @@ elsif site == "stoo"
         lastNum[v] = numList[v][-1]
         str << "numList[#{v}]=['#{numList[v].join(",")}'];"
         str << "lastNum[#{v}]='#{lastNum[v]}';"
-        (0...numList[v].length).each do |i|
-          db.exec("UPDATE stoo_numlist SET toon_num=$1::VARCHAR WHERE toon_id=$2 AND toon_num_idx=$3;", [numList[v][i], v, i])
-          db.exec("INSERT INTO stoo_numlist (toon_id, toon_num_idx, toon_num) SELECT $1, $2, $3::VARCHAR WHERE NOT EXISTS (SELECT 1 FROM stoo_numlist WHERE toon_id=$1 AND toon_num_idx=$2);", [v, i, numList[v][i]])
+        numList[v].each_with_index do |num, idx|
+          db.exec("UPDATE stoo_numlist SET toon_num=$1::VARCHAR WHERE toon_id=$2 AND toon_num_idx=$3;", [num, v, idx])
+          db.exec("INSERT INTO stoo_numlist (toon_id, toon_num_idx, toon_num) SELECT $1, $2, $3::VARCHAR WHERE NOT EXISTS (SELECT 1 FROM stoo_numlist WHERE toon_id=$1 AND toon_num_idx=$2);", [v, idx, num])
         end
         db.exec("INSERT INTO stoo_lastnum (toon_id, toon_num) VALUES ($1, $2::VARCHAR);", [v, lastNum[v]])
         finishToon.push(v)
