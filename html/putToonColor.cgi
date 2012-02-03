@@ -19,6 +19,9 @@ def db_init(db, site)
     db.exec("CREATE TABLE IF NOT EXISTS yahoo_bm (id INTEGER REFERENCES usr(id) ON DELETE CASCADE NOT NULL, toon_id INTEGER NOT NULL, toon_num INTEGER NOT NULL, UNIQUE (id, toon_id));")
     db.exec("CREATE TABLE IF NOT EXISTS yahoo_lastnum (toon_id INTEGER PRIMARY KEY, toon_num INTEGER NOT NULL);")
     db.exec("CREATE TABLE IF NOT EXISTS yahoo_numlist (toon_id INTEGER NOT NULL, toon_num_idx INTEGER NOT NULL, toon_num INTEGER NOT NULL, UNIQUE (toon_id, toon_num_idx));")
+  when "paran"
+    db.exec("CREATE TABLE IF NOT EXISTS paran_bm (id INTEGER REFERENCES usr(id) ON DELETE CASCADE NOT NULL, toon_id INTEGER NOT NULL, toon_num INTEGER NOT NULL, UNIQUE (id, toon_id));")
+    db.exec("CREATE TABLE IF NOT EXISTS paran_lastnum (toon_id INTEGER PRIMARY KEY, toon_num INTEGER NOT NULL);")
   when "stoo"
     db.exec("CREATE TABLE IF NOT EXISTS stoo_bm (id INTEGER REFERENCES usr(id) ON DELETE CASCADE NOT NULL, toon_id INTEGER NOT NULL, toon_num VARCHAR NOT NULL, UNIQUE (id, toon_id));")
     db.exec("CREATE TABLE IF NOT EXISTS stoo_lastnum (toon_id INTEGER PRIMARY KEY, toon_num VARCHAR NOT NULL);")
@@ -293,6 +296,72 @@ elsif site == "yahoo"
   # reqList 처리
   reqList.keys.each do |v|
     str << "$.get(\"/displayToon?site=yahoo&id=#{v}&num=#{reqList[v]}\");"
+  end
+
+  str << "</script>"
+
+  puts str
+
+# Paran 웹툰
+elsif site == "paran"
+  day_BM = day_BM.map(&:to_i)
+  toonBM = Hash.new
+  lastNum = Hash.new
+  finishToon = []
+  reqList = Hash.new
+
+  db.exec("SELECT toon_id, toon_num FROM paran_bm WHERE id=$1 ORDER BY toon_id;", [session["user_id"]]).each do |row|
+    _toon_id = row["toon_id"].to_i
+    _toon_num = row["toon_num"].to_i
+    toonBM[_toon_id] = _toon_num
+    db.exec("SELECT toon_num FROM paran_lastnum WHERE toon_id=$1;", [_toon_id]).each do |sec_row|
+      _lastNum[_toon_id] = _lastNum
+      finishToon.push(_toon_id)
+    end
+  end
+
+  col_str = ""
+  str = "<script>"
+
+  if finish == "n"
+    day_BM.each do |v|
+      if finishToon.include? v
+        finishToon.delete(v)
+        str << "finishToon.splice(finishToon.indexOf(#{v}),1);"
+        db.exec("DELETE FROM paran_lastnum WHERE toon_id=$1;", [v])
+      end
+      lastNum[v] = a.get("http://#{localhost}/getNum?site=paran&id=#{v}").body.to_i
+      str << "lastNum[#{v}]=#{lastNum[v]};"
+      if toonBM[v] < lastNum[v]
+        reqList[v] = toonBM[v] + 1
+        col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
+      else
+        col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved"]}');"
+      end
+    end
+  else
+    day_BM.each do |v|
+      unless finishToon.include? v
+        lastNum[v] = a.get("http://#{localhost}/getNum?site=paran&id=#{v}").body.to_i
+        str << "lastNum[#{v}]=#{lastNum[v]};"
+        db.exec("INSERT INTO paran_lastnum (toon_id, toon_num) VALUES ($1, $2);", [v, lastNum[v]])
+        finishToon.push(v)
+        str << "finishToon.push(#{v});"
+      end
+      if toonBM[v] < lastNum[v]
+        reqList[v] = toonBM[v] + 1
+        col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
+      else
+        col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_finish"]}');"
+      end
+    end
+  end
+
+  str << col_str
+
+  # reqList 처리
+  reqList.keys.each do |v|
+    str << "$.get(\"/displayToon?site=paran&id=#{v}&num=#{reqList[v]}\");"
   end
 
   str << "</script>"

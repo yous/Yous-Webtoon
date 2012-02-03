@@ -427,6 +427,63 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
       str << '<br/><br/>'
       str << "<script>setTimeout(\"location.replace('#title_area');\", 500);</script>"
 
+    # Paran 웹툰
+    elsif site == "paran"
+      resp = a.get "http://cartoon.media.paran.com/ncartoon_view.php?id=#{id}&ord=#{num}"
+
+      # 로그인 필요한 웹툰
+      return nil if resp.at('script').inner_html =~ /top\.location\.href\s*=\s*'http:\/\/main\.paran\.com\/paran\/index\.jsp\?wbSurl=[\w\W]*'/
+
+      _title = '<div id="title_area">'
+      _content = '<div id="content_area">'
+
+      # 웹툰 제목 출력
+      comic_title = resp.at('//div[@class="carView"]/div[@class="titWrap"]/div[@class="l"]/strong').inner_html.encode("UTF-8").strip
+      _title << "<div style=\"padding: 15px 0px 15px 0px; background-color: #{btnColor["buttonB"]};\"></div>"
+
+      # 작가, 설명, 웹툰 회, 날짜 출력
+      _span = resp.at('//div[@class="carView"]/div[@class="view"]/dl/dt/span[@class="l"]')
+      title, date = $1.encode("UTF-8").strip, $2.encode("UTF-8").strip.gsub("-", ".") if _span.inner_html =~ /<strong>([\w\W]*)<\/strong>\s*<span>[\w\W]*<\/span>([\w\W]*)<!-[^>]+>\s*<span>[\w\W]*<\/span>\s*<em>[\w\W]*<\/em>[\w\W]*/
+      _title << "<small id=\"toon_date\">#{date}</small>"
+      _title << "<script>$('#title_area div').append('#{comic_title} - ' + toonInfo[#{id}][0] + '<br/><small style=\"font-size: 12px;\">' + toonInfo[#{id}][1] + '</small><br/><br/><b>#{title}</b>');</script>"
+
+      # 웹툰 출력
+      while true
+        _dd = resp.at('//div[@class="carView"]/div[@class="view"]/dl/dd')
+        _dd.search('./div[@class="toon"]/img').each_with_index do |img, idx|
+          url = $1.strip if img.attr("src") =~ /http:\/\/([\w\W]*)/
+
+          if not File::exists?("html/images/#{url.gsub(/\//, "@")}")
+            _data = a.get("http://#{url}").body
+            if _data != nil
+              File.open("html/images/#{url.gsub(/\//, "@")}", "w") do |f|
+                f.write(_data)
+              end
+            end
+          end
+
+          if idx == 0
+            _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\" onload=\"location.replace('#title_area');\"/>"
+          else
+            _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\"/>"
+          end
+        end
+        if _dd.search('./div[@class="page"]').length > 0 and _dd.at('./div[@class="page"]/a').attr("href") =~ /javascript\s*:\s*sel_cartoon_view\(\s*'#{id}'\s*,\s*'#{num}'\s*,\s*'(\d+)'\s*,\s*'[\w\W]*'\s*\);/ and $1.to_i != 1
+          resp = a.get "http://cartoon.media.paran.com/ncartoon_view.php?id=#{id}&ord=#{num}&part=#{$1}"
+        else
+          break
+        end
+      end
+
+      _title << '</div>'
+      _content << '</div>'
+
+      str << _title
+      str << '<br/>'
+      str << _content
+      str << '<br/><br/>'
+      str << "<script>setTimeout(\"location.replace('#title_area');\", 500);</script>"
+
     # Stoo 웹툰
     elsif site == "stoo"
       resp = a.get "http://stoo.asiae.co.kr/cartoon/ctview.htm?sc3=#{id}&id=#{num}"

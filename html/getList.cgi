@@ -23,6 +23,10 @@ def db_init(db, site)
     db.exec("CREATE TABLE IF NOT EXISTS yahoo_lastnum (toon_id INTEGER PRIMARY KEY, toon_num INTEGER NOT NULL);")
     db.exec("CREATE TABLE IF NOT EXISTS yahoo_numlist (toon_id INTEGER NOT NULL, toon_num_idx INTEGER NOT NULL, toon_num INTEGER NOT NULL, UNIQUE (toon_id, toon_num_idx));")
     db.exec("CREATE TABLE IF NOT EXISTS yahoo_tooninfo (toon_id INTEGER PRIMARY KEY, toon_title VARCHAR, toon_intro VARCHAR);")
+  when "paran"
+    db.exec("CREATE TABLE IF NOT EXISTS paran_bm (id INTEGER REFERENCES usr(id) ON DELETE CASCADE NOT NULL, toon_id INTEGER NOT NULL, toon_num INTEGER NOT NULL, UNIQUE (id, toon_id));")
+    db.exec("CREATE TABLE IF NOT EXISTS paran_lastnum (toon_id INTEGER PRIMARY KEY, toon_num INTEGER NOT NULL);")
+    db.exec("CREATE TABLE IF NOT EXISTS paran_tmplist (toon_id INTEGER PRIMARY KEY);")
   when "stoo"
     db.exec("CREATE TABLE IF NOT EXISTS stoo_bm (id INTEGER REFERENCES usr(id) ON DELETE CASCADE NOT NULL, toon_id INTEGER NOT NULL, toon_num VARCHAR NOT NULL, UNIQUE (id, toon_id));")
     db.exec("CREATE TABLE IF NOT EXISTS stoo_lastnum (toon_id INTEGER PRIMARY KEY, toon_num VARCHAR NOT NULL);")
@@ -32,7 +36,7 @@ def db_init(db, site)
 end
 
 def site_button(site)
-  sites = ["naver", "daum", "yahoo", "stoo"].reverse
+  sites = ["naver", "daum", "yahoo", "paran", "stoo"].reverse
   str = ""
   sites.each do |site_name|
     next if site_name == site
@@ -565,6 +569,144 @@ elsif site == "yahoo"
     toonBM = Hash.new
 
     db.exec("SELECT toon_id, toon_num FROM yahoo_bm WHERE id=$1 ORDER BY toon_id;", [session["user_id"]]).each do |row|
+      _toon_id = row["toon_id"].to_i
+      _toon_num = row["toon_num"].to_i
+      toonBM[_toon_id] = _toon_num
+    end
+
+    str << "toonBM={#{toonBM.keys.map {|v| "#{v}:#{toonBM[v]}"}.join(",")}};"
+
+    str << '$("#loading").html(" Loading");'
+    str << '$("#loading").css("display", "inline");'
+    str << 'loading(10);'
+    str << "putToonColor();"
+  end
+
+  str << '</script>'
+
+  puts str
+
+# Paran 웹툰
+elsif site == "paran"
+  toonInfo = Hash.new
+  lastNum = Hash.new
+  finishToon = []
+  reqList = []
+  tmpList = []
+
+  db.exec("SELECT toon_id FROM paran_tmplist ORDER BY toon_id;").each do |row|
+    _toon_id = row["toon_id"].to_i
+    tmpList.push(_toon_id)
+    res = db.exec("SELECT toon_num FROM paran_lastnum WHERE toon_id=$1;", [_toon_id])
+    if not res.count < 1
+      _lastNum = res[0]["toon_num"]
+      lastNum[_toon_id] = _lastNum
+      finishToon.push(_toon_id)
+    end
+  end
+
+  # 연재
+  resp = a.get "http://media.paran.com/cartoon/?mno=3"
+
+  str = '<span class="table_toggle_button" onclick="show_table();">완결 웹툰</span>'
+  str << site_button(site)
+  str << '<table id="current_toonlist" class="toonlist">'
+  str << '<tr style="font-weight: bold;">'
+  str << '<td><span class="refreshBtn" onclick="putToonColor(0);">Re</span></td>'
+  str << '<td><span class="refreshBtn" onclick="putToonColor(1);">Re</span></td>'
+  str << '<td><span class="refreshBtn" onclick="putToonColor(2);">Re</span></td>'
+  str << '<td><span class="refreshBtn" onclick="putToonColor(3);">Re</span></td>'
+  str << '<td><span class="refreshBtn" onclick="putToonColor(4);">Re</span></td>'
+  str << '<td><span class="refreshBtn" onclick="putToonColor(5);">Re</span></td>'
+  str << '<td><span class="refreshBtn" onclick="putToonColor(6);">Re</span></td>'
+  str << '</tr>'
+  str << '<tr valign="top">'
+  str_td = ['<td id="day0">', '<td id="day1">', '<td id="day2">', '<td id="day3">', '<td id="day4">', '<td id="day5">', '<td id="day6">']
+
+  count = [0, 0, 0, 0, 0, 0, 0]
+  day = 0
+
+  resp.search('//div[@id="mainBlock"]/div[@class="mainWrap"]/div[@class="foodMan"]/div[@class="carType2"]/dl/dd/ul/li').each do |r|
+    _a = r.at('./div[@class="info"]/p[@class="tit"]/a')
+    _titleId = $1.to_i if _a.attr("href") =~ /\/cartoon\/cartoonview\.kth\?id=(\d+)&ord=1&mno=3/
+    _title = _a.inner_html.strip.encode("UTF-8")
+    _writer = $1.strip.encode("UTF-8") if r.at('./div[@class="info"]/p[@class="name"]').inner_html =~ /([\w\W]*)<span>[\w\W]*<\/span>\s*<strong>[\w\W]*<\/strong>/
+    _intro = r.at('./div[@class="info"]/p[@class="txt"]').inner_html.encode("UTF-8").strip.gsub(/[\r\n]/, "").gsub('"', "&quot;").gsub("'", "&#39;").gsub("<", "&lt;").gsub(">", "&gt;").gsub(/&lt;br\/?&gt;/, "<br/>")
+    _color = (count[day] % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
+
+    toonInfo[_titleId] = [_writer, _intro]
+    reqList.push(_titleId) unless tmpList.include? _titleId
+
+    str_td[day] << "<div id=\"#{_titleId}\" name=\"#{_titleId}\" class=\"current_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon(#{_titleId});\">#{_title}</div>"
+    count[day] += 1
+    day = (day + 1) % 7
+  end
+
+  str_td.each do |v|
+    str << v + "</td>"
+  end
+  str << '</tr></table>'
+
+  # 완결
+  str << '<table id="finished_toonlist" class="toonlist" style="display: none;"><tr valign="top">'
+  str_td = ["<td>", "<td>", "<td>", "<td>", "<td>", "<td>", "<td>"]
+
+  count = 0
+
+  page = 1
+  begin
+    resp = a.get "http://media.paran.com/cartoon/?mno=5&page=#{page}"
+    resp.search('//div[@id="mainBlock"]/div[@class="mainWrap"]/div[@class="foodMan"]/div[@class="carType2"]/dl/dd/ul/li').each do |r|
+      _a = r.at('./div[@class="info"]/p[@class="tit"]/a')
+      _titleId = $1.to_i if _a.attr("href") =~ /\/cartoon\/cartoonview\.kth\?id=(\d+)&ord=1&mno=5/
+        _title = _a.inner_html.strip.encode("UTF-8")
+      _writer = $1.strip.encode("UTF-8") if r.at('./div[@class="info"]/p[@class="name"]').inner_html =~ /([\w\W]*)<span>[\w\W]*<\/span>\s*<strong>[\w\W]*<\/strong>/
+        _intro = r.at('./div[@class="info"]/p[@class="txt"]').inner_html.encode("UTF-8").strip.gsub(/[\r\n]/, "").gsub('"', "&quot;").gsub("'", "&#39;").gsub("<", "&lt;").gsub(">", "&gt;").gsub(/&lt;br\/?&gt;/, "<br/>")
+        _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
+
+      toonInfo[_titleId] = [_writer, _intro]
+      if not finishToon.include? _titleId
+        finishToon.push(_titleId)
+        reqList.push(_titleId)
+      end
+
+      str_td[count % 7] << "<div id=\"#{_titleId}\" name=\"#{_titleId}\" class=\"finished_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon(#{_titleId});\">#{_title}</div>"
+      count += 1
+    end
+    page += 1
+  end while resp.at('//div[@class="mainWrap"]/div[@class="foodMan"]/div[@class="carType2"]/dl/dt/span[@class="r"]/a[last()]').attr("class") != "on"
+
+  str_td.each do |v|
+    str << v + "</td>"
+  end
+  str << '</tr></table><br/><br/>'
+
+  # reqList 처리
+  str << '<script>'
+  reqList.each do |v|
+    lastNum[v] = a.get("http://#{localhost}/getNum?site=paran&id=#{v}").body.to_i
+
+    str << "$.get(\"/displayToon?site=paran&id=#{v}&num=1\");"
+
+    db.exec("INSERT INTO paran_tmplist (toon_id) VALUES ($1);", [v])
+
+    if finishToon.include? v # 완결
+      db.exec("UPDATE paran_lastnum SET toon_num=$1 WHERE toon_id=$2;", [lastNum[v], v])
+      db.exec("INSERT INTO paran_lastnum (toon_id, toon_num) SELECT $1, $2 WHERE NOT EXISTS (SELECT 1 FROM paran_lastnum WHERE toon_id=$1);", [v, lastNum[v]])
+    end
+  end
+  str << 'resizeWidth();'
+
+  # 웹툰 정보 입력
+  str << "toonInfo={#{toonInfo.keys.map {|v| "#{v}:['#{toonInfo[v].join("','")}']"}.join(",")}};"
+  str << "lastNum={#{lastNum.keys.map {|v| "#{v}:#{lastNum[v]}"}.join(",")}};"
+  str << "finishToon=[#{finishToon.join(",")}];"
+
+  # toonlist background-color 처리
+  if session["user_id"] != nil and session["user_id"] != ""
+    toonBM = Hash.new
+
+    db.exec("SELECT toon_id, toon_num FROM paran_bm WHERE id=$1;", [session["user_id"]]).each do |row|
       _toon_id = row["toon_id"].to_i
       _toon_num = row["toon_num"].to_i
       toonBM[_toon_id] = _toon_num

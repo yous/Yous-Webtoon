@@ -3,6 +3,7 @@ require "rubygems"
 require "webrick"
 require "mechanize"
 require "pg"
+require "json"
 
 class GetNum < WEBrick::HTTPServlet::AbstractServlet
   def do_GET(req, res)
@@ -136,6 +137,12 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
       numList += tmp_numList.reverse
 
       ((str_finish == "") ? "n " : str_finish) + numList.join(" ") + "\n" + str_intro
+
+    # Paran 웹툰
+    elsif site =="paran"
+      resp = JSON.parse(a.get("http://media.paran.com/cartoon/cartoon_series_json.kth?uid=#{id}").body.gsub("'", '"').gsub(/[^"\w]([A-Za-z]+)[^"\w]/, '"\1"'))
+
+      resp["data"]["ord"].to_s
 
     # Stoo 웹툰
     elsif site == "stoo"
