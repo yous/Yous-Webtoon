@@ -365,7 +365,7 @@
   var _Stoo = null;
   var classStoo = function()
   {
-    this.id = function(_id) { return _id; };
+    this.id = function(_id) { return parseInt(_id); };
     this.first_num = function() { return (numList[id]) ? numList[id][0] : 0; };
     this.prev_num = function()
     {
