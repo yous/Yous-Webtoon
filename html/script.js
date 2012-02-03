@@ -459,6 +459,12 @@ var Naver = new classNaver();
 var Daum = new classDaum();
 var Yahoo = new classYahoo();
 var Stoo = new classStoo();
+var sites = {
+  "naver" : Naver,
+  "daum" : Daum,
+  "yahoo" : Yahoo,
+  "stoo" : Stoo
+};
 
 // width 자동 조절
 function resizeWidth()
@@ -511,34 +517,19 @@ function loading(n)
 // remote 버튼 정리
 function change_remote()
 {
-  $("#saveBM").attr("disabled", (!id || (site == "naver" && num == Naver.first_num() || site == "daum" && num == Daum.first_num() || site == "yahoo" && num == Yahoo.first_num()) || num == toonBM[id] || site == "stoo" && num == Stoo.first_num()) ? true : false);
+  $("#saveBM").attr("disabled", (!id || num == sites[site].first_num()) ? true : false);
   $("#moveBM").attr("disabled", (!id || !toonBM[id] || num == toonBM[id]) ? true : false);
-  $("#firstBtn").attr("disabled", (!id || (site == "naver" && num == Naver.first_num() || site == "daum" && num == Daum.first_num() || site == "yahoo" && num == Yahoo.first_num() || site =="stoo" && num == Stoo.first_num())) ? true : false);
+  $("#firstBtn").attr("disabled", (!id || num == sites[site].first_num()) ? true : false);
   $("#lastBtn").attr("disabled", (!id || num == lastNum[id]) ? true : false);
-  $("#prevBtn").attr("disabled", (!id || (site == "naver" && num == Naver.first_num() || site == "daum" && num == Daum.first_num() || site == "yahoo" && num == Yahoo.first_num() || site == "stoo" && num == Stoo.first_num())) ? true : false);
+  $("#prevBtn").attr("disabled", (!id || num == sites[site].first_num()) ? true : false);
   $("#nextBtn").attr("disabled", (!id || num == lastNum[id]) ? true : false);
   $("#dirBtn").attr("disabled", (!id) ? true : false);
 
   var src = "";
-  if (site == "naver")
+  if (sites[site] != undefined)
   {
-    src = Naver.src();
-    $("#inputNum").val(Naver.inputNum());
-  }
-  else if (site == "daum")
-  {
-    src = Daum.src();
-    $("#inputNum").val(Daum.inputNum());
-  }
-  else if (site == "yahoo")
-  {
-    src = Yahoo.src();
-    $("#inputNum").val(Yahoo.inputNum());
-  }
-  else if (site == "stoo")
-  {
-    src = Stoo.src();
-    $("#inputNum").val(Stoo.inputNum());
+    src = sites[site].src();
+    $("#inputNum").val(sites[site].inputNum());
   }
 
   $("#url").removeAttr("href");
@@ -680,10 +671,8 @@ function site_change(_site)
 function toonlist_area_init()
 {
   var str = "<br/>";
-  str += Naver.toonlist_area_init();
-  str += Daum.toonlist_area_init();
-  str += Yahoo.toonlist_area_init();
-  str += Stoo.toonlist_area_init();
+  for (key in sites)
+    str += sites[key].toonlist_area_init();
   str += "<script>id=null;num=null;site=null;change_remote();</script>";
   $("#toonlist_area").html(str);
   $("#display_area").html("");
@@ -787,20 +776,13 @@ function add_bookmark()
 {
   if (id && num)
   {
-    if (toonBM[id] && (site == "naver" && num == Naver.first_num() || site == "daum" && num == Daum.first_num() || site == "yahoo" && num == Yahoo.first_num() || site == "stoo" && num == Stoo.first_num()))
+    if (toonBM[id] && num == sites[site].first_num())
     {
       delete toonBM[id];
       var check = finishToon.indexOf(id);
       var _finish = (check == -1) ? "no" : lastNum[id];
 
-      if (site == "naver")
-        Naver.saveBM("no", _finish);
-      else if (site == "daum")
-        Daum.saveBM("no", _finish);
-      else if (site == "yahoo")
-        Yahoo.saveBM("no", _finish);
-      else if (site == "stoo")
-        Stoo.saveBM("no", _finish);
+      sites[site].saveBM("no", _finish);
 
       alert("북마크가 저장되었습니다!");
       $("#moveBM").attr("disabled", true);
@@ -838,7 +820,7 @@ function add_bookmark()
 
       location.replace("#");
     }
-    else if (!toonBM[id] && (site == "naver" && num != Naver.first_num() || site == "daum" && num != Daum.first_num() || site == "yahoo" && num != Yahoo.first_num() || site == "stoo" && num != Stoo.first_num()) || toonBM[id] && toonBM[id] != num)
+    else if (!toonBM[id] && num != sites[site].first_num() || toonBM[id] && toonBM[id] != num)
     {
       toonBM[id] = num;
       var check = -1;
@@ -849,14 +831,7 @@ function add_bookmark()
       }
       var _finish = (check == -1) ? "no" : lastNum[id];
 
-      if (site == "naver")
-        Naver.saveBM("yes", _finish);
-      else if (site == "daum")
-        Daum.saveBM("yes", _finish);
-      else if (site == "yahoo")
-        Yahoo.saveBM("yes", _finish);
-      else if (site == "stoo")
-        Stoo.saveBM("yes", _finish);
+      sites[site].saveBM("yes", _finish);
 
       alert("북마크가 저장되었습니다!");
       $("#saveBM").attr("disabled", true);
@@ -997,14 +972,7 @@ function show_table(opt /* only for Yahoo 웹툰 */)
 // 작가 정보 table 토글
 function show_artist_table(opt)
 {
-  if (site == "naver")
-    Naver.show_artist_table(opt);
-  else if (site == "daum")
-    Daum.show_artist_table(opt);
-  else if (site == "yahoo")
-    Yahoo.show_artist_table(opt);
-  else if (site == "stoo")
-    Stoo.show_artist_table(opt);
+  sites[site].show_artist_table(opt);
 }
 
 // 작가의 다른 작품 출력
@@ -1013,14 +981,10 @@ function getOtherToon(_id, /* Daum 웹툰용 */ check_other)
   if (check_other == null)
     check_other = true;
 
-  if (site == "naver")
-    Naver.getOtherToon(_id);
-  else if (site == "daum")
-    Daum.getOtherToon(_id, check_other);
-  else if (site == "yahoo")
-    Yahoo.getOtherToon(_id);
-  else if (site == "stoo")
-    Stoo.getOtherToon(_id);
+  if (site == "daum")
+    sites[site].getOtherToon(_id, check_other);
+  else
+    sites[site].getOtherToon(_id);
 }
 
 // 웹툰 출력
@@ -1040,27 +1004,14 @@ function viewToon(_id, _num)
   if (_id != id)
     add_bookmark();
 
-  if (site == "naver")
-    id = Naver.id(_id);
-  else if (site == "daum")
-    id = Daum.id(_id);
-  else if (site == "yahoo")
-    id = Yahoo.id(_id);
-  else if (site == "stoo")
-    id = Stoo.id(_id);
+  id = sites[site].id(_id);
 
   if (typeof(_num) == "undefined")
   {
     if (toonBM[id])
       _num = toonBM[id];
-    else if (site == "naver")
-      _num = Naver.first_num();
-    else if (site == "daum")
-      _num = Daum.first_num();
-    else if (site == "yahoo")
-      _num = Yahoo.first_num();
-    else if (site == "stoo")
-      _num = Stoo.first_num();
+    else
+      _num = sites[site].first_num();
   }
   if (site == "stoo")
     num = _num;
@@ -1068,29 +1019,11 @@ function viewToon(_id, _num)
     num = parseInt(_num);
 
   if (typeof(lastNum[id]) == "undefined")
-  {
-    if (site == "naver")
-      Naver.getNumAndDisplay(prev_id, prev_num);
-    else if (site == "daum")
-      Daum.getNumAndDisplay(prev_id, prev_num);
-    else if (site == "yahoo")
-      Yahoo.getNumAndDisplay(prev_id, prev_num);
-    else if (site == "stoo")
-      Stoo.getNumAndDisplay(prev_id, prev_num);
-  }
+    sites[site].getNumAndDisplay(prev_id, prev_num);
   else
   {
     if (num < lastNum[id])
-    {
-      if (site == "naver")
-        Naver.getNextToon();
-      else if (site == "daum")
-        Daum.getNextToon();
-      else if (site == "yahoo")
-        Yahoo.getNextToon();
-      else if (site == "stoo")
-        Stoo.getNextToon();
-    }
+      sites[site].getNextToon();
 
     $.get(
       "/displayToon",
@@ -1119,59 +1052,22 @@ function go_to(opt)
   }
   switch (opt) {
     case -2: // 첫 화
-      if (site == "naver")
-        viewToon(id, Naver.first_num());
-      else if (site == "daum")
-        viewToon(id, Daum.first_num());
-      else if (site == "yahoo")
-        viewToon(id, Yahoo.first_num());
-      else if (site == "stoo")
-        viewToon(id, Stoo.first_num());
+      viewToon(id, sites[site].first_num());
       break;
     case 2: // 마지막 화
       viewToon(id, lastNum[id]);
       break;
     case -1: // 이전 화
-      if (site == "naver")
-      {
-        if (num == Naver.first_num())
-          alert("첫 화입니다!");
-        else
-          viewToon(id, Naver.prev_num());
-      }
-      else if (site == "daum")
-      {
-        if (num == Daum.first_num())
-          alert("첫 화입니다!");
-        else
-          viewToon(id, Daum.prev_num());
-      }
-      else if (site == "yahoo")
-      {
-        if (num == Yahoo.first_num())
-          alert("첫 화입니다!");
-        else
-          viewToon(id, Yahoo.prev_num());
-      }
-      else if (site == "stoo")
-      {
-        if (num == Stoo.first_num())
-          alert("첫 화입니다!");
-        else
-          viewToon(id, Stoo.prev_num());
-      }
+      if (num == sites[site].first_num())
+        alert("첫 화입니다!");
+      else
+        viewToon(id, sites[site].prev_num());
       break;
     case 1: // 다음 화
       if (num == lastNum[id])
         alert("마지막 화입니다!");
-      else if (site == "naver")
-        viewToon(id, Naver.next_num());
-      else if (site == "daum")
-        viewToon(id, Daum.next_num());
-      else if (site == "yahoo")
-        viewToon(id, Yahoo.next_num());
-      else if (site == "stoo")
-        viewToon(id, Stoo.next_num());
+      else
+        viewToon(id, sites[site].next_num());
       break;
     case 0: // 직접 이동
       var inputNum = parseInt($("#inputNum").val());
@@ -1183,14 +1079,7 @@ function go_to(opt)
       if (inputNum < 1)
         inputNum = 1;
 
-      if (site == "naver")
-        inputNum = Naver.idx_to_num(inputNum);
-      else if (site == "daum")
-        inputNum = Daum.idx_to_num(inputNum);
-      else if (site == "yahoo")
-        inputNum = Yahoo.idx_to_num(inputNum);
-      else if (site == "stoo")
-        inputNum = Stoo.idx_to_num(inputNum);
+      inputNum = sites[site].idx_to_num(inputNum);
 
       viewToon(id, inputNum);
       break;
