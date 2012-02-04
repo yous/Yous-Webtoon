@@ -585,7 +585,7 @@ function loading(n)
 // remote 버튼 정리
 function change_remote()
 {
-  $("#saveBM").attr("disabled", (!id || num == sites[site].first_num()) ? true : false);
+  $("#saveBM").attr("disabled", (!id || num == sites[site].first_num() || num == toonBM[id]) ? true : false);
   $("#moveBM").attr("disabled", (!id || !toonBM[id] || num == toonBM[id]) ? true : false);
   $("#firstBtn").attr("disabled", (!id || num == sites[site].first_num()) ? true : false);
   $("#lastBtn").attr("disabled", (!id || num == lastNum[id]) ? true : false);
