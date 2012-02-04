@@ -1,2 +1,2 @@
 #!/bin/bash
-ps -C "ruby -Ilib bin/webserver.rb" -o pid= | xargs kill -9; rm sess/*
+ps x | grep "ruby -Ilib bin/webserver.rb" | grep -v "grep" | grep -o -E "^\ *[0-9]+" | grep -o -E "[0-9]+" | xargs kill -9; rm sess/*
