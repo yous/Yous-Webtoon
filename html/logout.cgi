@@ -8,15 +8,15 @@ puts "Content-Type: text/html; charset=utf-8\n\n"
 
 cgi = CGI.new
 
-session = CGI::Session.new(cgi, "session_key" => "SSID", "prefix" => "rubysess.", "tmpdir" => File.join(File.dirname(__FILE__), "/../sess"))
-
-if session["user_id"] != nil and session["user_id"] != ""
-  session["user_id"] = nil
-  str = "<script>"
-  str << "toggle_login(false);"
-  str << "toonlist_area_init();"
-  str << "</script>"
-  puts str
+if not cgi.cookies["SSID"].nil?
+  begin
+    session = CGI::Session.new(cgi, "session_id" => cgi.cookies["SSID"][0], "prefix" => "rubysess.", "tmpdir" => File.join(File.dirname(__FILE__), "/../sess"), "new_session" => false)
+    session.delete
+    str = "<script>"
+    str << "toggle_login(false);"
+    str << "toonlist_area_init();"
+    str << "</script>"
+    puts str
+  rescue
+  end
 end
-
-session.delete
