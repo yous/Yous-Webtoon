@@ -820,13 +820,20 @@ function leave()
 }
 
 // Login
-function login()
+function login(check)
 {
-  $.post(
-    "/login.cgi",
-    {user_id: $("#user_id").val(), user_pw: $("#user_pw").val()},
-    function (data) { $("#display_area").html(data); }
-  );
+  if (check == undefined)
+    $.post(
+      "/login.cgi",
+      {user_id: $("#user_id").val(), user_pw: $("#user_pw").val()},
+      function (data) { $("#display_area").html(data); }
+    );
+  else if (check)
+    $.post(
+      "/login.cgi",
+      {check: "y"},
+      function (data) { $("#display_area").html(data); }
+    );
 }
 
 // Logout

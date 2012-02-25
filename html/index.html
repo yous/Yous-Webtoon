@@ -12,6 +12,7 @@
         $(window).resize(function() { resizeWidth(); });
         resizeWidth();
         toonlist_area_init();
+        login(true);
         $(this).bind("keydown", function(e) { bodyKeyDown(e, true); });
         $("#main_title").bind("click", function() { toonlist_area_init(); });
         $("#login_area").bind("focusin", function() { $(document).unbind("keydown");$(document).bind("keydown", function(e) { loginKeyDown(e); }); });
