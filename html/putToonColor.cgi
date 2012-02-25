@@ -36,7 +36,13 @@ site = cgi.params["site"][0]
 finish = cgi.params["finish"][0]
 day_BM = cgi.params["day_BM"][0].split(",")
 
-session = CGI::Session.new(cgi, "session_key" => "SSID", "tmpdir" => File.join(File.dirname(__FILE__), "/../sess"))
+if not cgi.cookies["SSID"].nil?
+  begin
+    session = CGI::Session.new(cgi, "session_id" => cgi.cookies["SSID"][0], "tmpdir" => File.join(File.dirname(__FILE__), "/../sess"), "new_session" => false)
+  rescue
+    session = CGI::Session.new(cgi, "session_key" => "SSID", "tmpdir" => File.join(File.dirname(__FILE__), "/../sess"))
+  end
+end
 
 db = PGconn.open(:dbname => "webtoon")
 db_init(db, site)
