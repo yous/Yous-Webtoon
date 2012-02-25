@@ -23,21 +23,21 @@ if check == "y" # Login 확인
 
   if not cgi.cookies["SSID"].nil?
     begin
-      session = CGI::Session.new(cgi, "session_id" => cgi.cookies["SSID"][0], "prefix" => "rubysess.", "tmpdir" => File.join(File.dirname(__FILE__), "/../sess"), "new_session" => false)
+      session = CGI::Session.new(cgi, "session_id" => cgi.cookies["SSID"][0], "tmpdir" => File.join(File.dirname(__FILE__), "/../sess"), "new_session" => false)
       str = "<script>"
       str << "$('#user_id').val('#{db.exec("SELECT usr_id FROM usr WHERE id=$1;", [session["user_id"]])[0]["usr_id"]}');"
       str << "toggle_login(true);"
       str << "</script>"
       puts str
     rescue
-      session = CGI::Session.new(cgi, "session_key" => "SSID", "prefix" => "rubysess.", "tmpdir" => File.join(File.dirname(__FILE__), "/../sess"))
+      session = CGI::Session.new(cgi, "session_key" => "SSID", "tmpdir" => File.join(File.dirname(__FILE__), "/../sess"))
     end
   end
 elsif user_id != nil and user_pw != nil
   db = PGconn.open(:dbname => "webtoon")
   db_init(db)
 
-  session = CGI::Session.new(cgi, "session_key" => "SSID", "prefix" => "rubysess.", "tmpdir" => File.join(File.dirname(__FILE__), "/../sess"), "new_session" => true)
+  session = CGI::Session.new(cgi, "session_key" => "SSID", "tmpdir" => File.join(File.dirname(__FILE__), "/../sess"), "new_session" => true)
 
   check = true
 

@@ -10,7 +10,7 @@ cgi = CGI.new
 
 if not cgi.cookies["SSID"].nil?
   begin
-    session = CGI::Session.new(cgi, "session_id" => cgi.cookies["SSID"][0], "prefix" => "rubysess.", "tmpdir" => File.join(File.dirname(__FILE__), "/../sess"), "new_session" => false)
+    session = CGI::Session.new(cgi, "session_id" => cgi.cookies["SSID"][0], "tmpdir" => File.join(File.dirname(__FILE__), "/../sess"), "new_session" => false)
     session.delete
     str = "<script>"
     str << "toggle_login(false);"

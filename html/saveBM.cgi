@@ -42,7 +42,7 @@ numList = (cgi.has_key?("numList")) ? cgi.params["numList"][0].split : nil
 # only for Daum 웹툰
 dateList = (cgi.has_key?("dateList")) ? cgi.params["dateList"][0].split : nil
 
-session = CGI::Session.new(cgi, "session_key" => "SSID", "prefix" => "rubysess.", "tmpdir" => File.join(File.dirname(__FILE__), "/../sess"))
+session = CGI::Session.new(cgi, "session_key" => "SSID", "tmpdir" => File.join(File.dirname(__FILE__), "/../sess"))
 
 db = PGconn.open(:dbname => "webtoon")
 db.exec("CREATE TABLE usr (id SERIAL PRIMARY KEY, user_id VARCHAR NOT NULL UNIQUE, user_pw VARCHAR NOT NULL);") rescue nil

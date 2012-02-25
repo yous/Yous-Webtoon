@@ -50,7 +50,7 @@ puts "Content-Type: text/html; charset=utf-8\n\n"
 cgi = CGI.new
 site = cgi.params["site"][0]
 
-session = CGI::Session.new(cgi, "session_key" => "SSID", "prefix" => "rubysess.", "tmpdir" => File.join(File.dirname(__FILE__), "/../sess"))
+session = CGI::Session.new(cgi, "session_key" => "SSID", "tmpdir" => File.join(File.dirname(__FILE__), "/../sess"))
 
 db = PGconn.open(:dbname => "webtoon")
 db_init(db, site)
