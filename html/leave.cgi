@@ -25,7 +25,7 @@ if session["user_id"] != nil and session["user_id"] != ""
     puts str
   else
     check = true
-    db.execute("SELECT id FROM usr WHERE id=$1 AND usr_pw=$2::VARCHAR;", [session["user_id"], Digest::SHA1.hexdigest("YoUs" + user_pw + "wEbt00N").force_encoding("UTF-8")]).each do |row|
+    db.exec("SELECT id FROM usr WHERE id=$1 AND usr_pw=$2::VARCHAR;", [session["user_id"], Digest::SHA1.hexdigest("YoUs" + user_pw + "wEbt00N").force_encoding("UTF-8")]).each do |row|
       _id = row["id"].to_i
       db.exec("DELETE FROM usr WHERE id=$1;", [_id])
       session["user_id"] = nil
