@@ -865,6 +865,8 @@ function add_bookmark()
       var same_toon = document.getElementsByName(id);
       for (i = 0; i < same_toon.length; i++)
       {
+        if (same_toon[i].tagName.toLowerCase() != "div")
+          continue;
         var same_td = same_toon[i].parentNode.childNodes;
         for (j = 0; j < same_td.length; j++)
         {
@@ -915,6 +917,8 @@ function add_bookmark()
       var same_toon = document.getElementsByName(id);
       for (i = 0; i < same_toon.length; i++)
       {
+        if (same_toon[i].tagName.toLowerCase() != "div")
+          continue;
         var same_td = same_toon[i].parentNode.childNodes;
         for (j = 0; j < same_td.length; j++)
         {
