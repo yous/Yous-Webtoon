@@ -63,7 +63,7 @@ db_init(db, site)
 
 a = Mechanize.new
 
-localhost = "192.168.90.128:8888"
+port = 8888
 btnColor = {
   "buttonA" => "#FAFAFA",
   "buttonB" => "#EAEAEA",
@@ -306,7 +306,7 @@ elsif site == "daum"
   reqList.keys.each do |v|
     numList[v] = []
     dateList[v] = []
-    num_resp = a.get("http://#{localhost}/getNum?site=daum&id=#{v}").body
+    num_resp = a.get("http://localhost:#{port}/getNum?site=daum&id=#{v}").body
 
     # 로그인 필요한 웹툰
     next if num_resp == ""
@@ -545,7 +545,7 @@ elsif site == "yahoo"
   # reqList 처리
   str << '<script>'
   reqList.keys.each do |v|
-    num_resp = a.get("http://#{localhost}/getNum?site=yahoo&id=#{v}").body.split("\n").map(&:strip)
+    num_resp = a.get("http://localhost:#{port}/getNum?site=yahoo&id=#{v}").body.split("\n").map(&:strip)
     numList[v] = num_resp[0].split()[1..-1].map(&:to_i)
     toonInfo[v][1] = (num_resp[1].nil?) ? nil : num_resp[1].force_encoding("UTF-8").gsub('"', "&quot;").gsub("'", "&#39;").gsub("<", "&lt;").gsub(">", "&gt;").gsub(/&lt;br\/?&gt;/, "<br/>")
     lastNum[v] = numList[v][-1]
@@ -690,7 +690,7 @@ elsif site == "paran"
   # reqList 처리
   str << '<script>'
   reqList.each do |v|
-    lastNum[v] = a.get("http://#{localhost}/getNum?site=paran&id=#{v}").body.to_i
+    lastNum[v] = a.get("http://localhost:#{port}/getNum?site=paran&id=#{v}").body.to_i
 
     str << "$.get(\"/displayToon?site=paran&id=#{v}&num=1\");"
 
@@ -833,7 +833,7 @@ elsif site == "stoo"
   # reqList 처리
   str << '<script>'
   reqList.keys.each do |v|
-    num_resp = a.get("http://#{localhost}/getNum?site=stoo&id=#{v}").body.split("\n").map(&:strip)
+    num_resp = a.get("http://localhost:#{port}/getNum?site=stoo&id=#{v}").body.split("\n").map(&:strip)
     numList[v] = num_resp[0].split()[1..-1]
     toonInfo[v] = [num_resp[1].force_encoding("UTF-8"), (num_resp[2].nil?) ? nil : num_resp[2].force_encoding("UTF-8").gsub('"', "&quot;").gsub("'", "&#39;").gsub("<", "&lt;").gsub(">", "&gt;").gsub(/&lt;br\/?&gt;/, "<br/>")]
     lastNum[v] = numList[v][-1]
