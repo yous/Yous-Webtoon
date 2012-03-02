@@ -620,8 +620,8 @@ function putToonColor(day)
         day_BM[i] = [];
         for (j = 0; j < day_toon.length; j++)
         {
-          if (toonBM[day_toon[j].id] != undefined)
-            day_BM[i].push(day_toon[j].id);
+          if (toonBM[day_toon[j].attributes["name"].value] != undefined)
+            day_BM[i].push(day_toon[j].attributes["name"].value);
         }
       }
 
@@ -638,7 +638,7 @@ function putToonColor(day)
       var finish_BM = [];
       for (_id in toonBM)
       {
-        if ($("#" + String(_id)).attr("class") == "finished_toon")
+        if ($("div[name=" + String(_id) + "]").attr("class") == "finished_toon")
           finish_BM.push(_id);
       }
       $.post(
@@ -659,8 +659,8 @@ function putToonColor(day)
         day_BM[i] = [];
         for (j = 0; j < day_toon.length; j++)
         {
-          if (toonBM[day_toon[j].id] != undefined)
-            day_BM[i].push(day_toon[j].id);
+          if (toonBM[day_toon[j].attributes["name"].value] != undefined)
+            day_BM[i].push(day_toon[j].attributes["name"].value);
         }
       }
 
@@ -677,7 +677,7 @@ function putToonColor(day)
       var finish_BM = [];
       for (_id in toonBM)
       {
-        if ($("#" + String(_id)).attr("class") == "finished_toon")
+        if ($("div[name=" + String(_id) + "]").attr("class") == "finished_toon")
           finish_BM.push(_id);
       }
       $.post(
@@ -696,8 +696,8 @@ function putToonColor(day)
     var day_BM = [];
     for (i = 0; i < day_toon.length; i++)
     {
-      if (toonBM[day_toon[i].id] != undefined)
-        day_BM.push(day_toon[i].id);
+      if (toonBM[day_toon[i].attributes["name"].value] != undefined)
+        day_BM.push(day_toon[i].attributes["name"].value);
     }
 
     $.post(
