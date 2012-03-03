@@ -366,7 +366,7 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
 =end
       end
 
-      # 작가 블로그, 관련 웹툰 출력
+      # 관련 웹툰, 작품 노트 출력
       _content << "<br/><br/>"
       _content << '<div id="artist_area" style="width: 85%; clear: both; margin: 0 auto;">'
       _content << '<table id="artist_info" align="right"><tr>'

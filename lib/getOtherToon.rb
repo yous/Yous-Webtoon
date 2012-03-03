@@ -44,11 +44,10 @@ class GetOtherToon < WEBrick::HTTPServlet::AbstractServlet
       end while (resp.search('//div[@class="pagenavigation"]/a[@class="next"]').length > 0)
     elsif site == "daum"
       resp = a.get "http://cartoon.media.daum.net/webtoon/view/#{id}"
-      check_puts = false
 
       if check_other == "y"
         resp.
-          at('//div[@id="daumContent"]/div/div[@id="mCenter"]/script').
+          at('//div[@id="daumContent"]/div/div[@id="mCenter"]/script[2]').
           inner_html.force_encoding("UTF-8").strip.split(';').map(&:strip).
           find_all {|v| v =~ /data2\.push\([\w\W]*\)/}.
           map {|v|
@@ -56,9 +55,8 @@ class GetOtherToon < WEBrick::HTTPServlet::AbstractServlet
           }.
           each do |v|
             str << "<div id=\"#{v["url"]}\" style=\"background-color: #{btnColor["buttonB"]}; cursor: default; margin: 3px 0px 3px 0px;\" onclick=\"viewToon('#{v["url"]}');\">#{v["title"]}</div>"
-            check_puts = true if not check_puts
           end
-        if not check_puts
+        if str == ""
           str << "<span>관련 웹툰이 없습니다.</span>"
         end
       else
