@@ -65,12 +65,8 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
         r.search('./script').each do |e|
           bgmURL = $1 if e.inner_html =~ /showMusicPlayer\("http:\/\/(.*)"\);/
           if not File::exists?("html/images/#{bgmURL.gsub(/\//, "@")}")
-            _data = a.get("http://#{bgmURL}").body
-            if _data != nil
-              File.open("html/images/#{bgmURL.gsub(/\//, "@")}", "w") do |f|
-                f.write(_data)
-              end
-            end
+            _data = a.get("http://#{bgmURL}")
+            _data.save_as("html/images/#{bgmURL.gsub(/\//, "@")}") if not _data.body.nil?
           end
           if ENV["HTTP_USER_AGENT"] =~ /MSIE/
             _content << '<script>play_status = "play";</script>'
@@ -148,12 +144,8 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
             }
             _content << "<a target=\"_blank\" href=\"#{link_url}\">"
             if not File::exists?("html/images/#{imageList[i].gsub(/\//, "@")}")
-              _data = a.get("http://#{imageList[i]}").body
-              if _data != nil
-                File.open("html/images/#{imageList[i].gsub(/\//, "@")}", "w") do |f|
-                  f.write(_data)
-                end
-              end
+              _data = a.get("http://#{imageList[i]}")
+              _data.save_as("html/images/#{imageList[i].gsub(/\//, "@")}") if not _data.body.nil?
             end
             _content << "<img src=\"/images/#{imageList[i].gsub(/\//, "@")}\"></a>"
             i += 1
@@ -169,12 +161,8 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
           if check_link and idx == imageList.length - 1
             _content << "<a target=\"_blank\" href=\"#{link_url}\">"
             if not File::exists?("html/images/#{imageList[idx].gsub(/\//, "@")}")
-              _data = a.get("http://#{imageList[idx]}").body
-              if _data != nil
-                File.open("html/images/#{imageList[idx].gsub(/\//, "@")}", "w") do |f|
-                  f.write(_data)
-                end
-              end
+              _data = a.get("http://#{imageList[idx]}")
+              _data.save_as("html/images/#{imageList[idx].gsub(/\//, "@")}") if not _data.body.nil?
             end
             _content << "<img src=\"/images/#{imageList[idx].gsub(/\//, "@")}\"></a>"
           else
@@ -191,12 +179,8 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
             if e.attributes["class"].to_s =~ /real_url\(http:\/\/(.*)\)/
               url = $1
               if not File::exists?("html/images/#{url.gsub(/\//, "@")}")
-                _data = a.get("http://#{url}").body
-                if _data != nil
-                  File.open("html/images/#{url.gsub(/\//, "@")}", "w") do |f|
-                    f.write(_data)
-                  end
-                end
+                _data = a.get("http://#{url}")
+                _data.save_as("html/images/#{url.gsub(/\//, "@")}") if not _data.body.nil?
               end
               if count % 2 == 0
                 if count <= 1
@@ -289,12 +273,8 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
 
           if r["mediaType"] == "image"
             if not File::exists?("html/images/#{url.gsub(/\//, "@")}")
-              _data = a.get("http://#{url}").body
-              if _data != nil
-                File.open("html/images/#{url.gsub(/\//, "@")}", "w") do |f|
-                  f.write(_data)
-                end
-              end
+              _data = a.get("http://#{url}")
+              _data.save_as("html/images/#{url.gsub(/\//, "@")}") if not _data.body.nil?
             end
             if count == 1
               _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\" width=\"#{r["width"]}\" onload=\"location.replace('#title_area');\"/>"
@@ -304,12 +284,8 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
           else
             daum_tvpot = (url =~ /flvs\.daum\.net\/flvPlayer\.swf/) ? true : false
             if not daum_tvpot and not File::exists?("html/images/#{url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}")
-              _data = a.get("http://#{url.gsub(/\?[\w\W]*$/, "")}").body
-              if _data != nil
-                File.open("html/images/#{url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}", "w") do |f|
-                  f.write(_data)
-                end
-              end
+              _data = a.get("http://#{url.gsub(/\?[\w\W]*$/, "")}")
+              _data.save_as("html/images/#{url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}") if not _data.body.nil?
             end
             if r["mediaType"] == "flash"
               if daum_tvpot
@@ -339,12 +315,8 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
         resp.search('//div[@class="img_list"]/div[@class="by_daum"]').each do |r|
           url = "photo-section.daum-img.net/-cartoon10/img/published.png"
           if not File::exists?("html/images/#{url.gsub(/\//, "@")}")
-            _data = a.get("http://#{url}").body
-            if _data != nil
-              File.open("html/images/#{url.gsub(/\//, "@")}", "w") do |f|
-                f.write(_data)
-              end
-            end
+            _data = a.get("http://#{url}")
+            _data.save_as("html/images/#{url.gsub(/\//, "@")}") if not _data.body.nil?
           end
           _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\"/>"
         end
@@ -355,12 +327,8 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
         _ids, _recentId, _nick = $1, $2, $3 if resp.at('//div[@class="img_list"]/script').inner_html =~ /Webtoon\.EmbedViewer\.init\('([\d,]*)','(\d+)','(.*)'\);/
         _url = "photo-section.daum-img.net/-cartoon10/swf/webtoon/GaroViewer2011.swf"
         if not File::exists?("html/images/#{_url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}")
-          _data = a.get("http://#{_url.gsub(/\?[\w\W]*$/, "")}").body
-          if _data != nil
-            File.open("html/images/#{_url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}", "w") do |f|
-              f.write(_data)
-            end
-          end
+          _data = a.get("http://#{_url.gsub(/\?[\w\W]*$/, "")}")
+          _data.save_as("html/images/#{_url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}") if not _data.body.nil?
         end
         _content << flashObj(_url.gsub(/\//, "@") + "?v=21&episode_ids=#{_ids}&recent_id=#{_recentId}&img_cnt=&page_no=1", 'viewerFla', 940, 700, 'transparent');
 =end
@@ -401,12 +369,8 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
         url = $1.strip if img["URL"] =~ /http:\/\/([\w\W]*)/
 
         if not File::exists?("html/images/#{url.gsub(/\//, "@")}")
-          _data = a.get("http://#{url}").body
-          if _data != nil
-            File.open("html/images/#{url.gsub(/\//, "@")}", "w") do |f|
-              f.write(_data)
-            end
-          end
+          _data = a.get("http://#{url}")
+          _data.save_as("html/images/#{url.gsub(/\//, "@")}") if not _data.body.nil?
         end
 
         if idx == 0
@@ -451,12 +415,8 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
           url = $1.strip if img.attr("src") =~ /http:\/\/([\w\W]*)/
 
           if not File::exists?("html/images/#{url.gsub(/\//, "@")}")
-            _data = a.get("http://#{url}").body
-            if _data != nil
-              File.open("html/images/#{url.gsub(/\//, "@")}", "w") do |f|
-                f.write(_data)
-              end
-            end
+            _data = a.get("http://#{url}")
+            _data.save_as("html/images/#{url.gsub(/\//, "@")}") if not _data.body.nil?
           end
 
           if idx == 0
@@ -508,12 +468,8 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
           url = $1.strip if img.attr("src") =~ /http:\/\/([\w\W]*)/
 
           if not File::exists?("html/images/#{url.gsub(/\//, "@")}")
-            _data = a.get("http://#{url}").body
-            if _data != nil
-              File.open("html/images/#{url.gsub(/\//, "@")}", "w") do |f|
-                f.write(_data)
-              end
-            end
+            _data = a.get("http://#{url}")
+            _data.save_as("html/images/#{url.gsub(/\//, "@")}") if not _data.body.nil?
           end
 
           if idx == 0
@@ -560,34 +516,22 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
     if _imageURL.downcase.index(".swf") != nil or _imageURL.downcase.index(".flv") != nil
       if _imageURL.downcase.index(".swf") != nil
         if not File::exists?("html/images/#{_imageURL.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}")
-          _data = mechanObj.get("http://#{_imageURL.gsub(/\?[\w\W]*$/, "")}").body
-          if _data != nil
-            File.open("html/images/#{_imageURL.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}", "w") do |f|
-              f.write(_data)
-            end
-          end
+          _data = mechanObj.get("http://#{_imageURL.gsub(/\?[\w\W]*$/, "")}")
+          _data.save_as("html/images/#{_imageURL.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}") if not _data.body.nil?
         end
         str << flashObj(_imageURL.gsub(/\//, "@"), id, _imageWidth, _imageHeight, "transparent", "", "", "")
       else
         if not File::exists?("html/images/#{_imageURL.gsub(/\//, "@")}")
-          _data = mechanObj.get("http://flash.comic.naver.com/webtoon/flvPlayer.swf").body
-          if _data != nil
-            File.open("html/images/#{"flash.comic.naver.com/webtoon/flvPlayer.swf".gsub(/\//, "@")}", "w") do |f|
-              f.write(_data)
-            end
-          end
+          _data = mechanObj.get("http://flash.comic.naver.com/webtoon/flvPlayer.swf")
+          _data.save_as("html/images/#{"flash.comic.naver.com/webtoon/flvPlayer.swf".gsub(/\//, "@")}") if not _data.body.nil?
         end
         str << flashObj("flash.comic.naver.com/webtoon/flvPlayer.swf".gsub(/\//, "@"), "flvPlayer", "640", "395", "transparent", "flvURL=#{_imageURL}&imgURL=http://static.comic.naver.com/staticImages/COMICWEB/NAVER/images/flash/#{id}/flv.jpg&autoPlay=true&defaultVolume=0.5&flvWidth=640&flvHeight=360", "#FFFFFF", true)
       end
     # Image
     else
       if not File::exists?("html/images/#{_imageURL.gsub(/\//, "@")}")
-        _data = mechanObj.get("http://#{_imageURL}").body
-        if _data != nil
-          File.open("html/images/#{_imageURL.gsub(/\//, "@")}", "w") do |f|
-            f.write(_data)
-          end
-        end
+        _data = mechanObj.get("http://#{_imageURL}")
+        _data.save_as("html/images/#{_imageURL.gsub(/\//, "@")}") if not _data.body.nil?
       end
       if _first_img
         str << "<img src=\"/images/#{_imageURL.gsub(/\//, "@")}\" onload=\"location.replace('#title_area');\">"

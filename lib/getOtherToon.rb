@@ -69,12 +69,8 @@ class GetOtherToon < WEBrick::HTTPServlet::AbstractServlet
           map {|v| $1 if v =~ /data3\.push\(\s*\{\s*img\s*:\s*"http:\/\/(.*)"\s*,\s*no\s*:\s*".*"\s*\}\s*\)/}.
           each {|v|
             if not File::exists?("images/#{v.gsub(/\//, "@")}")
-              _data = a.get("http://#{v}").body
-              if _data != nil
-                File.open("images/#{v.gsub(/\//, "@")}", "w") do |f|
-                  f.write(_data)
-                end
-              end
+              _data = a.get("http://#{v}")
+              _data.save_as("html/images/#{v.gsub(/\//, "@")}") if not _data.body.nil?
             end
             str << "<img src=\"/images/#{v.gsub(/\//, "@")}\"/>"
             check_puts = true if not check_puts
