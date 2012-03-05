@@ -1008,13 +1008,13 @@ function show_table(opt /* only for Yahoo 웹툰 */)
     {
       $("#current_toonlist").css("display", "none");
       $("#finished_toonlist").css("display", "table");
-      $("#table_toggle_button").html("연재 웹툰");
+      $(".table_toggle_button").html("연재 웹툰");
     }
     else
     {
       $("#finished_toonlist").css("display", "none");
       $("#current_toonlist").css("display", "table");
-      $("#table_toggle_button").html("완결 웹툰");
+      $(".table_toggle_button").html("완결 웹툰");
     }
   }
   else // Yahoo 웹툰
