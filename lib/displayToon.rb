@@ -186,6 +186,7 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
                 if count <= 1
                   _content << "<hr id=\"anchor_0\" style=\"width: 80%; height: 1px; border: 0px;\"/>"
                 else
+                  _content << "<input type=\"button\" value=\"&uarr;\" style=\"position: relative; top: 650px;\" onclick=\"scrollAnchor(-1);\"><input type=\"button\" value=\"&darr;\" style=\"position: relative; top: 650px;\" onclick=\"scrollAnchor(1);\">"
                   _content << "</div><br/><br/><br/>"
                   _content << "<hr id=\"anchor_#{count / 2}\" style=\"width: 80%; height: 1px; border: 0px;\"/>"
                 end
@@ -197,6 +198,7 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
             end
           end
         end
+        _content << "<input type=\"button\" value=\"&uarr;\" style=\"position: relative; top: 650px;\" onclick=\"scrollAnchor(-1);\"><input type=\"button\" value=\"&darr;\" style=\"position: relative; top: 650px;\" onclick=\"scrollAnchor(1);\">"
         _content << '</div><br/>'
       end
 

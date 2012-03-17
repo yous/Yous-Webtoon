@@ -1171,6 +1171,43 @@ function go_to(opt)
   }
 }
 
+// 만화책 형식의 웹툰 스크롤
+function scrollAnchor(opt)
+{
+  if (opt == 1) // Down
+  {
+    var hrs = $("#display_area hr");
+    switch (location.hash) {
+      case "":
+        location.replace("#title_area"); break;
+      case "#title_area":
+        location.replace("#anchor_0"); break;
+      case "#anchor_" + String(hrs.length - 1):
+        location.replace("#bottom"); break;
+      default:
+        if (location.hash.substring(0, 8) == "#anchor_")
+          location.replace("#anchor_" + String(parseInt(location.hash.substring(8)) + 1));
+        break;
+    }
+  }
+  else if (opt == -1) // Up
+  {
+    var hrs = $("#display_area hr");
+    switch (location.hash) {
+      case "#bottom":
+        location.replace("#anchor_" + String(hrs.length - 1)); break;
+      case "#anchor_0":
+        location.replace("#title_area"); break;
+      case "#title_area":
+        location.replace("#"); break;
+      default:
+        if (location.hash.substring(0, 8) == "#anchor_")
+          location.replace("#anchor_" + String(parseInt(location.hash.substring(8)) - 1));
+        break;
+    }
+  }
+}
+
 // Login, Join 키 입력 처리
 function spanKeyDown(spanId, e)
 {
@@ -1238,18 +1275,7 @@ function bodyKeyDown(e, lr_arrow)
             window.scrollBy('0', '-9');
         }
         else
-        {
-          var hrs = $("#display_area hr");
-          switch (location.hash) {
-            case "#bottom": location.replace("#anchor_" + String(hrs.length - 1)); break;
-            case "#anchor_0": location.replace("#title_area"); break;
-            case "#title_area": location.replace("#"); break;
-            default:
-              if (location.hash.substring(0, 8) == "#anchor_")
-                location.replace("#anchor_" + String(parseInt(location.hash.substring(8)) - 1));
-              break;
-          }
-        }
+          scrollAnchor(-1);
         break;
       case 83: // S
         if ($("#display_area hr").length == 0)
@@ -1258,18 +1284,7 @@ function bodyKeyDown(e, lr_arrow)
             window.scrollBy('0', '9');
         }
         else
-        {
-          var hrs = $("#display_area hr");
-          switch (location.hash) {
-            case "": location.replace("#title_area"); break;
-            case "#title_area": location.replace("#anchor_0"); break;
-            case "#anchor_" + String(hrs.length - 1): location.replace("#bottom"); break;
-            default:
-              if (location.hash.substring(0, 8) == "#anchor_")
-                location.replace("#anchor_" + String(parseInt(location.hash.substring(8)) + 1));
-              break;
-          }
-        }
+          scrollAnchor(1);
         break;
       case 81: // Q
         if (document.getElementById("title_area"))
