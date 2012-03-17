@@ -191,8 +191,8 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
                 end
                 _content << "<div style=\"position: relative; margin: 0 auto; width: 900px; height: 650px;\">"
               end
-              _content << "<div style=\"position: absolute; width: 450px; height: 650px; left: #{(count % 2 == 0) ? 0 : 450}px;\">"
-              _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\"#{(count <= 1) ? " onload=\"location.replace('#title_area');\"" : ""}/></div>"
+              _content << "<div style=\"position: absolute; width: 450px; height: 650px; left: #{if count % 2 == 0 then 0 else 450 end}px;\">"
+              _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\"#{if count <= 1 then " onload=\"location.replace('#title_area');\"" else "" end}/></div>"
               count += 1
             end
           end
