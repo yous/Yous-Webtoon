@@ -49,10 +49,10 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
         end
       end
       resp.search('//div[@class="btn_area"]').each do |v|
-        if v.at('./span[@class="pre"]/a').attr("href") =~ /\/webtoon\/detail\.nhn\?titleId=\d+&seq=(\d+)/
-          str << "#{$1.to_i + 1}"
-        else
+        if v.at('./span[@class="pre"]/a').nil?
           str << "1"
+        elsif v.at('./span[@class="pre"]/a').attr("href") =~ /\/webtoon\/detail\.nhn\?titleId=\d+&seq=(\d+)/
+          str << "#{$1.to_i + 1}"
         end
       end
 
