@@ -1268,6 +1268,8 @@ function bodyKeyDown(e, lr_arrow)
       case 39: if (lr_arrow) { $("#nextBtn").trigger("click"); } break; // →
       case 65: $("#prevBtn").trigger("click"); break; // A
       case 68: $("#nextBtn").trigger("click"); break; // D
+      case 38: // ^↑
+        event.preventDefault();
       case 87: // W
         if ($("#display_area hr").length == 0)
         {
@@ -1277,6 +1279,8 @@ function bodyKeyDown(e, lr_arrow)
         else
           scrollAnchor(-1);
         break;
+      case 40: // ^↓
+        event.preventDefault();
       case 83: // S
         if ($("#display_area hr").length == 0)
         {
