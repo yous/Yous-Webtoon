@@ -37,7 +37,10 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
     # Naver 웹툰
     if site == "naver"
       str = ""
-      resp = a.get "http://comic.naver.com/webtoon/detail.nhn?titleId=#{id}"
+      resp = a.get "http://comic.naver.com/webtoon/list.nhn?titleId=#{id}"
+
+      last_no = $1.to_i if resp.at('//div[@id="content"]/table[@class="viewList"]/tr[3]/td[@class="title"]/a').attr("href") =~ /\/webtoon\/detail\.nhn\?titleId=#{id}&no=(\d+)/
+      resp = a.get "http://comic.naver.com/webtoon/detail.nhn?titleId=#{id}&no=#{last_no}"
 
       resp.search('//div[@id="header"]/div[@id="submenu"]/ul[@class="submenu"]/li').each do |v|
         v.search('./a[@class="current"]').each do |e|
