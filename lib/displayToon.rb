@@ -28,6 +28,7 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
     }
 
     a = Mechanize.new
+    a.history.max_size = 0
 
     # Naver 웹툰
     if site == "naver"

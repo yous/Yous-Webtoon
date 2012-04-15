@@ -27,6 +27,7 @@ class GetOtherToon < WEBrick::HTTPServlet::AbstractServlet
     }
 
     a = Mechanize.new
+    a.history.max_size = 0
 
     if site == "naver"
       artistId = id

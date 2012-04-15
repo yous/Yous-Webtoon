@@ -33,6 +33,7 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
     end
 
     a = Mechanize.new
+    a.history.max_size = 0
 
     # Naver 웹툰
     if site == "naver"

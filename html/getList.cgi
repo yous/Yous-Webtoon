@@ -62,6 +62,7 @@ db = PGconn.open(:dbname => "webtoon")
 db_init(db, site)
 
 a = Mechanize.new
+a.history.max_size = 0
 
 port = 8888
 btnColor = {
