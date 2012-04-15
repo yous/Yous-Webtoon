@@ -43,15 +43,11 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
       last_no = $1.to_i if resp.at('//div[@id="content"]/table[@class="viewList"]/tr[3]/td[@class="title"]/a').attr("href") =~ /\/webtoon\/detail\.nhn\?titleId=#{id}&no=(\d+)/
       resp = a.get "http://comic.naver.com/webtoon/detail.nhn?titleId=#{id}&no=#{last_no}"
 
-      resp.search('//div[@id="header"]/div[@id="submenu"]/ul[@class="submenu"]/li').each do |v|
-        v.search('./a[@class="current"]').each do |e|
-          str << case e.attr("href")
-          when "/webtoon/weekday.nhn" then "n "
-          when "/webtoon/finish.nhn" then "y "
-          else "x "
-          end
-        end
-      end
+      str << case resp.at('//div[@id="header"]/div[@id="submenu"]/ul[@class="submenu"]/li/a[@class="current"]').attr("href")
+             when "webtoon/weekday.nhn" then "n "
+             when "webtoon/finish.nhn" then "y "
+             else "x "
+             end
       resp.search('//div[@class="btn_area"]').each do |v|
         if v.at('./span[@class="pre"]/a').nil?
           str << "1"
