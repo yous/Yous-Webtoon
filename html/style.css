@@ -18,16 +18,17 @@ input::-moz-focus-inner {
   padding-top: 0px;
   padding-bottom: 0px;
 }
+.table_toggle_button, .site_button, .refreshBtn, #login, #join {
+  color: #0066CC;
+}
 .table_toggle_button {
   float: left;
-  color: #0066CC;
   cursor: pointer;
   margin-left: 5px;
   margin-right: 5px;
 }
 .site_button {
   float: right;
-  color: #0066CC;
   cursor: pointer;
   margin-left: 5px;
   margin-right: 5px;
@@ -46,7 +47,6 @@ input::-moz-focus-inner {
 .refreshBtn {
   float: right;
   font-weight: normal;
-  color: #0066CC;
   cursor: pointer;
 }
 #title_area {
@@ -71,9 +71,6 @@ input::-moz-focus-inner {
 #login_area span {
   font-size: 12px;
   cursor: pointer;
-}
-#login, #join {
-  color: #0066CC;
 }
 #remote {
   border-spacing: 1px;
