@@ -72,6 +72,9 @@ input::-moz-focus-inner {
   font-size: 12px;
   cursor: pointer;
 }
+#login, #join {
+  color: #0066CC;
+}
 #remote {
   border-spacing: 1px;
   position: fixed;
