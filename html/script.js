@@ -1308,11 +1308,9 @@ function loginKeyDown(e)
     var event = e;
 
   if (event.keyCode == 13) { // Enter
-    if ($("#user_id").val() == "")
-      $("#user_id").focus();
-    else if ($("#user_pw").val() == "")
+    if (event.srcElement.id == "user_id")
       $("#user_pw").focus();
-    else
+    else if (event.srcElement.id == "user_pw")
       $("#login").trigger("click");
   }
 }
