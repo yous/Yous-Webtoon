@@ -43,6 +43,9 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
       last_no = $1.to_i if resp.at('//div[@id="content"]/table[@class="viewList"]/tr[3]/td[@class="title"]/a').attr("href") =~ /\/webtoon\/detail\.nhn\?titleId=#{id}&no=(\d+)/
       resp = a.get "http://comic.naver.com/webtoon/detail.nhn?titleId=#{id}&no=#{last_no}"
 
+      # 성인 인증 필요한 웹툰
+      return "" if resp.search('//div[@id="log_adult"]').length > 0
+
       str << case resp.at('//div[@id="header"]/div[@id="submenu"]/ul[@class="submenu"]/li/a[@class="current"]').attr("href")
              when "webtoon/weekday.nhn" then "n "
              when "webtoon/finish.nhn" then "y "
