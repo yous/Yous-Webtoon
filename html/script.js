@@ -118,8 +118,8 @@
           }
           lastNum[id] = parseInt(data.split(" ")[1]);
 
-          cache = Naver.cache_get(id, num);
-          if (cache == undefined || cache == null)
+          var _cache = Naver.cache_get(id, num);
+          if (_cache == undefined || _cache == null)
             $.get(
               "/displayToon",
               {site: site, id: id, num: num},
@@ -130,7 +130,7 @@
             );
           else
           {
-            $("#display_area").html(cache);
+            $("#display_area").html(_cache);
             change_remote();
             Naver.cache_set(id, num, null);
           }
@@ -283,8 +283,8 @@
           lastNum[id] = numList[id][numList[id].length - 1];
           num = numList[id][0];
 
-          cache = Daum.cache_get(id, num);
-          if (cache == undefined || cache == null)
+          var _cache = Daum.cache_get(id, num);
+          if (_cache == undefined || _cache == null)
             $.get(
               "/displayToon",
               {site: site, id: id, num: num},
@@ -302,7 +302,7 @@
             );
           else
           {
-            $("#display_area").html(cache);
+            $("#display_area").html(_cache);
             change_remote();
             Daum.cache_set(id, num, null);
           }
@@ -416,8 +416,8 @@
 
           lastNum[id] = numList[id][numList[id].length - 1];
           num = numList[id][0];
-          cache = Yahoo.cache_get(id, num);
-          if (cache == undefined || cache == null)
+          var _cache = Yahoo.cache_get(id, num);
+          if (_cache == undefined || _cache == null)
             $.get(
               "/displayToon",
               {site: site, id: id, num: num},
@@ -435,7 +435,7 @@
             );
           else
           {
-            $("#display_area").html(cache);
+            $("#display_area").html(_cache);
             change_remote();
             Yahoo.cache_set(id, num, null);
           }
@@ -515,8 +515,8 @@
           }
           lastNum[id] = parseInt(data);
 
-          cache = Paran.cache_get(id, num);
-          if (cache == undefined || cache == null)
+          var _cache = Paran.cache_get(id, num);
+          if (_cache == undefined || _cache == null)
             $.get(
               "/displayToon",
               {site: site, id: id, num: num},
@@ -534,7 +534,7 @@
             );
           else
           {
-            $("#display_area").html(cache);
+            $("#display_area").html(_cache);
             change_remote();
             Paran.cache_set(id, num, null);
           }
@@ -647,8 +647,8 @@
           lastNum[id] = numList[id][numList[id].length - 1];
           num = numList[id][0];
 
-          cache = Stoo.cache_get(id, num);
-          if (cache == undefined || cache == null)
+          var _cache = Stoo.cache_get(id, num);
+          if (_cache == undefined || _cache == null)
             $.get(
               "/displayToon",
               {site: site, id: id, num: num},
@@ -666,7 +666,7 @@
             );
           else
           {
-            $("#display_area").html(cache);
+            $("#display_area").html(_cache);
             change_remote();
             Stoo.cache_set(id, num, null);
           }
@@ -1262,7 +1262,7 @@ function viewToon(_id, _num)
     if (num < lastNum[id])
       sites[site].getNextToon();
 
-    cache = sites[site].cache_get(id, num);
+    var cache = sites[site].cache_get(id, num);
     if (cache == undefined || cache == null)
       $.get(
         "/displayToon",
