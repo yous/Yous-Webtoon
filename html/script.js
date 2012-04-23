@@ -78,7 +78,31 @@
         $("#artist_otherlist").css("display", "none");
       }
     };
-    this.getNextToon = function() { $.get("/displayToon", {site: site, id: id, num: num + 1}); };
+    var cache = new Object();
+    this.cache_get = function(_id, _num)
+    {
+      if (cache[_id] == undefined)
+        return undefined;
+
+      return cache[_id][_num];
+    };
+    this.cache_set = function(_id, _num, _data)
+    {
+      if (cache[_id] == undefined)
+        cache[_id] = new Object();
+
+      cache[_id][_num] = _data;
+    };
+    this.getNextToon = function()
+    {
+      $.get(
+        "/displayToon",
+        {site: site, id: id, num: num + 1},
+        function(data) {
+          Naver.cache_set(id, num + 1, data);
+        }
+      );
+    };
     this.getNumAndDisplay = function(prev_id, prev_num)
     {
       $.get(
@@ -196,12 +220,33 @@
         $("#artist_otherlist").css("display", "none");
       }
     };
+    var cache = new Object();
+    this.cache_get = function(_id, _num)
+    {
+      if (cache[_id] == undefined)
+        return undefined;
+
+      return cache[_id][_num];
+    };
+    this.cache_set = function(_id, _num, _data)
+    {
+      if (cache[_id] == undefined)
+        cache[_id] = new Object();
+
+      cache[_id][_num] = _data;
+    };
     this.getNextToon = function()
     {
       for (i = 0; i < numList[id].length; i++)
       {
         if (numList[id][i] == num)
-          $.get("/displayToon", {site: site, id: id, num: numList[id][i + 1]});
+          $.get(
+            "/displayToon",
+            {site: site, id: id, num: numList[id][i + 1]},
+            function(data) {
+              Daum.cache_set(id, numList[id][i + 1], data);
+            }
+          );
       }
     };
     this.getNumAndDisplay = function(prev_id, prev_num)
@@ -303,12 +348,32 @@
     };
     this.show_artist_table = function(opt) { return; };
     this.getOtherToon = function(_id) { return; };
+    var cache = new Object();
+    this.cache_get = function(_id, _num) {
+      if (cache[_id] == undefined)
+        return undefined;
+
+      return cache[_id][_num];
+    };
+    this.cache_set = function(_id, _num, _data)
+    {
+      if (cache[_id] == undefined)
+        cache[_id] = new Object();
+
+      cache[_id][_num] = _data;
+    };
     this.getNextToon = function()
     {
       for (i = 0; i < numList[id].length; i++)
       {
         if (numList[id][i] == num)
-          $.get("/displayToon", {site: site, id: id, num: numList[id][i + 1]});
+          $.get(
+            "/displayToon",
+            {site: site, id: id, num: numList[id][i + 1]},
+            function(data) {
+              Yahoo.cache_set(id, numList[id][i + 1], data);
+            }
+          );
       }
     }
     this.getNumAndDisplay = function(prev_id, prev_num)
@@ -382,7 +447,31 @@
     this.saveBM = function(_add, _finish) { $.post("/saveBM.cgi", {site: site, add: _add, toon_id: id, toon_num: num, finish: _finish}); };
     this.show_artist_table = function(opt) { return; };
     this.getOtherToon = function(_id) { return; };
-    this.getNextToon = function() { $.get("/displayToon", {site: site, id: id, num: num + 1}); };
+    var cache = new Object();
+    this.cache_get = function(_id, _num)
+    {
+      if (cache[_id] == undefined)
+        return undefined;
+
+      return cache[_id][_num];
+    };
+    this.cache_set = function(_id, _num, _data)
+    {
+      if (cache[_id] == undefined)
+        cache[_id] = new Object();
+
+      cache[_id][_num] = _data;
+    };
+    this.getNextToon = function()
+    {
+      $.get(
+        "/displayToon",
+        {site: site, id: id, num: num + 1},
+        function(data) {
+          Paran.cache_set(id, num + 1, data);
+        }
+      );
+    };
     this.getNumAndDisplay = function(prev_id, prev_num)
     {
       $.get(
@@ -473,12 +562,33 @@
     };
     this.show_artist_table = function(opt) { return; };
     this.getOtherToon = function(_id) { return; };
+    var cache = new Object();
+    this.cache_get = function(_id, _num)
+    {
+      if (cache[_id] == undefined)
+        return undefined;
+
+      return cache[_id][_num];
+    };
+    this.cache_set = function(_id, _num, _data)
+    {
+      if (cache[_id] == undefined)
+        cache[_id] = new Object();
+
+      cache[_id][_num] = _data;
+    };
     this.getNextToon = function()
     {
       for (i = 0; i < numList[id].length; i++)
       {
         if (numList[id][i] == num)
-          $.get("/displayToon", {site: site, id: id, num: numList[id][i + 1]});
+          $.get(
+            "/displayToon",
+            {site: site, id: id, num: numList[id][i + 1]},
+            function(data) {
+              Stoo.cache_set(id, numList[id][i + 1], data);
+            }
+          );
       }
     };
     this.getNumAndDisplay = function(prev_id, prev_num)
@@ -1104,21 +1214,29 @@ function viewToon(_id, _num)
     if (num < lastNum[id])
       sites[site].getNextToon();
 
-    $.get(
-      "/displayToon",
-      {site: site, id: id, num: num},
-      function (data) {
-        if (data == "")
-        {
-          alert("접속할 수 없습니다!");
-          id = prev_id;
-          num = prev_num;
-          return;
+    cache = sites[site].cache_get(id, num);
+    if (cache == undefined || cache == null)
+      $.get(
+        "/displayToon",
+        {site: site, id: id, num: num},
+        function (data) {
+          if (data == "")
+          {
+            alert("접속할 수 없습니다!");
+            id = prev_id;
+            num = prev_num;
+            return;
+          }
+          $("#display_area").html(data);
+          change_remote();
         }
-        $("#display_area").html(data);
-        change_remote();
-      }
-    );
+      );
+    else
+    {
+      $("#display_area").html(cache);
+      change_remote();
+      sites[site].cache_set(id, num, null);
+    }
   }
 }
 
