@@ -87,7 +87,7 @@ if site == "naver"
       resp = a.get("http://localhost:#{port}/getNum?site=naver&id=#{v}").body.split(" ")
       lastNum[v] = resp[1].to_i
       if toonBM[v] < lastNum[v]
-        reqList[v] = toonBM[v] + 1
+        reqList[v] = toonBM[v]
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
       else
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved"]}');"
@@ -102,7 +102,7 @@ if site == "naver"
         finishToon.push(v)
       end
       if toonBM[v] < lastNum[v]
-        reqList[v] = toonBM[v] + 1
+        reqList[v] = toonBM[v]
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
       else
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_finish"]}');"
@@ -176,7 +176,7 @@ elsif site == "daum"
       str << "lastNum['#{v}']=#{lastNum[v]};"
       str << "dateList['#{v}']=['#{dateList[v].join("','")}'];"
       if toonBM[v] < lastNum[v]
-        reqList[v] = numList[v][numList[v].index(toonBM[v]) + 1]
+        reqList[v] = toonBM[v]
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
       else
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved"]}');"
@@ -205,7 +205,7 @@ elsif site == "daum"
         str << "finishToon.push('#{v}');"
       end
       if toonBM[v] < lastNum[v]
-        reqList[v] = numList[v][numList[v].index(toonBM[v]) + 1]
+        reqList[v] = toonBM[v]
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
       else
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_finish"]}');"
@@ -267,7 +267,7 @@ elsif site == "yahoo"
       str << "numList[#{v}]=[#{numList[v].join(",")}];"
       str << "lastNum[#{v}]=#{lastNum[v]};"
       if toonBM[v] < lastNum[v]
-        reqList[v] = numList[v][numList[v].index(toonBM[v]) + 1]
+        reqList[v] = toonBM[v]
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
       else
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved"]}');"
@@ -290,7 +290,7 @@ elsif site == "yahoo"
         str << "finishToon.push(#{v});"
       end
       if toonBM[v] < lastNum[v]
-        reqList[v] = numList[v][numList[v].index(toonBM[v]) + 1]
+        reqList[v] = toonBM[v]
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
       else
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_finish"]}');"
@@ -340,7 +340,7 @@ elsif site == "paran"
       lastNum[v] = a.get("http://localhost:#{port}/getNum?site=paran&id=#{v}").body.to_i
       str << "lastNum[#{v}]=#{lastNum[v]};"
       if toonBM[v] < lastNum[v]
-        reqList[v] = toonBM[v] + 1
+        reqList[v] = toonBM[v]
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
       else
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved"]}');"
@@ -356,7 +356,7 @@ elsif site == "paran"
         str << "finishToon.push(#{v});"
       end
       if toonBM[v] < lastNum[v]
-        reqList[v] = toonBM[v] + 1
+        reqList[v] = toonBM[v]
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
       else
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_finish"]}');"
@@ -418,7 +418,7 @@ elsif site == "stoo"
       str << "numList[#{v}]=['#{numList[v].join("','")}'];"
       str << "lastNum[#{v}]='#{lastNum[v]}';"
       if numList[v].index(toonBM[v]) < numList[v].index(lastNum[v])
-        reqList[v] = numList[v][numList[v].index(toonBM[v]) + 1]
+        reqList[v] = toonBM[v]
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
       else
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved"]}');"
@@ -441,7 +441,7 @@ elsif site == "stoo"
         str << "finishToon.push(#{v});"
       end
       if numList[v].index(toonBM[v]) < numList[v].index(lastNum[v])
-        reqList[v] = numList[v][numList[v].index(toonBM[v]) + 1]
+        reqList[v] = toonBM[v]
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
       else
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_finish"]}');"
