@@ -117,7 +117,7 @@ if site == "naver"
 
   # reqList 처리
   reqList.keys.each do |v|
-    str << "$.get(\"/displayToon?site=naver&id=#{v}&num=#{reqList[v]}\");"
+    str << "$.get(\"/displayToon?site=naver&id=#{v}&num=#{reqList[v]}\", function(data) { Naver.cache_set(#{v}, #{reqList[v]}, data); });"
   end
 
   str << "</script>"
@@ -217,7 +217,7 @@ elsif site == "daum"
 
   # reqList 처리
   reqList.keys.each do |v|
-    str << "$.get(\"/displayToon?site=daum&id=#{v}&num=#{reqList[v]}\");"
+    str << "$.get(\"/displayToon?site=daum&id=#{v}&num=#{reqList[v]}\", function(data) { Daum.cache_set(#{v}, #{reqList[v]}, data); });"
   end
 
   str << "</script>"
@@ -302,7 +302,7 @@ elsif site == "yahoo"
 
   # reqList 처리
   reqList.keys.each do |v|
-    str << "$.get(\"/displayToon?site=yahoo&id=#{v}&num=#{reqList[v]}\");"
+    str << "$.get(\"/displayToon?site=yahoo&id=#{v}&num=#{reqList[v]}\", function(data) { Yahoo.cache_set(#{v}, #{reqList[v]}, data); });"
   end
 
   str << "</script>"
@@ -368,7 +368,7 @@ elsif site == "paran"
 
   # reqList 처리
   reqList.keys.each do |v|
-    str << "$.get(\"/displayToon?site=paran&id=#{v}&num=#{reqList[v]}\");"
+    str << "$.get(\"/displayToon?site=paran&id=#{v}&num=#{reqList[v]}\", function(data) { Paran.cache_set(#{v}, #{reqList[v]}, data); });"
   end
 
   str << "</script>"
@@ -453,7 +453,7 @@ elsif site == "stoo"
 
   # reqList 처리
   reqList.keys.each do |v|
-    str << "$.get(\"/displayToon?site=stoo&id=#{v}&num=#{reqList[v]}\");"
+    str << "$.get(\"/displayToon?site=stoo&id=#{v}&num=#{reqList[v]}\", function(data) { Stoo.cache_set(#{v}, #{reqList[v]}, data); });"
   end
 
   str << "</script>"
