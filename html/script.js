@@ -375,7 +375,7 @@
             }
           );
       }
-    }
+    };
     this.getNumAndDisplay = function(prev_id, prev_num)
     {
       $.get(
@@ -390,7 +390,7 @@
             return;
           }
           tmp = data.split("\n")[0].split(" ").slice(1);
-          numList[id] = []
+          numList[id] = [];
           for (i = 0; i < tmp.length; i++)
             numList[id].push(parseInt(tmp[i]));
 
