@@ -217,7 +217,7 @@ elsif site == "daum"
 
   # reqList 처리
   reqList.keys.each do |v|
-    str << "$.get(\"/displayToon?site=daum&id=#{v}&num=#{reqList[v]}\", function(data) { Daum.cache_set(#{v}, #{reqList[v]}, data); });"
+    str << "$.get(\"/displayToon?site=daum&id=#{v}&num=#{reqList[v]}\", function(data) { Daum.cache_set('#{v}', #{reqList[v]}, data); });"
   end
 
   str << "</script>"
