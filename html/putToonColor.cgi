@@ -87,7 +87,7 @@ if site == "naver"
       resp = a.get("http://localhost:#{port}/getNum?site=naver&id=#{v}").body.split(" ")
       lastNum[v] = resp[1].to_i
       if toonBM[v] < lastNum[v]
-        reqList[v] = toonBM[v]
+        reqList[v] = [toonBM[v], toonBM[v] + 1]
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
       else
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved"]}');"
@@ -102,7 +102,7 @@ if site == "naver"
         finishToon.push(v)
       end
       if toonBM[v] < lastNum[v]
-        reqList[v] = toonBM[v]
+        reqList[v] = [toonBM[v], toonBM[v] + 1]
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
       else
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_finish"]}');"
@@ -116,8 +116,10 @@ if site == "naver"
   str << "finishToon=[#{finishToon.join(",")}];"
 
   # reqList 처리
-  reqList.keys.each do |v|
-    str << "$.get(\"/displayToon?site=naver&id=#{v}&num=#{reqList[v]}\", function(data) { Naver.cache_set(#{v}, #{reqList[v]}, data); });"
+  reqList.keys.each do |_id|
+    reqList[_id].each do |_num|
+      str << "$.get(\"/displayToon?site=naver&id=#{_id}&num=#{_num}\", function(data) { Naver.cache_set(#{_id}, #{_num}, data); });"
+    end
   end
 
   str << "</script>"
@@ -176,7 +178,7 @@ elsif site == "daum"
       str << "lastNum['#{v}']=#{lastNum[v]};"
       str << "dateList['#{v}']=['#{dateList[v].join("','")}'];"
       if toonBM[v] < lastNum[v]
-        reqList[v] = toonBM[v]
+        reqList[v] = [toonBM[v], numList[v][numList[v].index(toonBM[v]) + 1]]
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
       else
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved"]}');"
@@ -205,7 +207,7 @@ elsif site == "daum"
         str << "finishToon.push('#{v}');"
       end
       if toonBM[v] < lastNum[v]
-        reqList[v] = toonBM[v]
+        reqList[v] = [toonBM[v], numList[v][numList[v].index(toonBM[v]) + 1]]
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
       else
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_finish"]}');"
@@ -216,8 +218,10 @@ elsif site == "daum"
   str << col_str
 
   # reqList 처리
-  reqList.keys.each do |v|
-    str << "$.get(\"/displayToon?site=daum&id=#{v}&num=#{reqList[v]}\", function(data) { Daum.cache_set('#{v}', #{reqList[v]}, data); });"
+  reqList.keys.each do |_id|
+    reqList[_id].each do |_num|
+      str << "$.get(\"/displayToon?site=daum&id=#{_id}&num=#{_num}\", function(data) { Daum.cache_set('#{_id}', #{_num}, data); });"
+    end
   end
 
   str << "</script>"
@@ -267,7 +271,7 @@ elsif site == "yahoo"
       str << "numList[#{v}]=[#{numList[v].join(",")}];"
       str << "lastNum[#{v}]=#{lastNum[v]};"
       if toonBM[v] < lastNum[v]
-        reqList[v] = toonBM[v]
+        reqList[v] = [toonBM[v], numList[v][numList[v].index(toonBM[v]) + 1]]
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
       else
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved"]}');"
@@ -290,7 +294,7 @@ elsif site == "yahoo"
         str << "finishToon.push(#{v});"
       end
       if toonBM[v] < lastNum[v]
-        reqList[v] = toonBM[v]
+        reqList[v] = [toonBM[v], numList[v][numList[v].index(toonBM[v]) + 1]]
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
       else
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_finish"]}');"
@@ -301,8 +305,10 @@ elsif site == "yahoo"
   str << col_str
 
   # reqList 처리
-  reqList.keys.each do |v|
-    str << "$.get(\"/displayToon?site=yahoo&id=#{v}&num=#{reqList[v]}\", function(data) { Yahoo.cache_set(#{v}, #{reqList[v]}, data); });"
+  reqList.keys.each do |_id|
+    reqList[_id].each do |_num|
+      str << "$.get(\"/displayToon?site=yahoo&id=#{_id}&num=#{_num}\", function(data) { Yahoo.cache_set(#{_id}, #{_num}, data); });"
+    end
   end
 
   str << "</script>"
@@ -340,7 +346,7 @@ elsif site == "paran"
       lastNum[v] = a.get("http://localhost:#{port}/getNum?site=paran&id=#{v}").body.to_i
       str << "lastNum[#{v}]=#{lastNum[v]};"
       if toonBM[v] < lastNum[v]
-        reqList[v] = toonBM[v]
+        reqList[v] = [toonBM[v], toonBM[v] + 1]
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
       else
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved"]}');"
@@ -356,7 +362,7 @@ elsif site == "paran"
         str << "finishToon.push(#{v});"
       end
       if toonBM[v] < lastNum[v]
-        reqList[v] = toonBM[v]
+        reqList[v] = [toonBM[v], toonBM[v] + 1]
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
       else
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_finish"]}');"
@@ -367,8 +373,10 @@ elsif site == "paran"
   str << col_str
 
   # reqList 처리
-  reqList.keys.each do |v|
-    str << "$.get(\"/displayToon?site=paran&id=#{v}&num=#{reqList[v]}\", function(data) { Paran.cache_set(#{v}, #{reqList[v]}, data); });"
+  reqList.keys.each do |_id|
+    reqList[_id].each do |_num|
+      str << "$.get(\"/displayToon?site=paran&id=#{_id}&num=#{_num}\", function(data) { Paran.cache_set(#{_id}, #{_num}, data); });"
+    end
   end
 
   str << "</script>"
@@ -418,7 +426,7 @@ elsif site == "stoo"
       str << "numList[#{v}]=['#{numList[v].join("','")}'];"
       str << "lastNum[#{v}]='#{lastNum[v]}';"
       if numList[v].index(toonBM[v]) < numList[v].index(lastNum[v])
-        reqList[v] = toonBM[v]
+        reqList[v] = [toonBM[v], numList[v][numList[v].index(toonBM[v]) + 1]]
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
       else
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved"]}');"
@@ -441,7 +449,7 @@ elsif site == "stoo"
         str << "finishToon.push(#{v});"
       end
       if numList[v].index(toonBM[v]) < numList[v].index(lastNum[v])
-        reqList[v] = toonBM[v]
+        reqList[v] = [toonBM[v], numList[v][numList[v].index(toonBM[v]) + 1]]
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
       else
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_finish"]}');"
@@ -452,8 +460,10 @@ elsif site == "stoo"
   str << col_str
 
   # reqList 처리
-  reqList.keys.each do |v|
-    str << "$.get(\"/displayToon?site=stoo&id=#{v}&num=#{reqList[v]}\", function(data) { Stoo.cache_set(#{v}, #{reqList[v]}, data); });"
+  reqList.keys.each do |_id|
+    reqList[_id].each do |_num|
+      str << "$.get(\"/displayToon?site=stoo&id=#{_id}&num=#{_num}\", function(data) { Stoo.cache_set(#{_id}, #{_num}, data); });"
+    end
   end
 
   str << "</script>"
