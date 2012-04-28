@@ -95,13 +95,15 @@
     };
     this.getNextToon = function()
     {
-      $.get(
-        "/displayToon",
-        {site: site, id: id, num: num + 1},
-        function(data) {
-          Naver.cache_set(id, num + 1, data);
-        }
-      );
+      var _cache = Naver.cache_get(id, num + 1);
+      if (_cache == undefined || _cache == null)
+        $.get(
+          "/displayToon",
+          {site: site, id: id, num: num + 1},
+          function(data) {
+            Naver.cache_set(id, num + 1, data);
+          }
+        );
     };
     this.getNumAndDisplay = function(prev_id, prev_num)
     {
@@ -242,13 +244,17 @@
       for (i = 0; i < numList[id].length; i++)
       {
         if (numList[id][i] == num)
-          $.get(
-            "/displayToon",
-            {site: site, id: id, num: numList[id][i + 1]},
-            function(data) {
-              Daum.cache_set(id, numList[id][i + 1], data);
-            }
-          );
+        {
+          var _cache = Daum.cache_get(id, numList[id][i + 1]);
+          if (_cache == undefined || _cache == null)
+            $.get(
+              "/displayToon",
+              {site: site, id: id, num: numList[id][i + 1]},
+              function(data) {
+                Daum.cache_set(id, numList[id][i + 1], data);
+              }
+            );
+        }
       }
     };
     this.getNumAndDisplay = function(prev_id, prev_num)
@@ -371,13 +377,17 @@
       for (i = 0; i < numList[id].length; i++)
       {
         if (numList[id][i] == num)
-          $.get(
-            "/displayToon",
-            {site: site, id: id, num: numList[id][i + 1]},
-            function(data) {
-              Yahoo.cache_set(id, numList[id][i + 1], data);
-            }
-          );
+        {
+          var _cache = Yahoo.cache_get(id, numList[id][i + 1]);
+          if (_cache == undefined || _cache == null)
+            $.get(
+              "/displayToon",
+              {site: site, id: id, num: numList[id][i + 1]},
+              function(data) {
+                Yahoo.cache_set(id, numList[id][i + 1], data);
+              }
+            );
+        }
       }
     };
     this.getNumAndDisplay = function(prev_id, prev_num)
@@ -470,13 +480,15 @@
     };
     this.getNextToon = function()
     {
-      $.get(
-        "/displayToon",
-        {site: site, id: id, num: num + 1},
-        function(data) {
-          Paran.cache_set(id, num + 1, data);
-        }
-      );
+      var _cache = Paran.cache_get(id, num + 1);
+      if (_cache == undefined || _cache == null)
+        $.get(
+          "/displayToon",
+          {site: site, id: id, num: num + 1},
+          function(data) {
+            Paran.cache_set(id, num + 1, data);
+          }
+        );
     };
     this.getNumAndDisplay = function(prev_id, prev_num)
     {
@@ -590,13 +602,17 @@
       for (i = 0; i < numList[id].length; i++)
       {
         if (numList[id][i] == num)
-          $.get(
-            "/displayToon",
-            {site: site, id: id, num: numList[id][i + 1]},
-            function(data) {
-              Stoo.cache_set(id, numList[id][i + 1], data);
-            }
-          );
+        {
+          var _cache = Stoo.cache_get(id, numList[id][i + 1]);
+          if (_cache == undefined || _cache == null)
+            $.get(
+              "/displayToon",
+              {site: site, id: id, num: numList[id][i + 1]},
+              function(data) {
+                Stoo.cache_set(id, numList[id][i + 1], data);
+              }
+            );
+        }
       }
     };
     this.getNumAndDisplay = function(prev_id, prev_num)
