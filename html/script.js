@@ -118,22 +118,14 @@
           }
           lastNum[id] = parseInt(data.split(" ")[1]);
 
-          var _cache = Naver.cache_get(id, num);
-          if (_cache == undefined || _cache == null)
-            $.get(
-              "/displayToon",
-              {site: site, id: id, num: num},
-              function(data) {
-                $("#display_area").html(data);
-                change_remote();
-              }
-            );
-          else
-          {
-            $("#display_area").html(_cache);
-            change_remote();
-            Naver.cache_set(id, num, null);
-          }
+          $.get(
+            "/displayToon",
+            {site: site, id: id, num: num},
+            function(data) {
+              $("#display_area").html(data);
+              change_remote();
+            }
+          );
 
           if (num < lastNum[id])
             Naver.getNextToon();
@@ -283,29 +275,21 @@
           lastNum[id] = numList[id][numList[id].length - 1];
           num = numList[id][0];
 
-          var _cache = Daum.cache_get(id, num);
-          if (_cache == undefined || _cache == null)
-            $.get(
-              "/displayToon",
-              {site: site, id: id, num: num},
-              function(data) {
-                if (data == "")
-                {
-                  alert("접속할 수 없습니다!");
-                  id = prev_id;
-                  num = prev_num;
-                  return;
-                }
-                $("#display_area").html(data);
-                change_remote();
+          $.get(
+            "/displayToon",
+            {site: site, id: id, num: num},
+            function(data) {
+              if (data == "")
+              {
+                alert("접속할 수 없습니다!");
+                id = prev_id;
+                num = prev_num;
+                return;
               }
-            );
-          else
-          {
-            $("#display_area").html(_cache);
-            change_remote();
-            Daum.cache_set(id, num, null);
-          }
+              $("#display_area").html(data);
+              change_remote();
+            }
+          );
 
           if (num < lastNum[id])
             Daum.getNextToon();
@@ -416,29 +400,23 @@
 
           lastNum[id] = numList[id][numList[id].length - 1];
           num = numList[id][0];
-          var _cache = Yahoo.cache_get(id, num);
-          if (_cache == undefined || _cache == null)
-            $.get(
-              "/displayToon",
-              {site: site, id: id, num: num},
-              function(data) {
-                if (data == "")
-                {
-                  alert("접속할 수 없습니다!");
-                  id = prev_id;
-                  num = prev_num;
-                  return;
-                }
-                $("#display_area").html(data);
-                change_remote();
+
+          $.get(
+            "/displayToon",
+            {site: site, id: id, num: num},
+            function(data) {
+              if (data == "")
+              {
+                alert("접속할 수 없습니다!");
+                id = prev_id;
+                num = prev_num;
+                return;
               }
-            );
-          else
-          {
-            $("#display_area").html(_cache);
-            change_remote();
-            Yahoo.cache_set(id, num, null);
-          }
+              $("#display_area").html(data);
+              change_remote();
+            }
+          );
+
           if (num < lastNum[id])
             Yahoo.getNextToon();
         }
@@ -515,29 +493,21 @@
           }
           lastNum[id] = parseInt(data);
 
-          var _cache = Paran.cache_get(id, num);
-          if (_cache == undefined || _cache == null)
-            $.get(
-              "/displayToon",
-              {site: site, id: id, num: num},
-              function(data) {
-                if (data == "")
-                {
-                  alert("접속할 수 없습니다!");
-                  id = prev_id;
-                  num = prev_num;
-                  return;
-                }
-                $("#display_area").html(data);
-                change_remote();
+          $.get(
+            "/displayToon",
+            {site: site, id: id, num: num},
+            function(data) {
+              if (data == "")
+              {
+                alert("접속할 수 없습니다!");
+                id = prev_id;
+                num = prev_num;
+                return;
               }
-            );
-          else
-          {
-            $("#display_area").html(_cache);
-            change_remote();
-            Paran.cache_set(id, num, null);
-          }
+              $("#display_area").html(data);
+              change_remote();
+            }
+          );
 
           if (num < lastNum[id])
             Paran.getNextToon();
@@ -647,29 +617,21 @@
           lastNum[id] = numList[id][numList[id].length - 1];
           num = numList[id][0];
 
-          var _cache = Stoo.cache_get(id, num);
-          if (_cache == undefined || _cache == null)
-            $.get(
-              "/displayToon",
-              {site: site, id: id, num: num},
-              function(data) {
-                if (data == "")
-                {
-                  alert("접속할 수 없습니다!");
-                  id = prev_id;
-                  num = prev_num;
-                  return;
-                }
-                $("#display_area").html(data);
-                change_remote();
+          $.get(
+            "/displayToon",
+            {site: site, id: id, num: num},
+            function(data) {
+              if (data == "")
+              {
+                alert("접속할 수 없습니다!");
+                id = prev_id;
+                num = prev_num;
+                return;
               }
-            );
-          else
-          {
-            $("#display_area").html(_cache);
-            change_remote();
-            Stoo.cache_set(id, num, null);
-          }
+              $("#display_area").html(data);
+              change_remote();
+            }
+          );
 
           if (num < lastNum[id])
             Stoo.getNextToon();
