@@ -975,7 +975,7 @@ function login(check)
 // Logout
 function logout()
 {
-  add_bookmark();
+  add_bookmark(false);
   $.get(
     "/logout.cgi",
     function (data) { $("#display_area").html(data); }
@@ -983,7 +983,7 @@ function logout()
 }
 
 // 북마크 추가
-function add_bookmark()
+function add_bookmark(show_table)
 {
   if (id && num)
   {
@@ -1010,25 +1010,28 @@ function add_bookmark()
             same_td[j].style.backgroundColor = (j % 2) ? btnColor["buttonA"] : btnColor["buttonB"];
         }
       }
-      if (site == "yahoo")
+      if (show_table)
       {
-        if (same_toon[0].className == "current_toon")
+        if (site == "yahoo")
         {
-          var _day = parseInt(same_toon[0].parentElement.id.substring(3));
-          if (0 <= _day && _day <= 6 && $("#current_toonlist").css("display") == "none")
-            show_table(1);
-          else if (7 <= _day && _day <= 13 && $("#special_toonlist").css("display") == "none")
-            show_table(3);
+          if (same_toon[0].className == "current_toon")
+          {
+            var _day = parseInt(same_toon[0].parentElement.id.substring(3));
+            if (0 <= _day && _day <= 6 && $("#current_toonlist").css("display") == "none")
+              show_table(1);
+            else if (7 <= _day && _day <= 13 && $("#special_toonlist").css("display") == "none")
+              show_table(3);
+          }
+          else if (same_toon[0].className == "finished_toon" && $("#finished_toonlist").css("display") == "none")
+            show_table(2);
         }
-        else if (same_toon[0].className == "finished_toon" && $("#finished_toonlist").css("display") == "none")
-          show_table(2);
-      }
-      else
-      {
-        if (same_toon[0].className == "current_toon" && $("#current_toonlist").css("display") == "none")
-          show_table();
-        else if (same_toon[0].className == "finished_toon" && $("#finished_toonlist").css("display") == "none")
-          show_table();
+        else
+        {
+          if (same_toon[0].className == "current_toon" && $("#current_toonlist").css("display") == "none")
+            show_table();
+          else if (same_toon[0].className == "finished_toon" && $("#finished_toonlist").css("display") == "none")
+            show_table();
+        }
       }
 
       location.replace("#");
@@ -1217,7 +1220,7 @@ function viewToon(_id, _num)
   toggle_toonlist(false);
 
   if (_id != id)
-    add_bookmark();
+    add_bookmark(false);
 
   id = sites[site].id(_id);
 
