@@ -52,14 +52,9 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
         _title << "<div style=\"padding: 15px 0px 15px 0px; background-color: #{btnColor["buttonB"]};\">#{comic_title} - #{writer}<br/><small style=\"font-size: 12px;\">#{comic_text}</small><br/><br/>"
       end
       # 웹툰 회 제목, 날짜 출력
-      resp.search('//div[@class="view_area"]').each do |r|
-        r1 = (r.at('./div[@class="btn_me"]/div[@class="pme2"]/script') or r.at('./div[@class="btn_me2"]/div[@class="pme2"]/script'))
-        if r1.inner_html =~ /"title"\s*:\s*"([\w\W]*)"\s*,[\w\W]*"tag"/
-          title = $1.gsub("<", "&lt;").gsub(">", "&gt;").gsub('"', "&quot;").gsub("'", "&#39;")
-        end
-        date = resp.at('//div[@class="tit_area"]/div[@class="vote_lst"]/dl[@class="rt"]/dd[@class="date"]').inner_html
-        _title << "<b>#{title}</b></div><small id=\"toon_date\">#{date}</small>"
-      end
+      title = resp.at('//form[@name="reportForm"]/input[@name="itemTitle"]').attr("value").gsub("<", "&lt;").gsub(">", "&gt;").gsub('"', "&quot;").gsub("'", "&#39;")
+      date = resp.at('//div[@class="section_spot"]/div[@class="tit_area"]/div[@class="vote_lst"]/dl[@class="rt"]/dd[@class="date"]').inner_html
+      _title << "<b>#{title}</b></div><small id=\"toon_date\">#{date}</small>"
 
       # BGM 출력
       resp.search('//div[@id="bgm_player"]').each do |r|
