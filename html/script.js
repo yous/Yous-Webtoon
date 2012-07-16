@@ -709,12 +709,17 @@ function resizeWidth()
     for (i = 0; i < toon.length; i++)
       toon[i].style.width = parseInt(parseInt(main_area.style.width) / 7 - 2) + "px";
   }
+}
 
-  try {
-    document.getElementById("remote").style.top = parseInt(window.innerHeight / 2 - 160) + "px";
-  } catch (e) {
-    document.getElementById("remote").style.top = parseInt(document.documentElement.clientHeight / 2 - 160) + "px";
-  }
+// remote scroll 자동 조절
+function scrollControl()
+{
+  var _height = $(window).height() / 2 - 160;
+  var _scroll = $(window).scrollTop();
+  if (_scroll + _height < 80)
+    $("#remote").css("top", "80px");
+  else
+    $("#remote").css("top", _scroll + _height + "px");
 }
 
 // Loading 메시지 출력

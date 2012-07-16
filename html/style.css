@@ -74,7 +74,7 @@ input::-moz-focus-inner {
 }
 #remote {
   border-spacing: 1px;
-  position: fixed;
+  position: absolute;
   right: 5px;
   font-size: 14px;
 }

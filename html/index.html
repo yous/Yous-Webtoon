@@ -9,8 +9,10 @@
     <script type="text/javascript" src="script.js"></script>
     <script>
       $(document).ready(function() {
-        $(window).resize(function() { resizeWidth(); });
+        $(window).resize(function() { resizeWidth(); scrollControl(); });
+        $(window).scroll(function() { scrollControl(); });
         resizeWidth();
+        scrollControl();
         toonlist_area_init();
         login(true);
         $(this).bind("keydown", function(e) { bodyKeyDown(e, true); });
