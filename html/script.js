@@ -719,7 +719,10 @@ function scrollControl()
   if (_scroll + _height < 80)
     $("#remote").css("top", "80px");
   else
-    $("#remote").css("top", _scroll + _height + "px");
+  {
+    $("#remote").stop(true);
+    $("#remote").animate({top: _scroll + _height + "px"});
+  }
 }
 
 // Loading 메시지 출력
