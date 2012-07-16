@@ -1433,7 +1433,7 @@ function bodyKeyDown(e, lr_arrow)
       case 39: if (lr_arrow) { $("#nextBtn").trigger("click"); } break; // →
       case 65: $("#prevBtn").trigger("click"); break; // A
       case 68: $("#nextBtn").trigger("click"); break; // D
-      case 38: // ^↑
+      case 38: // ↑
         event.preventDefault();
       case 87: // W
         if ($("#display_area hr").length == 0)
@@ -1444,7 +1444,7 @@ function bodyKeyDown(e, lr_arrow)
         else
           scrollAnchor(-1);
         break;
-      case 40: // ^↓
+      case 40: // ↓
         event.preventDefault();
       case 83: // S
         if ($("#display_area hr").length == 0)
@@ -1462,6 +1462,7 @@ function bodyKeyDown(e, lr_arrow)
           location.replace("#");
         break;
       case 90: location.replace("#bottom"); break; // Z
+      case 72: $("#shortcutBtn").trigger("click"); break; // H
     }
   }
 }
