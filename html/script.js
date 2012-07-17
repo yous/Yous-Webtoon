@@ -442,102 +442,6 @@
 })();
 
 (function() {
-  window.classParan = function()
-  {
-    if (_Paran == null)
-      _Paran = new classParan();
-    return _Paran;
-  }
-
-  var _Paran = null;
-  var classParan = function()
-  {
-    this.id = function(_id) { return parseInt(_id); };
-    this.first_num = function() { return 1; };
-    this.prev_num = function() { return num - 1; };
-    this.next_num = function() { return num + 1; };
-    this.idx_to_num = function(_inputNum)
-    {
-      if (_inputNum > lastNum[id])
-        return lastNum[id];
-      else
-        return _inputNum;
-    }
-    this.src = function() { return "http://media.paran.com/cartoon/cartoonview.kth?id=" + id + "&ord=" + num + "&mno=" + ((finishToon.indexOf(id) != -1) ? 5 : 3); };
-    this.inputNum = function() { return num; };
-    this.toonlist_area_init = function() { return '<span style="color: ' + btnColor["link"] + '; cursor: pointer; margin: 10px;" onclick="site_change(\'paran\');"><u>P</u>aran</span>'; };
-    this.saveBM = function(_add, _finish) { $.post("/saveBM.cgi", {site: site, add: _add, toon_id: id, toon_num: num, finish: _finish}); };
-    this.show_artist_table = function(opt) { return; };
-    this.getOtherToon = function(_id) { return; };
-    var cache = new Object();
-    this.cache_get = function(_id, _num)
-    {
-      if (cache[_id] == undefined)
-        return undefined;
-
-      return cache[_id][_num];
-    };
-    this.cache_set = function(_id, _num, _data)
-    {
-      if (cache[_id] == undefined)
-        cache[_id] = new Object();
-
-      cache[_id][_num] = _data;
-    };
-    this.getNextToon = function()
-    {
-      var _id = id;
-      var _num = num + 1;
-      var _cache = Paran.cache_get(_id, _num);
-      if (_cache == undefined || _cache == null)
-        $.get(
-          "/displayToon",
-          {site: site, id: _id, num: _num},
-          function(data) {
-            Paran.cache_set(_id, _num, data);
-          }
-        );
-    };
-    this.getNumAndDisplay = function(prev_id, prev_num)
-    {
-      $.get(
-        "/getNum",
-        {site: site, id: id},
-        function(data) {
-          if (data == "")
-          {
-            alert("접속할 수 없습니다!");
-            id = prev_id;
-            num = prev_num;
-            return;
-          }
-          lastNum[id] = parseInt(data);
-
-          $.get(
-            "/displayToon",
-            {site: site, id: id, num: num},
-            function(data) {
-              if (data == "")
-              {
-                alert("접속할 수 없습니다!");
-                id = prev_id;
-                num = prev_num;
-                return;
-              }
-              $("#display_area").html(data);
-              change_remote();
-            }
-          );
-
-          if (num < lastNum[id])
-            Paran.getNextToon();
-        }
-      );
-    };
-  }
-})();
-
-(function() {
   window.classStoo = function()
   {
     if (_Stoo == null)
@@ -670,13 +574,11 @@
 var Naver = new classNaver();
 var Daum = new classDaum();
 var Yahoo = new classYahoo();
-var Paran = new classParan();
 var Stoo = new classStoo();
 var sites = {
   "naver" : Naver,
   "daum" : Daum,
   "yahoo" : Yahoo,
-  "paran" : Paran,
   "stoo" : Stoo
 };
 
