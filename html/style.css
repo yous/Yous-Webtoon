@@ -101,6 +101,9 @@ input::-moz-focus-inner {
 #remote hr {
   margin: 3px;
 }
+#remote #shortcutBtn {
+  cursor: pointer;
+}
 #remote .shortcut {
   display: none;
 }
