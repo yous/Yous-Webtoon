@@ -141,12 +141,6 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
 
       ((str_finish == "") ? "n " : str_finish) + numList.join(" ") + "\n" + str_intro
 
-    # Paran 웹툰
-    elsif site =="paran"
-      resp = JSON.parse(a.get("http://media.paran.com/cartoon/cartoon_series_json.kth?uid=#{id}").body.gsub("'", '"').gsub(/[^"\w]([A-Za-z]+)[^"\w]/, '"\1"'))
-
-      resp["data"]["ord"].to_s
-
     # Stoo 웹툰
     elsif site == "stoo"
       str_finish = ""

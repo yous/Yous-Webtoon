@@ -19,9 +19,6 @@ def db_init(db, site)
     db.exec("CREATE TABLE IF NOT EXISTS yahoo_bm (id INTEGER REFERENCES usr(id) ON DELETE CASCADE NOT NULL, toon_id INTEGER NOT NULL, toon_num INTEGER NOT NULL, UNIQUE (id, toon_id));")
     db.exec("CREATE TABLE IF NOT EXISTS yahoo_lastnum (toon_id INTEGER PRIMARY KEY, toon_num INTEGER NOT NULL);")
     db.exec("CREATE TABLE IF NOT EXISTS yahoo_numlist (toon_id INTEGER NOT NULL, toon_num_idx INTEGER NOT NULL, toon_num INTEGER NOT NULL, UNIQUE (toon_id, toon_num_idx));")
-  when "paran"
-    db.exec("CREATE TABLE IF NOT EXISTS paran_bm (id INTEGER REFERENCES usr(id) ON DELETE CASCADE NOT NULL, toon_id INTEGER NOT NULL, toon_num INTEGER NOT NULL, UNIQUE (id, toon_id));")
-    db.exec("CREATE TABLE IF NOT EXISTS paran_lastnum (toon_id INTEGER PRIMARY KEY, toon_num INTEGER NOT NULL);")
   when "stoo"
     db.exec("CREATE TABLE IF NOT EXISTS stoo_bm (id INTEGER REFERENCES usr(id) ON DELETE CASCADE NOT NULL, toon_id INTEGER NOT NULL, toon_num VARCHAR NOT NULL, UNIQUE (id, toon_id));")
     db.exec("CREATE TABLE IF NOT EXISTS stoo_lastnum (toon_id INTEGER PRIMARY KEY, toon_num VARCHAR NOT NULL);")
@@ -103,20 +100,6 @@ if session["user_id"] != nil and session["user_id"] != "" and add != nil and too
     if finish != "no"
       db.exec("UPDATE yahoo_lastnum SET toon_num=$1 WHERE toon_id=$2;", [finish.to_i, toon_id])
       db.exec("INSERT INTO yahoo_lastnum (toon_id, toon_num) SELECT $1, $2 WHERE NOT EXISTS (SELECT 1 FROM yahoo_lastnum WHERE toon_id=$1);", [toon_id, finish.to_i])
-    end
-  # Paran 웹툰
-  elsif site == "paran"
-    toon_id = toon_id.to_i
-    toon_num = toon_num.to_i
-    if add == "yes"
-      db.exec("UPDATE paran_bm SET toon_num=$1 WHERE id=$2 AND toon_id=$3;", [toon_num, session["user_id"], toon_id])
-      db.exec("INSERT INTO paran_bm (id, toon_id, toon_num) SELECT $1, $2, $3 WHERE NOT EXISTS (SELECT 1 FROM paran_bm WHERE id=$1 AND toon_id=$2);", [session["user_id"], toon_id, toon_num])
-    else
-      db.exec("DELETE FROM paran_bm WHERE id=$1 AND toon_id=$2;", [session["user_id"], toon_id])
-    end
-    if finish != "no"
-      db.exec("UPDATE paran_lastnum SET toon_num=$1 WHERE toon_id=$2;", [finish.to_i, toon_id])
-      db.exec("INSERT INTO paran_lastnum (toon_id, toon_num) SELECT $1, $2 WHERE NOT EXISTS (SELECT 1 FROM paran_lastnum WHERE toon_id=$1);", [toon_id, finish.to_i])
     end
   # Stoo 웹툰
   elsif site == "stoo" and numList != nil

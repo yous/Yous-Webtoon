@@ -1315,10 +1315,6 @@ function bodyKeyDown(e, lr_arrow)
         if (site != "yahoo")
           site_change("yahoo");
         break;
-      case 80: // Shift + P
-        if (site != "paran")
-          site_change("paran");
-        break;
       case 83: // Shift + S
         if (site != "stoo")
           site_change("stoo");
