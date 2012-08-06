@@ -16,10 +16,6 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
   end
 
   def process(site, id)
-    if site == "yahoo" or site == "stoo"
-      db = PGconn.open(:dbname => "webtoon")
-    end
-
     a = Mechanize.new
     a.history.max_size = 0
 
@@ -83,6 +79,8 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
 
     # Yahoo 웹툰
     elsif site == "yahoo"
+      db = PGconn.open(:dbname => "webtoon")
+
       a.default_encoding = "CP949"
       a.force_default_encoding = true
 
@@ -131,6 +129,8 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
 
     # Stoo 웹툰
     elsif site == "stoo"
+      db = PGconn.open(:dbname => "webtoon")
+
       str_finish = ""
       str_writer = ""
       str_intro = ""
