@@ -49,7 +49,11 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
         #comic_text = r.at('./p[@class="txt"]').inner_html.strip().gsub(/^<br\/?>/i, "").gsub(/<br\/?>$/i, "").gsub(/<br\/?>/i, " ")
         comic_title = comic_title.strip()
         writer = writer.strip().gsub(/^<span>\s*/i, "").gsub(/\s*<\/span>/i, "")
-        _title << "<div id=\"title\" style=\"background-color: #{btnColor["buttonB"]};\">#{comic_title} - #{writer}<br/><small style=\"font-size: 12px;\">#{comic_text}</small><br/><br/>"
+        _title << <<-HTML
+          <div id="title" style="background-color: #{btnColor["buttonB"]};">
+            #{comic_title} - #{writer}<br/>
+            <small style="font-size: 12px;">#{comic_text}</small><br/><br/>
+        HTML
       end
       # 웹툰 회 제목, 날짜 출력
       title = resp.at('//form[@name="reportForm"]/input[@name="itemTitle"]').attr("value").gsub("<", "&lt;").gsub(">", "&gt;").gsub('"', "&quot;").gsub("'", "&#39;")
@@ -65,29 +69,36 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
             _data.save_as("html/images/#{bgmURL.gsub(/\//, "@")}") if not _data.body.nil?
           end
           if ENV["HTTP_USER_AGENT"] =~ /MSIE/
-            _content << '<script>play_status = "play";</script>'
-            _content << '<div id="toonBGM" style="float: left; position: absolute;">'
-            _content << '<span style="color: gray; cursor: default;">BGM</span><br/>'
-            _content << '<span id="BGM_play_pause" style="color: gray; cursor: pointer;" onclick="toggle_play_pause(0);">∥</span>'
-            _content << '<span id="BGM_stop" style="color: gray; cursor: pointer;" onclick="toggle_play_pause(1);">■</span>'
-            _content << '<div id="music_player" style="display: none;">'
+            _content << <<-HTML
+              <script>play_status = "play";</script>
+              <div id="toonBGM" style="float: left; position: absolute;">
+                <span style="color: gray; cursor: default;">BGM</span><br/>
+                <span id="BGM_play_pause" style="color: gray; cursor: pointer;" onclick="toggle_play_pause(0);">∥</span>
+                <span id="BGM_stop" style="color: gray; cursor: pointer;" onclick="toggle_play_pause(1);">■</span>
+                <div id="music_player" style="display: none;">
+            HTML
           else
-            _content << '<div id="toonBGM" style="float: left; position: absolute;">'
-            _content << '<span style="color: gray; cursor: default;">BGM</span><br/>'
-            _content << '<span id="BGM_play_pause" style="color: gray; cursor: pointer;" onclick="toggle_play_pause(2);">■</span>'
-            _content << '<div id="music_player">'
+            _content << <<-HTML
+              <div id="toonBGM" style="float: left; position: absolute;">
+                <span style="color: gray; cursor: default;">BGM</span><br/>
+                <span id="BGM_play_pause" style="color: gray; cursor: pointer;" onclick="toggle_play_pause(2);">■</span>
+                <div id="music_player">
+            HTML
           end
-          _content << '<object id="music_player_obj" classid="CLSID:6BF52A52-394A-11d3-B153-00C04F79FAA6" width="0" height="0">'
-          _content << "<param name=\"URL\" value=\"/images#{bgmURL.gsub(/\//, "@")}\"/>"
-          _content << '<param name="AutoStart" value="1"/>'
-          _content << '<param name="uiMode" value="none"/>'
-          _content << '<param name="StretchToFit" value="1"/>'
-          _content << '<param name="invokeURLs" value="false"/>'
-          _content << '<param name="WindowlessVideo" value="1"/>'
-          _content << '<param name="Volume" value="50"/>'
-          _content << "<embed src=\"/images/#{bgmURL.gsub(/\//, "@")}\" type=\"application/x-mplayer2\" pluginspage=\"http://www.microsoft.com/Windows/MediaPlayer/\" width=\"0\" height=\"0\"/>"
-          _content << '</object></div>'
-          _content << '</div><br/><br/>'
+          _content << <<-HTML
+                  <object id="music_player_obj" classid="CLSID:6BF52A52-394A-11d3-B153-00C04F79FAA6" width="0" height="0">
+                    <param name="URL" value="/images#{bgmURL.gsub(/\//, "@")}"/>
+                    <param name="AutoStart" value="1"/>
+                    <param name="uiMode" value="none"/>
+                    <param name="StretchToFit" value="1"/>
+                    <param name="invokeURLs" value="false"/>
+                    <param name="WindowlessVideo" value="1"/>
+                    <param name="Volume" value="50"/>
+                    <embed src="/images/#{bgmURL.gsub(/\//, "@")}" type="application/x-mplayer2" pluginspage="http://www.microsoft.com/Windows/MediaPlayer/" width="0" height="0"/>
+                  </object>
+                </div>
+              </div><br/><br/>
+          HTML
         end
       end
 
@@ -127,7 +138,13 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
           # Flash
           elsif v.name == "script"
             if f_exist
-              _content << '<script>$("#title_area").append("<small style=\'float: left;\'>Flash Exist <span style=\'cursor: pointer;\' onclick=\'toggle_toonlist();\'>목록 접기/펼치기</span></small>");toggle_toonlist(true);location.replace("#title_area");</script>'
+              _content << <<-HTML
+                <script>
+                  $("#title_area").append("<small style='float: left;'>Flash Exist <span style='cursor: pointer;' onclick='toggle_toonlist();'>목록 접기/펼치기</span></small>");
+                  toggle_toonlist(true);
+                  location.replace("#title_area");
+                </script>
+              HTML
               f_exist = false
             end
             _content << naverPutObj(a, id, imageList[i], imageWidth[i], imageHeight[i])
@@ -182,31 +199,44 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
                 if count <= 1
                   _content << "<hr id=\"anchor_0\" style=\"width: 80%; height: 1px; border: 0px;\"/>"
                 else
-                  _content << "<input type=\"button\" value=\"&uarr;\" style=\"position: relative; top: 650px;\" onclick=\"scrollAnchor(-1);\"><input type=\"button\" value=\"&darr;\" style=\"position: relative; top: 650px;\" onclick=\"scrollAnchor(1);\">"
-                  _content << "</div><br/><br/><br/>"
-                  _content << "<hr id=\"anchor_#{count / 2}\" style=\"width: 80%; height: 1px; border: 0px;\"/>"
+                  _content << <<-HTML
+                      <input type="button" value="&uarr;" style="position: relative; top: 650px;" onclick="scrollAnchor(-1);">
+                      <input type="button" value="&darr;" style="position: relative; top: 650px;" onclick="scrollAnchor(1);">
+                    </div><br/><br/><br/>
+                    <hr id="anchor_#{count / 2}" style="width: 80%; height: 1px; border: 0px;"/>
+                  HTML
                 end
                 _content << "<div style=\"position: relative; margin: 0 auto; width: 900px; height: 650px;\">"
               end
-              _content << "<div style=\"position: absolute; width: 450px; height: 650px; left: #{if count % 2 == 0 then 0 else 450 end}px;\">"
-              _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\"#{if count <= 1 then " onload=\"location.replace('#title_area');\"" else "" end}/></div>"
+              _content << <<-HTML
+                <div style="position: absolute; width: 450px; height: 650px; left: #{if count % 2 == 0 then 0 else 450 end}px;">
+                  <img src="/images/#{url.gsub(/\//, "@")}"#{if count <= 1 then " onload=\"location.replace('#title_area');\"" else "" end}/>
+                </div>
+              HTML
               count += 1
             end
           end
         end
-        _content << "<input type=\"button\" value=\"&uarr;\" style=\"position: relative; top: 650px;\" onclick=\"scrollAnchor(-1);\"><input type=\"button\" value=\"&darr;\" style=\"position: relative; top: 650px;\" onclick=\"scrollAnchor(1);\">"
-        _content << '</div><br/>'
+        _content << <<-HTML
+            <input type="button" value="&uarr;" style="position: relative; top: 650px;" onclick="scrollAnchor(-1);">
+            <input type="button" value="&darr;" style="position: relative; top: 650px;" onclick="scrollAnchor(1);">"
+          </div><br/>
+        HTML
       end
 
       # 작가 블로그, 다른 작품 출력
       resp.search('//script').each do |r|
         if r.inner_html =~ /artistData/
-          _content << '<br/><br/>'
-          _content << '<div id="artist_area">'
-          _content << '<table id="artist_info" align="right"><tr>'
-          _content << "<td><div style=\"text-align: center; width: 100px; margin: 0px 10px 0px 10px; cursor: pointer; background-color: #{btnColor["buttonB"]};\" onclick=\"show_artist_table(0);\">블로그</div></td>"
-          _content << "<td><div style=\"text-align: center; width: 100px; margin: 0px 10px 0px 10px; cursor: pointer; background-color: #{btnColor["buttonB"]};\" onclick=\"show_artist_table(1);\">다른 작품</div></td>"
-          _content << '</tr><tr style="font-size: 13px;">'
+          _content << <<-HTML
+            <br/><br/>
+            <div id="artist_area">
+              <table id="artist_info" align="right">
+                <tr>
+                  <td><div style="text-align: center; width: 100px; margin: 0px 10px 0px 10px; cursor: pointer; background-color: #{btnColor["buttonB"]};" onclick="show_artist_table(0);">블로그</div></td>
+                  <td><div style="text-align: center; width: 100px; margin: 0px 10px 0px 10px; cursor: pointer; background-color: #{btnColor["buttonB"]};" onclick="show_artist_table(1);">다른 작품</div></td>
+                </tr>
+                <tr style="font-size: 13px;">
+          HTML
           _blog = '<td><div id="artist_blog" style="display: none;">'
           _other = '<td><div id="artist_other" style="display: none;">'
           if r.inner_html =~ /artistData\s*=\s*\[([\w\W]*)\];[\w\W]*var actionRunner;/
@@ -222,9 +252,16 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
           _other << '</div></td>'
           _content << _blog
           _content << _other
-          _content << '</tr><tr>'
-          _content << '<td colspan="2"><div id="artist_otherlist"></div></td>'
-          _content << '</tr></table></div>'
+          _content << <<-HTML
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <div id="artist_otherlist"></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          HTML
         end
       end
 
@@ -232,7 +269,15 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
       _writerCmt = $1.gsub("<", "&lt;").gsub(">", "&gt;").gsub(/&lt;br&gt;/i, "<br>").force_encoding("UTF-8") if resp.body =~ /<div\s+class="writer_info">[\w\W]*<p>([\w\W]*)<\/p>\s*<ul\s+class="btn_group">[\w\W]*<\/div>/
       _rating = resp.at('//span[@id="bottomPointTotalNumber"]/strong').inner_html
       _ratingPerson = resp.at('//span[@class="pointTotalPerson"]/em').inner_html
-      _content << "<div id=\"writer_info\"><div style=\"background-color: #{btnColor["buttonB"]}; padding: 2px 15px 2px 15px;\"><b>작가의 말</b></div><p style=\"padding: 0px 20px 0px 20px;\">#{_writerCmt}</p><p style=\"padding: 0px 20px 0px 20px; text-align: right;\">별점 #{_rating} (#{_ratingPerson}명)</p></div></br>"
+      _content << <<-HTML
+        <div id="writer_info">
+          <div style="background-color: #{btnColor["buttonB"]}; padding: 2px 15px 2px 15px;">
+            <b>작가의 말</b>
+          </div>
+          <p style="padding: 0px 20px 0px 20px;">#{_writerCmt}</p>
+          <p style="padding: 0px 20px 0px 20px; text-align: right;">별점 #{_rating} (#{_ratingPerson}명)</p>
+        </div></br>
+      HTML
 
       _title << '</div>'
       _content << '</div>'
@@ -259,8 +304,13 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
       end
       # 웹툰 회, 날짜 출력
       title = resp.at('//div[@class="others"]/span/span[@class="episode_title"]').inner_html.gsub("<", "&lt;").gsub(">", "&gt;").gsub('"', "&quot;").gsub("'", "&#39;")
-      _title << "<small id=\"toon_date\"></small>"
-      _title << "<script>$('#title_area div').append('#{comic_title} - ' + toonInfo['#{id}'][0] + '<br/><small style=\"font-size: 12px;\">' + toonInfo['#{id}'][1] + '</small><br/><br/><b>#{title}</b>');$('#toon_date').html(dateList['#{id}'][numList['#{id}'].indexOf(#{num})]);</script>"
+      _title << <<-HTML
+        <small id="toon_date"></small>
+        <script>
+          $('#title_area div').append('#{comic_title} - ' + toonInfo['#{id}'][0] + '<br/><small style="font-size: 12px;">' + toonInfo['#{id}'][1] + '</small><br/><br/><b>#{title}</b>');
+          $('#toon_date').html(dateList['#{id}'][numList['#{id}'].indexOf(#{num})]);
+        </script>
+      HTML
 
       # 스크롤 형식의 웹툰
       if resp.search('//div[@class="img_list_wrap"]').length > 0
@@ -333,14 +383,19 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
       end
 
       # 관련 웹툰, 작품 노트 출력
-      _content << "<br/><br/>"
-      _content << '<div id="artist_area">'
-      _content << '<table id="artist_info" align="right"><tr>'
-      _content << "<td><div style=\"text-align: center; width: 100px; margin: 0px 10px 0px 10px; cursor: pointer; background-color: #{btnColor["buttonB"]};\" onclick=\"show_artist_table(0);\">관련 웹툰</div></td>"
-      _content << "<td><div style=\"text-align: center; width: 100px; margin: 0px 10px 0px 10px; cursor: pointer; background-color: #{btnColor["buttonB"]};\" onclick=\"show_artist_table(1);\">작품 노트</div></td>"
-      _content << "</tr><tr>"
-      _content << '<td colspan="2"><div id="artist_otherlist"></div></td>'
-      _content << '</tr></table></div>'
+      _content << <<-HTML
+        <br/><br/>
+        <div id="artist_area">
+          <table id="artist_info" align="right">
+            <tr>
+              <td><div style="text-align: center; width: 100px; margin: 0px 10px 0px 10px; cursor: pointer; background-color: #{btnColor["buttonB"]};" onclick="show_artist_table(0);">관련 웹툰</div></td>
+              <td><div style="text-align: center; width: 100px; margin: 0px 10px 0px 10px; cursor: pointer; background-color: #{btnColor["buttonB"]};" onclick="show_artist_table(1);">작품 노트</div></td>
+              </tr><tr>
+              <td colspan="2"><div id="artist_otherlist"></div></td>
+            </tr>
+          </table>
+        </div>
+      HTML
 
       _title << '</div>'
       _content << '</div>'
@@ -358,9 +413,13 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
       _content = '<div id="content_area">'
 
       # 웹툰 제목, 작가, 설명, 회 제목, 날짜 출력
-      _title << "<div id=\"title\" style=\"background-color: #{btnColor["buttonB"]};\"></div>"
-      _title << "<small id=\"toon_date\">#{resp["DATE"]}</small>"
-      _title << "<script>$('#title_area div').append(toonInfo[#{id}][0] + ' - #{resp["NAME"]}<br/><small style=\"font-size: 12px;\">' + toonInfo[#{id}][1] + '</small><br/><br/><b>#{resp["TITLE"]}</b>');</script>"
+      _title << <<-HTML
+        <div id="title" style="background-color: #{btnColor["buttonB"]};"></div>
+        <small id="toon_date">#{resp["DATE"]}</small>
+        <script>
+          $('#title_area div').append(toonInfo[#{id}][0] + ' - #{resp["NAME"]}<br/><small style="font-size: 12px;">' + toonInfo[#{id}][1] + '</small><br/><br/><b>#{resp["TITLE"]}</b>');
+        </script>
+      HTML
 
       # 웹툰 출력
       resp["IMAGES"].each_with_index do |img, idx|
@@ -406,7 +465,11 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
         date = "#{$1}.#{$2}.#{$3}" if r.at('./span[@class="date"]').inner_html.encode("UTF-8") =~ /(\d+)년\s+(\d+)월\s+(\d+)일/
         _title << "<small id=\"toon_date\">#{date}</small>"
       end
-      _title << "<script>$('#title_area div').append('#{comic_title} - ' + toonInfo[#{id}][0] + '<br/><small style=\"font-size: 12px;\">' + toonInfo[#{id}][1] + '</small><br/><br/><b>#{title}</b>');</script>"
+      _title << <<-HTML
+        <script>
+          $('#title_area div').append('#{comic_title} - ' + toonInfo[#{id}][0] + '<br/><small style="font-size: 12px;">' + toonInfo[#{id}][1] + '</small><br/><br/><b>#{title}</b>');
+        </script>
+      HTML
 
       # 웹툰 출력
       while true
@@ -443,17 +506,19 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
   end
 
   def flashObj(_url, _flashID, _width, _height, _wmode = "transparent", _flashVars = "", _bgColor = "#FFFFFF", _allowFullScreen = true)
-    s = "<object width=\"#{_width}\" height=\"#{_height}\" id=\"#{_flashID}\" classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" codebase=\"http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0\">"
-    s << '<param name="allowScriptAccess" value="always"/>'
-    s << '<param name="quality" value="high"/>'
-    s << '<param name="menu" value="false"/>'
-    s << "<param name=\"movie\" value=\"/images/#{_url.gsub(/\//, "@")}\"/>"
-    s << "<param name=\"wmode\" value=\"#{_wmode}\"/>"
-    s << "<param name=\"bgcolor\" value=\"#{_bgColor}\"/>"
-    s << "<param name=\"FlashVars\" value=\"#{_flashVars}\"/>"
-    s << "<param name=\"allowFullScreen\" value=\"#{_allowFullScreen}\"/>"
-    s << "<embed src=\"/images/#{_url.gsub(/\//, "@")}\" quality=\"high\" wmode=\"#{_wmode}\" menu=\"false\" FlashVars=\"#{_flashVars}\" bgcolor=\"#{_bgColor}\" width=\"#{_width}\" height=\"#{_height}\" name=\"#{_flashID}\" allowFullScreen=\"#{_allowFullScreen}\" align=\"middle\" allowScriptAccess=\"always\" type=\"application/x-shockwave-flash\" pluginspage=\"http://www.macromedia.com/go/getflashplayer\"/>"
-    s << '</object>'
+    return <<-HTML
+      <object width="#{_width}" height="#{_height}" id="#{_flashID}" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0">
+        <param name="allowScriptAccess" value="always"/>
+        <param name="quality" value="high"/>
+        <param name="menu" value="false"/>
+        <param name="movie" value="/images/#{_url.gsub(/\//, "@")}"/>
+        <param name="wmode" value="#{_wmode}"/>
+        <param name="bgcolor" value="#{_bgColor}"/>
+        <param name="FlashVars" value="#{_flashVars}"/>
+        <param name="allowFullScreen" value="#{_allowFullScreen}"/>
+        <embed src="/images/#{_url.gsub(/\//, "@")}" quality="high" wmode="#{_wmode}" menu="false" FlashVars="#{_flashVars}" bgcolor="#{_bgColor}" width="#{_width}" height="#{_height}" name="#{_flashID}" allowFullScreen="#{_allowFullScreen}" align="middle" allowScriptAccess="always" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer"/>
+      </object>
+    HTML
   end
 
   def naverPutObj(mechanObj, id, _imageURL, _imageWidth, _imageHeight, _first_img = false)
