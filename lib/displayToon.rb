@@ -202,7 +202,7 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
       resp.search('//script').each do |r|
         if r.inner_html =~ /artistData/
           _content << '<br/><br/>'
-          _content << '<div id="artist_area" style="width: 85%; clear: both; margin: 0 auto;">'
+          _content << '<div id="artist_area">'
           _content << '<table id="artist_info" align="right"><tr>'
           _content << "<td><div style=\"text-align: center; width: 100px; margin: 0px 10px 0px 10px; cursor: pointer; background-color: #{btnColor["buttonB"]};\" onclick=\"show_artist_table(0);\">블로그</div></td>"
           _content << "<td><div style=\"text-align: center; width: 100px; margin: 0px 10px 0px 10px; cursor: pointer; background-color: #{btnColor["buttonB"]};\" onclick=\"show_artist_table(1);\">다른 작품</div></td>"
@@ -232,7 +232,7 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
       _writerCmt = $1.gsub("<", "&lt;").gsub(">", "&gt;").gsub(/&lt;br&gt;/i, "<br>").force_encoding("UTF-8") if resp.body =~ /<div\s+class="writer_info">[\w\W]*<p>([\w\W]*)<\/p>\s*<ul\s+class="btn_group">[\w\W]*<\/div>/
       _rating = resp.at('//span[@id="bottomPointTotalNumber"]/strong').inner_html
       _ratingPerson = resp.at('//span[@class="pointTotalPerson"]/em').inner_html
-      _content << "<div id=\"writer_info\" style=\"width: 85%; text-align: left; clear: both; margin: 0 auto;\"><div style=\"background-color: #{btnColor["buttonB"]}; padding: 2px 15px 2px 15px;\"><b>작가의 말</b></div><p style=\"padding: 0px 20px 0px 20px;\">#{_writerCmt}</p><p style=\"padding: 0px 20px 0px 20px; text-align: right;\">별점 #{_rating} (#{_ratingPerson}명)</p></div></br>"
+      _content << "<div id=\"writer_info\"><div style=\"background-color: #{btnColor["buttonB"]}; padding: 2px 15px 2px 15px;\"><b>작가의 말</b></div><p style=\"padding: 0px 20px 0px 20px;\">#{_writerCmt}</p><p style=\"padding: 0px 20px 0px 20px; text-align: right;\">별점 #{_rating} (#{_ratingPerson}명)</p></div></br>"
 
       _title << '</div>'
       _content << '</div>'
@@ -334,7 +334,7 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
 
       # 관련 웹툰, 작품 노트 출력
       _content << "<br/><br/>"
-      _content << '<div id="artist_area" style="width: 85%; clear: both; margin: 0 auto;">'
+      _content << '<div id="artist_area">'
       _content << '<table id="artist_info" align="right"><tr>'
       _content << "<td><div style=\"text-align: center; width: 100px; margin: 0px 10px 0px 10px; cursor: pointer; background-color: #{btnColor["buttonB"]};\" onclick=\"show_artist_table(0);\">관련 웹툰</div></td>"
       _content << "<td><div style=\"text-align: center; width: 100px; margin: 0px 10px 0px 10px; cursor: pointer; background-color: #{btnColor["buttonB"]};\" onclick=\"show_artist_table(1);\">작품 노트</div></td>"
