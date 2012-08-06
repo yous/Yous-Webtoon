@@ -49,7 +49,7 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
         #comic_text = r.at('./p[@class="txt"]').inner_html.strip().gsub(/^<br\/?>/i, "").gsub(/<br\/?>$/i, "").gsub(/<br\/?>/i, " ")
         comic_title = comic_title.strip()
         writer = writer.strip().gsub(/^<span>\s*/i, "").gsub(/\s*<\/span>/i, "")
-        _title << "<div style=\"padding: 15px 0px 15px 0px; background-color: #{btnColor["buttonB"]};\">#{comic_title} - #{writer}<br/><small style=\"font-size: 12px;\">#{comic_text}</small><br/><br/>"
+        _title << "<div id=\"title\" style=\"background-color: #{btnColor["buttonB"]};\">#{comic_title} - #{writer}<br/><small style=\"font-size: 12px;\">#{comic_text}</small><br/><br/>"
       end
       # 웹툰 회 제목, 날짜 출력
       title = resp.at('//form[@name="reportForm"]/input[@name="itemTitle"]').attr("value").gsub("<", "&lt;").gsub(">", "&gt;").gsub('"', "&quot;").gsub("'", "&#39;")
@@ -255,7 +255,7 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
       comic_title = ""
       resp.search('//div[@class="episode_info"]').each do |r|
         comic_title = r.at('./a[@class="title"]').inner_html.strip()
-        _title << "<div style=\"padding: 15px 0px 15px 0px; background-color: #{btnColor["buttonB"]};\"></div>"
+        _title << "<div id=\"title\" style=\"background-color: #{btnColor["buttonB"]};\"></div>"
       end
       # 웹툰 회, 날짜 출력
       title = resp.at('//div[@class="others"]/span/span[@class="episode_title"]').inner_html.gsub("<", "&lt;").gsub(">", "&gt;").gsub('"', "&quot;").gsub("'", "&#39;")
@@ -358,7 +358,7 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
       _content = '<div id="content_area">'
 
       # 웹툰 제목, 작가, 설명, 회 제목, 날짜 출력
-      _title << "<div style=\"padding: 15px 0px 15px 0px; background-color: #{btnColor["buttonB"]};\"></div>"
+      _title << "<div id=\"title\" style=\"background-color: #{btnColor["buttonB"]};\"></div>"
       _title << "<small id=\"toon_date\">#{resp["DATE"]}</small>"
       _title << "<script>$('#title_area div').append(toonInfo[#{id}][0] + ' - #{resp["NAME"]}<br/><small style=\"font-size: 12px;\">' + toonInfo[#{id}][1] + '</small><br/><br/><b>#{resp["TITLE"]}</b>');</script>"
 
@@ -398,7 +398,7 @@ class DisplayToon < WEBrick::HTTPServlet::AbstractServlet
 
       # 웹툰 제목 출력
       comic_title = resp.at('//div[@id="content"]/div[@class="location"]/strong/a').attr("title")
-      _title << "<div style=\"padding: 15px 0px 15px 0px; background-color: #{btnColor["buttonB"]};\"></div>"
+      _title << "<div id=\"title\" style=\"background-color: #{btnColor["buttonB"]};\"></div>"
 
       # 작가, 설명, 웹툰 회, 날짜 출력
       resp.search('//div[@id="content"]/div[@class="cttop"]').each do |r|

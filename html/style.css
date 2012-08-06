@@ -52,6 +52,9 @@ input::-moz-focus-inner {
 #title_area {
   font-size: 17px;
 }
+#title {
+  padding: 15px 0px 15px 0px;
+}
 #content_area {
   clear: both;
 }
