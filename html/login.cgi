@@ -6,10 +6,6 @@ require 'cgi/session'
 require 'pg'
 require 'digest/sha1'
 
-def db_init(db)
-  db.exec("CREATE TABLE IF NOT EXISTS usr (id SERIAL PRIMARY KEY, usr_id VARCHAR NOT NULL UNIQUE, usr_pw VARCHAR NOT NULL);")
-end
-
 cgi = CGI.new
 user_id = (cgi.has_key?("user_id")) ? cgi.params["user_id"][0] : nil
 user_pw = (cgi.has_key?("user_pw")) ? cgi.params["user_pw"][0] : nil
@@ -19,7 +15,6 @@ if check == "y" # Login 확인
   puts "Content-Type: text/html; charset=utf-8\n\n"
 
   db = PGconn.open(:dbname => "webtoon")
-  db_init(db)
 
   if not cgi.cookies["SSID"].nil?
     begin
@@ -35,7 +30,6 @@ if check == "y" # Login 확인
   end
 elsif user_id != nil and user_pw != nil
   db = PGconn.open(:dbname => "webtoon")
-  db_init(db)
 
   session = CGI::Session.new(cgi, "session_key" => "SSID", "tmpdir" => File.join(File.dirname(__FILE__), "/../sess"), "new_session" => true)
 

@@ -15,21 +15,9 @@ class GetNum < WEBrick::HTTPServlet::AbstractServlet
     res.body = process(site, id) if site != nil and id != nil
   end
 
-  def db_init(db, site)
-    case site
-    when "yahoo"
-      db.exec("CREATE TABLE IF NOT EXISTS yahoo_lastnum (toon_id INTEGER PRIMARY KEY, toon_num INTEGER NOT NULL);")
-      db.exec("CREATE TABLE IF NOT EXISTS yahoo_numlist (toon_id INTEGER NOT NULL, toon_num_idx INTEGER NOT NULL, toon_num INTEGER NOT NULL, UNIQUE (toon_id, toon_num_idx));")
-    when "stoo"
-      db.exec("CREATE TABLE IF NOT EXISTS stoo_lastnum (toon_id INTEGER PRIMARY KEY, toon_num VARCHAR NOT NULL);")
-      db.exec("CREATE TABLE IF NOT EXISTS stoo_numlist (toon_id INTEGER NOT NULL, toon_num_idx INTEGER NOT NULL, toon_num VARCHAR NOT NULL, UNIQUE (toon_id, toon_num_idx));")
-    end
-  end
-
   def process(site, id)
     if site == "yahoo" or site == "stoo"
       db = PGconn.open(:dbname => "webtoon")
-      db_init(db, site)
     end
 
     a = Mechanize.new
