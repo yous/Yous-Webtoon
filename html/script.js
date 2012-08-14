@@ -625,11 +625,14 @@ function scrollControl()
   var _height = $(window).height() / 2 - 160;
   var _scroll = $(window).scrollTop();
   if (_scroll + _height < 80)
+  {
     $("#remote").css("top", "80px");
+    $("#remote").css("position", "absolute");
+  }
   else
   {
-    $("#remote").stop(true);
-    $("#remote").animate({top: _scroll + _height + "px"});
+    $("#remote").css("top", _height + "px");
+    $("#remote").css("position", "fixed");
   }
 }
 
