@@ -60,7 +60,7 @@ if site == "naver"
 
   if finish == "n"
     day_BM.each do |v|
-      resp = a.get("http://localhost:#{port}/getNum?site=naver&id=#{v}").body.split(" ")
+      resp = a.get("http://localhost:#{port}/getNum.cgi?site=naver&id=#{v}").body.split(" ")
       lastNum[v] = resp[1].to_i
       if toonBM[v] < lastNum[v]
         reqList[v] = [toonBM[v], toonBM[v] + 1]
@@ -72,7 +72,7 @@ if site == "naver"
   else
     day_BM.each do |v|
       unless finishToon.include?(v)
-        resp = a.get("http://localhost:#{port}/getNum?site=naver&id=#{v}").body.split(" ")
+        resp = a.get("http://localhost:#{port}/getNum.cgi?site=naver&id=#{v}").body.split(" ")
         lastNum[v] = resp[1].to_i
         db.exec("INSERT INTO naver_lastnum (toon_id, toon_num) VALUES ($1, $2);", [v, lastNum[v]])
         finishToon.push(v)
@@ -142,7 +142,7 @@ elsif site == "daum"
         str << "finishToon.splice(finishToon.indexOf('#{v}'),1);"
         db.exec("DELETE FROM daum_lastnum WHERE toon_id=$1::VARCHAR;", [v])
       end
-      resp = a.get("http://localhost:#{port}/getNum?site=daum&id=#{v}").body.strip.split("\n")[0].split()
+      resp = a.get("http://localhost:#{port}/getNum.cgi?site=daum&id=#{v}").body.strip.split("\n")[0].split()
       numList[v] = []
       dateList[v] = []
       resp.drop(1).each do |item|
@@ -163,7 +163,7 @@ elsif site == "daum"
   else
     day_BM.each do |v|
       unless finishToon.include?(v)
-        resp = a.get("http://localhost:#{port}/getNum?site=daum&id=#{v}").body.strip.split("\n")[0].split()
+        resp = a.get("http://localhost:#{port}/getNum.cgi?site=daum&id=#{v}").body.strip.split("\n")[0].split()
         numList[v] = []
         dateList[v] = []
         resp.drop(1).each do |item|
@@ -241,7 +241,7 @@ elsif site == "yahoo"
         str << "finishToon.splice(finishToon.indexOf('#{v}'),1);"
         db.exec("DELETE FROM yahoo_lastnum WHERE toon_id=$1;", [v])
       end
-      resp = a.get("http://localhost:#{port}/getNum?site=yahoo&id=#{v}").body.strip.split("\n")[0].split()
+      resp = a.get("http://localhost:#{port}/getNum.cgi?site=yahoo&id=#{v}").body.strip.split("\n")[0].split()
       numList[v] = resp.drop(1).map(&:to_i)
       lastNum[v] = numList[v][-1]
       str << "numList[#{v}]=[#{numList[v].join(",")}];"
@@ -256,7 +256,7 @@ elsif site == "yahoo"
   else
     day_BM.each do |v|
       unless finishToon.include?(v)
-        resp = a.get("http://localhost:#{port}/getNum?site=yahoo&id=#{v}").body.strip.split("\n")[0].split()
+        resp = a.get("http://localhost:#{port}/getNum.cgi?site=yahoo&id=#{v}").body.strip.split("\n")[0].split()
         numList[v] = resp.drop(1).map(&:to_i)
         lastNum[v] = numList[v][-1]
         str << "numList[#{v}]=[#{numList[v].join(",")}];"
@@ -328,7 +328,7 @@ elsif site == "stoo"
         str << "finishToon.splice(finishToon.indexOf(#{v}),1);"
         db.exec("DELETE FROM stoo_lastnum WHERE toon_id=$1;", [v])
       end
-      resp = a.get("http://localhost:#{port}/getNum?site=stoo&id=#{v}").body.strip.split("\n")[0].split()
+      resp = a.get("http://localhost:#{port}/getNum.cgi?site=stoo&id=#{v}").body.strip.split("\n")[0].split()
       numList[v] = resp.drop(1)
       lastNum[v] = numList[v][-1]
       str << "numList[#{v}]=['#{numList[v].join("','")}'];"
@@ -343,7 +343,7 @@ elsif site == "stoo"
   else
     day_BM.each do |v|
       unless finishToon.include?(v)
-        resp = a.get("http://localhost:#{port}/getNum?site=stoo&id=#{v}").body.strip.split("\n")[0].split()
+        resp = a.get("http://localhost:#{port}/getNum.cgi?site=stoo&id=#{v}").body.strip.split("\n")[0].split()
         numList[v] = resp.drop(1)
         lastNum[v] = numList[v][-1]
         str << "numList[#{v}]=['#{numList[v].join(",")}'];"
