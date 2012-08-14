@@ -100,7 +100,7 @@
       var _cache = Naver.cache_get(_id, _num);
       if (_cache == undefined || _cache == null)
         $.get(
-          "/displayToon",
+          "/displayToon.cgi",
           {site: site, id: _id, num: _num},
           function(data) {
             Naver.cache_set(_id, _num, data);
@@ -110,7 +110,7 @@
     this.getNumAndDisplay = function(prev_id, prev_num)
     {
       $.get(
-        "/getNum",
+        "/getNum.cgi",
         {site: site, id: id},
         function(data) {
           if (data == "")
@@ -120,10 +120,16 @@
             num = prev_num;
             return;
           }
+          else if (data == "auth")
+          {
+            window.open("auth.cgi?site=" + site);
+            return;
+          }
+
           lastNum[id] = parseInt(data.split(" ")[1]);
 
           $.get(
-            "/displayToon",
+            "/displayToon.cgi",
             {site: site, id: id, num: num},
             function(data) {
               $("#display_area").html(data);
@@ -252,7 +258,7 @@
           var _cache = Daum.cache_get(_id, _num);
           if (_cache == undefined || _cache == null)
             $.get(
-              "/displayToon",
+              "/displayToon.cgi",
               {site: site, id: _id, num: _num},
               function(data) {
                 Daum.cache_set(_id, _num, data);
@@ -264,7 +270,7 @@
     this.getNumAndDisplay = function(prev_id, prev_num)
     {
       $.get(
-        "/getNum",
+        "/getNum.cgi",
         {site: site, id: id},
         function(data) {
           if (data == "")
@@ -286,7 +292,7 @@
           num = numList[id][0];
 
           $.get(
-            "/displayToon",
+            "/displayToon.cgi",
             {site: site, id: id, num: num},
             function(data) {
               if (data == "")
@@ -387,7 +393,7 @@
           var _cache = Yahoo.cache_get(_id, _num);
           if (_cache == undefined || _cache == null)
             $.get(
-              "/displayToon",
+              "/displayToon.cgi",
               {site: site, id: _id, num: _num},
               function(data) {
                 Yahoo.cache_set(_id, _num, data);
@@ -399,7 +405,7 @@
     this.getNumAndDisplay = function(prev_id, prev_num)
     {
       $.get(
-        "/getNum",
+        "/getNum.cgi",
         {site: site, id: id},
         function(data) {
           if (data == "")
@@ -418,7 +424,7 @@
           num = numList[id][0];
 
           $.get(
-            "/displayToon",
+            "/displayToon.cgi",
             {site: site, id: id, num: num},
             function(data) {
               if (data == "")
@@ -520,7 +526,7 @@
           var _cache = Stoo.cache_get(_id, _num);
           if (_cache == undefined || _cache == null)
             $.get(
-              "/displayToon",
+              "/displayToon.cgi",
               {site: site, id: _id, num: _num},
               function(data) {
                 Stoo.cache_set(_id, _num, data);
@@ -532,7 +538,7 @@
     this.getNumAndDisplay = function(prev_id, prev_num)
     {
       $.get(
-        "/getNum",
+        "/getNum.cgi",
         {site: site, id: id},
         function(data) {
           if (data == "")
@@ -548,7 +554,7 @@
           num = numList[id][0];
 
           $.get(
-            "/displayToon",
+            "/displayToon.cgi",
             {site: site, id: id, num: num},
             function(data) {
               if (data == "")
@@ -1166,7 +1172,7 @@ function viewToon(_id, _num)
     var cache = sites[site].cache_get(id, num);
     if (cache == undefined || cache == null)
       $.get(
-        "/displayToon",
+        "/displayToon.cgi",
         {site: site, id: id, num: num},
         function (data) {
           if (data == "")
