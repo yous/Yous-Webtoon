@@ -224,10 +224,10 @@ if site != nil and id != nil and num != nil
           i += 1
         # a tag
         elsif v.name == "a"
-          (imageList.length - 1 - i).times {
+          (imageList.length - 1 - i).times do
             _content << naverPutObj(a, id, imageList[i], imageWidth[i], imageHeight[i])
             i += 1
-          }
+          end
           _content << "<a target=\"_blank\" href=\"#{link_url}\">"
           if not File::exists?("images/#{imageList[i].gsub(/\//, "@")}")
             _data = a.get("http://#{imageList[i]}")
