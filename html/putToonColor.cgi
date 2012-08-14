@@ -94,7 +94,7 @@ if site == "naver"
   # reqList 처리
   reqList.keys.each do |_id|
     reqList[_id].each do |_num|
-      str << "$.get(\"/displayToon?site=naver&id=#{_id}&num=#{_num}\", function(data) { Naver.cache_set(#{_id}, #{_num}, data); });"
+      str << "$.get(\"/displayToon.cgi?site=naver&id=#{_id}&num=#{_num}\", function(data) { Naver.cache_set(#{_id}, #{_num}, data); });"
     end
   end
 
@@ -196,7 +196,7 @@ elsif site == "daum"
   # reqList 처리
   reqList.keys.each do |_id|
     reqList[_id].each do |_num|
-      str << "$.get(\"/displayToon?site=daum&id=#{_id}&num=#{_num}\", function(data) { Daum.cache_set('#{_id}', #{_num}, data); });"
+      str << "$.get(\"/displayToon.cgi?site=daum&id=#{_id}&num=#{_num}\", function(data) { Daum.cache_set('#{_id}', #{_num}, data); });"
     end
   end
 
@@ -283,7 +283,7 @@ elsif site == "yahoo"
   # reqList 처리
   reqList.keys.each do |_id|
     reqList[_id].each do |_num|
-      str << "$.get(\"/displayToon?site=yahoo&id=#{_id}&num=#{_num}\", function(data) { Yahoo.cache_set(#{_id}, #{_num}, data); });"
+      str << "$.get(\"/displayToon.cgi?site=yahoo&id=#{_id}&num=#{_num}\", function(data) { Yahoo.cache_set(#{_id}, #{_num}, data); });"
     end
   end
 
@@ -370,7 +370,7 @@ elsif site == "stoo"
   # reqList 처리
   reqList.keys.each do |_id|
     reqList[_id].each do |_num|
-      str << "$.get(\"/displayToon?site=stoo&id=#{_id}&num=#{_num}\", function(data) { Stoo.cache_set(#{_id}, #{_num}, data); });"
+      str << "$.get(\"/displayToon.cgi?site=stoo&id=#{_id}&num=#{_num}\", function(data) { Stoo.cache_set(#{_id}, #{_num}, data); });"
     end
   end
 
