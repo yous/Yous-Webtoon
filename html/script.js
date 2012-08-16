@@ -133,6 +133,7 @@
             {site: site, id: id, num: num},
             function(data) {
               $("#display_area").html(data);
+              resizeWidth();
               change_remote();
             }
           );
@@ -303,6 +304,7 @@
                 return;
               }
               $("#display_area").html(data);
+              resizeWidth();
               change_remote();
             }
           );
@@ -435,6 +437,7 @@
                 return;
               }
               $("#display_area").html(data);
+              resizeWidth();
               change_remote();
             }
           );
@@ -565,6 +568,7 @@
                 return;
               }
               $("#display_area").html(data);
+              resizeWidth();
               change_remote();
             }
           );
@@ -1161,12 +1165,14 @@ function viewToon(_id, _num)
             return;
           }
           $("#display_area").html(data);
+          resizeWidth();
           change_remote();
         }
       );
     else
     {
       $("#display_area").html(cache);
+      resizeWidth();
       change_remote();
       sites[site].cache_set(id, num, null);
     }
