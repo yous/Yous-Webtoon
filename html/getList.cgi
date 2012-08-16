@@ -74,26 +74,19 @@ if site == "naver"
   str = <<-HTML
     <span class="table_toggle_button" onclick="show_table();">완결 웹툰</span>
     #{site_button(site)}
-    <table id="current_toonlist" class="toonlist">
-      <tr style="font-weight: bold;">
-        <td>월<span class="refreshBtn" onclick="putToonColor(0);">Re</span></td>
-        <td>화<span class="refreshBtn" onclick="putToonColor(1);">Re</span></td>
-        <td>수<span class="refreshBtn" onclick="putToonColor(2);">Re</span></td>
-        <td>목<span class="refreshBtn" onclick="putToonColor(3);">Re</span></td>
-        <td>금<span class="refreshBtn" onclick="putToonColor(4);">Re</span></td>
-        <td>토<span class="refreshBtn" onclick="putToonColor(5);">Re</span></td>
-        <td>일<span class="refreshBtn" onclick="putToonColor(6);">Re</span></td>
-      </tr>
-      <tr valign="top">
+    <div id="current_toonlist" class="toonlist">
   HTML
 
   count = 0
 
   resp.search('//div[@class="list_area daily_all"]').each do |r|
+    str_div = []
     day = 0
+    days = ["월", "화", "수", "목", "금", "토", "일"]
     r.search('./div/div[@class="col_inner"]').each do |v|
-      str << <<-HTML
-        <td id="day#{day}">
+      str_div.push <<-HTML
+        <div id="day#{day}">
+          <div style="font-weight: bold;">#{days[day]}<span class="refreshBtn" onclick="putToonColor(#{day});">Re</span></div>
       HTML
       v.search('./ul/li/div[@class="thumb"]').each do |v1|
         _a = v1.at('./a')
@@ -105,21 +98,21 @@ if site == "naver"
 
         reqList.push(_titleId) unless tmpList.include? _titleId
 
-        str << generate_toon(_titleId, "current_toon", _color, _title, :new => _new, :up => _up)
+        str_div[day] << generate_toon(_titleId, "current_toon", _color, _title, :new => _new, :up => _up)
         count += 1
       end
       count = 0
-      str << '</td>'
+      str << str_div[day] + '</div>'
       day += 1
     end
-    str << '</td></tr></table>'
+    str << '</div>'
   end
 
   # 완결
   resp = a.get 'http://comic.naver.com/webtoon/finish.nhn'
 
-  str << '<table id="finished_toonlist" class="toonlist" style="display: none;"><tr valign="top">'
-  str_td = ["<td>", "<td>", "<td>", "<td>", "<td>", "<td>", "<td>"]
+  str << '<div id="finished_toonlist" class="toonlist" style="display: none;">'
+  str_div = ["<div>", "<div>", "<div>", "<div>", "<div>", "<div>", "<div>"]
 
   count = 0
 
@@ -131,14 +124,14 @@ if site == "naver"
 
     reqList.push(_titleId) unless tmpList.include? _titleId
 
-    str_td[count % 7] << generate_toon(_titleId, "finished_toon", _color, _title)
+    str_div[count % 7] << generate_toon(_titleId, "finished_toon", _color, _title)
     count += 1
   end
 
-  str_td.each do |v|
-    str << v + "</td>"
+  str_div.each do |v|
+    str << v + "</div>"
   end
-  str << '</tr></table><br/><br/>'
+  str << '</div><div class="clear">&nbsp;</div>'
 
   # reqList 처리
   str << '<script>'
@@ -232,26 +225,19 @@ elsif site == "daum"
   str = <<-HTML
     <span class="table_toggle_button" onclick="show_table();">완결 웹툰</span>
     #{site_button(site)}
-    <table id="current_toonlist" class="toonlist">
-      <tr style="font-weight: bold;">
-        <td>월<span class="refreshBtn" onclick="putToonColor(0);">Re</span></td>
-        <td>화<span class="refreshBtn" onclick="putToonColor(1);">Re</span></td>
-        <td>수<span class="refreshBtn" onclick="putToonColor(2);">Re</span></td>
-        <td>목<span class="refreshBtn" onclick="putToonColor(3);">Re</span></td>
-        <td>금<span class="refreshBtn" onclick="putToonColor(4);">Re</span></td>
-        <td>토<span class="refreshBtn" onclick="putToonColor(5);">Re</span></td>
-        <td>일<span class="refreshBtn" onclick="putToonColor(6);">Re</span></td>
-      </tr>
-      <tr valign="top">
+    <div id="current_toonlist" class="toonlist">
   HTML
 
   count = 0
 
   resp.search('//div[@class="area_toonlist area_bg"]').each do |r|
+    str_div = []
     day = 0
+    days = ["월", "화", "수", "목", "금", "토", "일"]
     r.search('./div/div[@class="bg_line"]').each do |v|
-      str << <<-HTML
-        <td id="day#{day}">
+      str_div.push <<-HTML
+        <div id="day#{day}">
+          <div style="font-weight: bold;">#{days[day]}<span class="refreshBtn" onclick="putToonColor(#{day});">Re</span></div>
       HTML
       v.search('./ul/li/a').each do |v1|
         _titleId = $1 if v1.attr("href") =~ /\/webtoon\/view\/(.+)$/
@@ -260,21 +246,21 @@ elsif site == "daum"
 
         reqList[_titleId] = true unless tmpList.include? _titleId
 
-        str << generate_toon(_titleId, "current_toon", _color, _title, :quote => true)
+        str_div[day] << generate_toon(_titleId, "current_toon", _color, _title, :quote => true)
         count += 1
       end
       count = 0
-      str << '</td>'
+      str << str_div[day] + '</div>'
       day += 1
     end
-    str << '</td></tr></table>'
+    str << '</div>'
   end
 
   # 완결
   resp = a.get 'http://cartoon.media.daum.net/webtoon/finished'
 
-  str << '<table id="finished_toonlist" class="toonlist" style="display: none;"><tr valign="top">'
-  str_td = ["<td>", "<td>", "<td>", "<td>", "<td>", "<td>", "<td>"]
+  str << '<div id="finished_toonlist" class="toonlist" style="display: none;">'
+  str_div = ["<div>", "<div>", "<div>", "<div>", "<div>", "<div>", "<div>"]
 
   count = 0
 
@@ -289,14 +275,14 @@ elsif site == "daum"
       reqList[_titleId] = (tmpList.include? _titleId) ? false : true
     end
 
-    str_td[count % 7] << generate_toon(_titleId, "finished_toon", _color, _title)
+    str_div[count % 7] << generate_toon(_titleId, "finished_toon", _color, _title, :quote => true)
     count += 1
   end
 
-  str_td.each do |v|
-    str << v + "</td>"
+  str_div.each do |v|
+    str << v + "</div>"
   end
-  str << '</tr></table><br/><br/>'
+  str << '</div><div class="clear">&nbsp;</div>'
 
   # reqList 처리
   str << '<script>'
@@ -406,19 +392,16 @@ elsif site == "yahoo"
     <span class="table_toggle_button" id="table_toggle_button2" onclick="show_table(2);">완결 웹툰</span>
     <span class="table_toggle_button" id="table_toggle_button3" onclick="show_table(3);">특집 웹툰</span>
     #{site_button(site)}
-    <table id="current_toonlist" class="toonlist">
-      <tr style="font-weight: bold;">
-        <td><span class="refreshBtn" onclick="putToonColor(0);">Re</span></td>
-        <td><span class="refreshBtn" onclick="putToonColor(1);">Re</span></td>
-        <td><span class="refreshBtn" onclick="putToonColor(2);">Re</span></td>
-        <td><span class="refreshBtn" onclick="putToonColor(3);">Re</span></td>
-        <td><span class="refreshBtn" onclick="putToonColor(4);">Re</span></td>
-        <td><span class="refreshBtn" onclick="putToonColor(5);">Re</span></td>
-        <td><span class="refreshBtn" onclick="putToonColor(6);">Re</span></td>
-      </tr>
-      <tr valign="top">
+    <div id="current_toonlist" class="toonlist">
   HTML
-  str_td = ['<td id="day0">', '<td id="day1">', '<td id="day2">', '<td id="day3">', '<td id="day4">', '<td id="day5">', '<td id="day6">']
+
+  str_div = []
+  7.times do |day|
+    str_div.push <<-HTML
+      <div id="day#{day}">
+        <div style="font-weight: bold;"><span class="refreshBtn" onclick="putToonColor(#{day});">Re</span></div>
+    HTML
+  end
 
   count = [0, 0, 0, 0, 0, 0, 0]
   day = 0
@@ -436,7 +419,7 @@ elsif site == "yahoo"
         toonInfo[_titleId][0] = _title
       end
 
-      str_td[day] << generate_toon(_titleId, "current_toon", _color, _title)
+      str_div[day] << generate_toon(_titleId, "current_toon", _color, _title)
       count[day] += 1
       day = (day + 1) % 7
     end
@@ -448,17 +431,17 @@ elsif site == "yahoo"
     end
   end
 
-  str_td.each do |v|
-    str << v + "</td>"
+  str_div.each do |v|
+    str << v + "</div>"
   end
 
-  str << '</tr></table>'
+  str << '</div>'
 
   # 완결
   resp = a.get "http://kr.news.yahoo.com/service/cartoon/shelllist.htm?linkid=webtoon&kind=done"
 
-  str << '<table id="finished_toonlist" class="toonlist" style="display: none;"><tr valign="top">'
-  str_td = ["<td>", "<td>", "<td>", "<td>", "<td>", "<td>", "<td>"]
+  str << '<div id="finished_toonlist" class="toonlist" style="display: none;">'
+  str_div = ["<div>", "<div>", "<div>", "<div>", "<div>", "<div>", "<div>"]
 
   count = 0
 
@@ -478,7 +461,7 @@ elsif site == "yahoo"
         toonInfo[_titleId][0] = _title
       end
 
-      str_td[count % 7] << generate_toon(_titleId, "finished_toon", _color, _title)
+      str_div[count % 7] << generate_toon(_titleId, "finished_toon", _color, _title)
       count += 1
     end
 
@@ -489,29 +472,26 @@ elsif site == "yahoo"
     end
   end
 
-  str_td.each do |v|
-    str << v + "</td>"
+  str_div.each do |v|
+    str << v + "</div>"
   end
 
-  str << '</tr></table>'
+  str << '</div>'
 
   # 특집
   resp = a.get "http://kr.news.yahoo.com/service/cartoon/shelllist.htm?linkid=webtoon&kind=special"
 
   str << <<-HTML
-    <table id="special_toonlist" class="toonlist" style="display: none;">
-      <tr style="font-weight: bold;">
-        <td><span class="refreshBtn" onclick="putToonColor(7);">Re</span></td>
-        <td><span class="refreshBtn" onclick="putToonColor(8);">Re</span></td>
-        <td><span class="refreshBtn" onclick="putToonColor(9);">Re</span></td>
-        <td><span class="refreshBtn" onclick="putToonColor(10);">Re</span></td>
-        <td><span class="refreshBtn" onclick="putToonColor(11);">Re</span></td>
-        <td><span class="refreshBtn" onclick="putToonColor(12);">Re</span></td>
-        <td><span class="refreshBtn" onclick="putToonColor(13);">Re</span></td>
-      </tr>
-      <tr valign="top">
+    <div id="special_toonlist" class="toonlist" style="display: none;">
   HTML
-  str_td = ['<td id="day7">', '<td id="day8">', '<td id="day9">', '<td id="day10">', '<td id="day11">', '<td id="day12">', '<td id="day13">']
+
+  str_div = []
+  7.times do |day|
+    str_div.push <<-HTML
+      <div id="day#{day + 7}">
+        <div><span class="refreshBtn" onclick="putToonColor(#{day + 7});">Re</span></div>
+    HTML
+  end
 
   count = [0, 0, 0, 0, 0, 0, 0]
   day = 0
@@ -529,7 +509,7 @@ elsif site == "yahoo"
         toonInfo[_titleId][0] = _title
       end
 
-      str_td[day] << generate_toon(_titleId, "current_toon", _color, _title)
+      str_div[day] << generate_toon(_titleId, "current_toon", _color, _title)
       count[day] += 1
       day = (day + 1) % 7
     end
@@ -541,11 +521,11 @@ elsif site == "yahoo"
     end
   end
 
-  str_td.each do |v|
-    str << v + "</td>"
+  str_div.each do |v|
+    str << v + "</div>"
   end
 
-  str << '</tr></table><br/><br/>'
+  str << '</div><div class="clear">&nbsp;</div>'
 
   # reqList 처리
   str << '<script>'
@@ -642,19 +622,16 @@ elsif site == "stoo"
   str = <<-HTML
     <span class="table_toggle_button" onclick="show_table();">완결 웹툰</span>
     #{site_button(site)}
-    <table id="current_toonlist" class="toonlist">
-      <tr style="font-weight: bold;">
-        <td><span class="refreshBtn" onclick="putToonColor(0);">Re</span></td>
-        <td><span class="refreshBtn" onclick="putToonColor(1);">Re</span></td>
-        <td><span class="refreshBtn" onclick="putToonColor(2);">Re</span></td>
-        <td><span class="refreshBtn" onclick="putToonColor(3);">Re</span></td>
-        <td><span class="refreshBtn" onclick="putToonColor(4);">Re</span></td>
-        <td><span class="refreshBtn" onclick="putToonColor(5);">Re</span></td>
-        <td><span class="refreshBtn" onclick="putToonColor(6);">Re</span></td>
-      </tr>
-      <tr valign="top">
+    <div id="current_toonlist" class="toonlist">
   HTML
-  str_td = ['<td id="day0">', '<td id="day1">', '<td id="day2">', '<td id="day3">', '<td id="day4">', '<td id="day5">', '<td id="day6">']
+
+  str_div = []
+  7.times do |day|
+    str_div.push <<-HTML
+      <div id="day#{day}">
+        <div style="font-weight: bold;"><span class="refreshBtn" onclick="putToonColor(#{day});">Re</span></div>
+    HTML
+  end
 
   count = [0, 0, 0, 0, 0, 0, 0]
   day = 0
@@ -667,19 +644,19 @@ elsif site == "stoo"
 
     reqList[_titleId] = true unless tmpList.include? _titleId
 
-    str_td[day] << generate_toon(_titleId, "current_toon", _color, _title)
+    str_div[day] << generate_toon(_titleId, "current_toon", _color, _title)
     count[day] += 1
     day = (day + 1) % 7
   end
 
-  str_td.each do |v|
-    str << v + "</td>"
+  str_div.each do |v|
+    str << v + "</div>"
   end
-  str << '</tr></table>'
+  str << '</div>'
 
   # 완결
-  str << '<table id="finished_toonlist" class="toonlist" style="display: none;"><tr valign="top">'
-  str_td = ["<td>", "<td>", "<td>", "<td>", "<td>", "<td>", "<td>"]
+  str << '<div id="finished_toonlist" class="toonlist" style="display: none;">'
+  str_div = ["<div>", "<div>", "<div>", "<div>", "<div>", "<div>", "<div>"]
 
   count = 0
 
@@ -694,14 +671,14 @@ elsif site == "stoo"
       reqList[_titleId] = (tmpList.include? _titleId) ? false : true
     end
 
-    str_td[count % 7] << generate_toon(_titleId, "finished_toon", _color, _title)
+    str_div[count % 7] << generate_toon(_titleId, "finished_toon", _color, _title)
     count += 1
   end
 
-  str_td.each do |v|
-    str << v + "</td>"
+  str_div.each do |v|
+    str << v + "</div>"
   end
-  str << '</tr></table><br/><br/>'
+  str << '</div><div class="clear">&nbsp;</div>'
 
   # reqList 처리
   str << '<script>'

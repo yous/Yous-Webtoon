@@ -685,7 +685,7 @@ function putToonColor(day)
         day_BM[i] = [];
         for (j = 0; j < day_toon.length; j++)
         {
-          if (toonBM[day_toon[j].attributes["name"].value] != undefined)
+          if (day_toon[j].attributes["name"] && toonBM[day_toon[j].attributes["name"].value] != undefined)
             day_BM[i].push(day_toon[j].attributes["name"].value);
         }
       }
@@ -724,7 +724,7 @@ function putToonColor(day)
         day_BM[i] = [];
         for (j = 0; j < day_toon.length; j++)
         {
-          if (toonBM[day_toon[j].attributes["name"].value] != undefined)
+          if (day_toon[j].attributes["name"] && toonBM[day_toon[j].attributes["name"].value] != undefined)
             day_BM[i].push(day_toon[j].attributes["name"].value);
         }
       }
@@ -761,7 +761,7 @@ function putToonColor(day)
     var day_BM = [];
     for (i = 0; i < day_toon.length; i++)
     {
-      if (toonBM[day_toon[i].attributes["name"].value] != undefined)
+      if (day_toon[i].attributes["name"] && toonBM[day_toon[i].attributes["name"].value] != undefined)
         day_BM.push(day_toon[i].attributes["name"].value);
     }
 

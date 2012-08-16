@@ -49,6 +49,10 @@ input::-moz-focus-inner {
   font-weight: normal;
   cursor: pointer;
 }
+.clear {
+  clear: both;
+  height: 40px;
+}
 #title_area {
   font-size: 17px;
 }
@@ -118,6 +122,10 @@ img {
 }
 .toonlist {
   border-spacing: 0px;
+}
+.toonlist>div {
+  float: left;
+  margin-right: 2px;
 }
 .current_toon, .finished_toon {
   white-space: nowrap;
