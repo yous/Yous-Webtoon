@@ -42,7 +42,7 @@ def naverPutObj(mechanObj, id, _imageURL, _imageWidth, _imageHeight, _first_img 
         _data = mechanObj.get("http://flash.comic.naver.com/webtoon/flvPlayer.swf")
         _data.save_as("images/#{"flash.comic.naver.com/webtoon/flvPlayer.swf".gsub(/\//, "@")}") if not _data.body.nil?
       end
-      str << flashObj("flash.comic.naver.com/webtoon/flvPlayer.swf".gsub(/\//, "@"), "flvPlayer", "640", "395", "transparent", "flvURL=#{_imageURL}&imgURL=http://static.comic.naver.com/staticImages/COMICWEB/NAVER/images/flash/#{id}/flv.jpg&autoPlay=true&defaultVolume=0.5&flvWidth=640&flvHeight=360", "#FFFFFF", true)
+      str << flashObj("flash.comic.naver.com/webtoon/flvPlayer.swf".gsub(/\//, "@"), "flvPlayer", "640", "395", "transparent", "flvURL=http://#{_imageURL}&imgURL=http://static.comic.naver.com/staticImages/COMICWEB/NAVER/images/flash/#{id}/flv.jpg&autoPlay=true&defaultVolume=0.5&flvWidth=640&flvHeight=360", "#FFFFFF", true)
     end
   # Image
   else
