@@ -12,11 +12,12 @@ if not cgi.cookies["SSID"].nil?
   begin
     session = CGI::Session.new(cgi, "session_id" => cgi.cookies["SSID"][0], "tmpdir" => File.join(File.dirname(__FILE__), "/../sess"), "new_session" => false)
     session.delete
-    str = "<script>"
-    str << "toggle_login(false);"
-    str << "toonlist_area_init();"
-    str << "</script>"
-    puts str
+    puts <<-HTML
+      <script>
+        toggle_login(false);
+        toonlist_area_init();
+      </script>
+    HTML
   rescue
   end
 end

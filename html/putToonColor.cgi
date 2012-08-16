@@ -88,8 +88,10 @@ if site == "naver"
 
   str << col_str
 
-  str << "lastNum={#{lastNum.keys.map {|v| "#{v}:#{lastNum[v]}"}.join(",")}};"
-  str << "finishToon=[#{finishToon.join(",")}];"
+  str << <<-HTML
+    lastNum={#{lastNum.keys.map {|v| "#{v}:#{lastNum[v]}"}.join(",")}};
+    finishToon=[#{finishToon.join(",")}];
+  HTML
 
   # reqList 처리
   reqList.keys.each do |_id|
@@ -150,9 +152,11 @@ elsif site == "daum"
         dateList[v].push(item.split(",")[1])
       end
       lastNum[v] = numList[v][-1]
-      str << "numList['#{v}']=[#{numList[v].join(",")}];"
-      str << "lastNum['#{v}']=#{lastNum[v]};"
-      str << "dateList['#{v}']=['#{dateList[v].join("','")}'];"
+      str << <<-HTML
+        numList['#{v}']=[#{numList[v].join(",")}];
+        lastNum['#{v}']=#{lastNum[v]};
+        dateList['#{v}']=['#{dateList[v].join("','")}'];
+      HTML
       if toonBM[v] < lastNum[v]
         reqList[v] = [toonBM[v], numList[v][numList[v].index(toonBM[v]) + 1]]
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
@@ -171,9 +175,11 @@ elsif site == "daum"
           dateList[v].push(item.split(",")[1])
         end
         lastNum[v] = numList[v][-1]
-        str << "numList['#{v}']=[#{numList[v].join(",")}];"
-        str << "lastNum['#{v}']=#{lastNum[v]};"
-        str << "dateList['#{v}']=['#{dateList[v].join("','")}'];"
+        str << <<-HTML
+          numList['#{v}']=[#{numList[v].join(",")}];
+          lastNum['#{v}']=#{lastNum[v]};
+          dateList['#{v}']=['#{dateList[v].join("','")}'];
+        HTML
         numList[v].each_with_index do |num, idx|
           db.exec("UPDATE daum_numlist SET toon_num=$1, toon_date=$2::VARCHAR WHERE toon_id=$3::VARCHAR AND toon_num_idx=$4;", [num, dateList[v][idx], v, idx])
           db.exec("INSERT INTO daum_numlist (toon_id, toon_num_idx, toon_num, toon_date) SELECT $1::VARCHAR, $2, $3, $4::VARCHAR WHERE NOT EXISTS (SELECT 1 FROM daum_numlist WHERE toon_id=$1 AND toon_num_idx=$2);", [v, idx, num, dateList[v][idx]])
@@ -244,8 +250,10 @@ elsif site == "yahoo"
       resp = a.get("http://localhost:#{port}/getNum.cgi?site=yahoo&id=#{v}").body.strip.split("\n")[0].split()
       numList[v] = resp.drop(1).map(&:to_i)
       lastNum[v] = numList[v][-1]
-      str << "numList[#{v}]=[#{numList[v].join(",")}];"
-      str << "lastNum[#{v}]=#{lastNum[v]};"
+      str << <<-HTML
+        numList[#{v}]=[#{numList[v].join(",")}];
+        lastNum[#{v}]=#{lastNum[v]};
+      HTML
       if toonBM[v] < lastNum[v]
         reqList[v] = [toonBM[v], numList[v][numList[v].index(toonBM[v]) + 1]]
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
@@ -259,8 +267,10 @@ elsif site == "yahoo"
         resp = a.get("http://localhost:#{port}/getNum.cgi?site=yahoo&id=#{v}").body.strip.split("\n")[0].split()
         numList[v] = resp.drop(1).map(&:to_i)
         lastNum[v] = numList[v][-1]
-        str << "numList[#{v}]=[#{numList[v].join(",")}];"
-        str << "lastNum[#{v}]=#{lastNum[v]};"
+        str << <<-HTML
+          numList[#{v}]=[#{numList[v].join(",")}];
+          lastNum[#{v}]=#{lastNum[v]};
+        HTML
         numList[v].each_with_index do |num, idx|
           db.exec("UPDATE yahoo_numlist SET toon_num=$1 WHERE toon_id=$2 AND toon_num_idx=$3;", [num, v, idx])
           db.exec("INSERT INTO yahoo_numlist (toon_id, toon_num_idx, toon_num) SELECT $1, $2, $3 WHERE NOT EXISTS (SELECT 1 FROM yahoo_numlist WHERE toon_id=$1 AND toon_num_idx=$2);", [v, idx, num])
@@ -331,8 +341,10 @@ elsif site == "stoo"
       resp = a.get("http://localhost:#{port}/getNum.cgi?site=stoo&id=#{v}").body.strip.split("\n")[0].split()
       numList[v] = resp.drop(1)
       lastNum[v] = numList[v][-1]
-      str << "numList[#{v}]=['#{numList[v].join("','")}'];"
-      str << "lastNum[#{v}]='#{lastNum[v]}';"
+      str << <<-HTML
+        numList[#{v}]=['#{numList[v].join("','")}'];
+        lastNum[#{v}]='#{lastNum[v]}';
+      HTML
       if numList[v].index(toonBM[v]) < numList[v].index(lastNum[v])
         reqList[v] = [toonBM[v], numList[v][numList[v].index(toonBM[v]) + 1]]
         col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
@@ -346,8 +358,10 @@ elsif site == "stoo"
         resp = a.get("http://localhost:#{port}/getNum.cgi?site=stoo&id=#{v}").body.strip.split("\n")[0].split()
         numList[v] = resp.drop(1)
         lastNum[v] = numList[v][-1]
-        str << "numList[#{v}]=['#{numList[v].join(",")}'];"
-        str << "lastNum[#{v}]='#{lastNum[v]}';"
+        str << <<-HTML
+          numList[#{v}]=['#{numList[v].join(",")}'];
+          lastNum[#{v}]='#{lastNum[v]}';
+        HTML
         numList[v].each_with_index do |num, idx|
           db.exec("UPDATE stoo_numlist SET toon_num=$1::VARCHAR WHERE toon_id=$2 AND toon_num_idx=$3;", [num, v, idx])
           db.exec("INSERT INTO stoo_numlist (toon_id, toon_num_idx, toon_num) SELECT $1, $2, $3::VARCHAR WHERE NOT EXISTS (SELECT 1 FROM stoo_numlist WHERE toon_id=$1 AND toon_num_idx=$2);", [v, idx, num])

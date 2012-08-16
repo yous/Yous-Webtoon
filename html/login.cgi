@@ -19,11 +19,12 @@ if check == "y" # Login 확인
   if not cgi.cookies["SSID"].nil?
     begin
       session = CGI::Session.new(cgi, "session_id" => cgi.cookies["SSID"][0], "tmpdir" => File.join(File.dirname(__FILE__), "/../sess"), "new_session" => false)
-      str = "<script>"
-      str << "$('#user_id').val('#{db.exec("SELECT usr_id FROM usr WHERE id=$1;", [session["user_id"]])[0]["usr_id"]}');"
-      str << "toggle_login(true);"
-      str << "</script>"
-      puts str
+      puts <<-HTML
+        <script>
+          $('#user_id').val('#{db.exec("SELECT usr_id FROM usr WHERE id=$1;", [session["user_id"]])[0]["usr_id"]}');
+          toggle_login(true);
+        </script>
+      HTML
     rescue
       session = CGI::Session.new(cgi, "session_key" => "SSID", "tmpdir" => File.join(File.dirname(__FILE__), "/../sess"))
     end
@@ -46,12 +47,13 @@ elsif user_id != nil and user_pw != nil
 
   if check
     session.delete
-    str = "Content-Type: text/html; charset=utf-8\n\n"
-    str << "<script>"
-    str << "alert('Wrong ID or Password!');"
-    str << "toggle_login(false);"
-    str << "</script>"
-    puts str
+    puts "Content-Type: text/html; charset=utf-8\n\n"
+    puts <<-HTML
+      <script>
+        alert('Wrong ID or Password!');
+        toggle_login(false);
+      </script>
+    HTML
   end
 else
   puts "Content-Type: text/html; charset=utf-8\n\n"

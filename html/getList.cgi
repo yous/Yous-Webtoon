@@ -11,7 +11,9 @@ def site_button(site)
   str = ""
   sites.each do |site_name|
     next if site_name == site
-    str << "<span class=\"site_button\" onclick=\"site_change('#{site_name}');\"><u>#{site_name.slice(0).upcase}</u>#{site_name.slice(1, site_name.length - 1)}</span>"
+    str << <<-HTML
+      <span class="site_button" onclick="site_change('#{site_name}');"><u>#{site_name.slice(0).upcase}</u>#{site_name.slice(1, site_name.length - 1)}</span>
+    HTML
   end
   str << "<br/>"
 end
@@ -57,26 +59,30 @@ if site == "naver"
   # 연재
   resp = a.get "http://comic.naver.com/webtoon/weekday.nhn"
 
-  str = '<span class="table_toggle_button" onclick="show_table();">완결 웹툰</span>'
-  str << site_button(site)
-  str << '<table id="current_toonlist" class="toonlist">'
-  str << '<tr style="font-weight: bold;">'
-  str << '<td>월<span class="refreshBtn" onclick="putToonColor(0);">Re</span></td>'
-  str << '<td>화<span class="refreshBtn" onclick="putToonColor(1);">Re</span></td>'
-  str << '<td>수<span class="refreshBtn" onclick="putToonColor(2);">Re</span></td>'
-  str << '<td>목<span class="refreshBtn" onclick="putToonColor(3);">Re</span></td>'
-  str << '<td>금<span class="refreshBtn" onclick="putToonColor(4);">Re</span></td>'
-  str << '<td>토<span class="refreshBtn" onclick="putToonColor(5);">Re</span></td>'
-  str << '<td>일<span class="refreshBtn" onclick="putToonColor(6);">Re</span></td>'
-  str << '</tr>'
-  str << '<tr valign="top">'
+  str = <<-HTML
+    <span class="table_toggle_button" onclick="show_table();">완결 웹툰</span>
+    #{site_button(site)}
+    <table id="current_toonlist" class="toonlist">
+      <tr style="font-weight: bold;">
+        <td>월<span class="refreshBtn" onclick="putToonColor(0);">Re</span></td>
+        <td>화<span class="refreshBtn" onclick="putToonColor(1);">Re</span></td>
+        <td>수<span class="refreshBtn" onclick="putToonColor(2);">Re</span></td>
+        <td>목<span class="refreshBtn" onclick="putToonColor(3);">Re</span></td>
+        <td>금<span class="refreshBtn" onclick="putToonColor(4);">Re</span></td>
+        <td>토<span class="refreshBtn" onclick="putToonColor(5);">Re</span></td>
+        <td>일<span class="refreshBtn" onclick="putToonColor(6);">Re</span></td>
+      </tr>
+      <tr valign="top">
+  HTML
 
   count = 0
 
   resp.search('//div[@class="list_area daily_all"]').each do |r|
     day = 0
     r.search('./div/div[@class="col_inner"]').each do |v|
-      str << "<td id=\"day#{day}\">"
+      str << <<-HTML
+        <td id="day#{day}">
+      HTML
       v.search('./ul/li/div[@class="thumb"]').each do |v1|
         _a = v1.at('./a')
         _titleId = $1.to_i if _a.attr("href") =~ /\/webtoon\/list\.nhn\?titleId=(\d+)/
@@ -87,7 +93,9 @@ if site == "naver"
 
         reqList.push(_titleId) unless tmpList.include? _titleId
 
-        str << "<div name=\"#{_titleId}\" class=\"current_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}#{_new}#{_up}\" onclick=\"viewToon(#{_titleId});\">#{_title}<small>#{_new}#{_up}</small></div>"
+        str << <<-HTML
+          <div name="#{_titleId}" class="current_toon" style="background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;" title="#{_title}#{_new}#{_up}" onclick="viewToon(#{_titleId});">#{_title}<small>#{_new}#{_up}</small></div>
+        HTML
         count += 1
       end
       count = 0
@@ -113,7 +121,9 @@ if site == "naver"
 
     reqList.push(_titleId) unless tmpList.include? _titleId
 
-    str_td[count % 7] << "<div name=\"#{_titleId}\" class=\"finished_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon(#{_titleId});\">#{_title}</div>"
+    str_td[count % 7] << <<-HTML
+      <div name="#{_titleId}" class="finished_toon" style="background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;" title="#{_title}" onclick="viewToon(#{_titleId});">#{_title}</div>
+    HTML
     count += 1
   end
 
@@ -125,7 +135,9 @@ if site == "naver"
   # reqList 처리
   str << '<script>'
   reqList.each do |v|
-    str << "$.get(\"/displayToon.cgi?site=naver&id=#{v}&num=1\");"
+    str << <<-HTML
+      $.get("/displayToon.cgi?site=naver&id=#{v}&num=1");
+    HTML
     db.exec("INSERT INTO naver_tmplist (toon_id) SELECT $1 WHERE NOT EXISTS (SELECT 1 FROM naver_tmplist WHERE toon_id=$1);", [v])
   end
   str << 'resizeWidth();'
@@ -147,14 +159,16 @@ if site == "naver"
       end
     end
 
-    str << "toonBM={#{toonBM.keys.map {|v| "#{v}:#{toonBM[v]}"}.join(",")}};"
-    str << "lastNum={#{lastNum.keys.map {|v| "#{v}:#{lastNum[v]}"}.join(",")}};"
-    str << "finishToon=[#{finishToon.join(",")}];"
+    str << <<-HTML
+      toonBM={#{toonBM.keys.map {|v| "#{v}:#{toonBM[v]}"}.join(",")}};
+      lastNum={#{lastNum.keys.map {|v| "#{v}:#{lastNum[v]}"}.join(",")}};
+      finishToon=[#{finishToon.join(",")}];
 
-    str << '$("#loading").html(" Loading");'
-    str << '$("#loading").css("display", "inline");'
-    str << 'loading(10);'
-    str << "putToonColor();"
+      $("#loading").html(" Loading");
+      $("#loading").css("display", "inline");
+      loading(10);
+      putToonColor();
+    HTML
   end
 
   str << '</script>'
@@ -207,26 +221,30 @@ elsif site == "daum"
   # 연재
   resp = a.get "http://cartoon.media.daum.net/webtoon/week"
 
-  str = '<span class="table_toggle_button" onclick="show_table();">완결 웹툰</span>'
-  str << site_button(site)
-  str << '<table id="current_toonlist" class="toonlist">'
-  str << '<tr style="font-weight: bold;">'
-  str << '<td>월<span class="refreshBtn" onclick="putToonColor(0);">Re</span></td>'
-  str << '<td>화<span class="refreshBtn" onclick="putToonColor(1);">Re</span></td>'
-  str << '<td>수<span class="refreshBtn" onclick="putToonColor(2);">Re</span></td>'
-  str << '<td>목<span class="refreshBtn" onclick="putToonColor(3);">Re</span></td>'
-  str << '<td>금<span class="refreshBtn" onclick="putToonColor(4);">Re</span></td>'
-  str << '<td>토<span class="refreshBtn" onclick="putToonColor(5);">Re</span></td>'
-  str << '<td>일<span class="refreshBtn" onclick="putToonColor(6);">Re</span></td>'
-  str << '</tr>'
-  str << '<tr valign="top">'
+  str = <<-HTML
+    <span class="table_toggle_button" onclick="show_table();">완결 웹툰</span>
+    #{site_button(site)}
+    <table id="current_toonlist" class="toonlist">
+      <tr style="font-weight: bold;">
+        <td>월<span class="refreshBtn" onclick="putToonColor(0);">Re</span></td>
+        <td>화<span class="refreshBtn" onclick="putToonColor(1);">Re</span></td>
+        <td>수<span class="refreshBtn" onclick="putToonColor(2);">Re</span></td>
+        <td>목<span class="refreshBtn" onclick="putToonColor(3);">Re</span></td>
+        <td>금<span class="refreshBtn" onclick="putToonColor(4);">Re</span></td>
+        <td>토<span class="refreshBtn" onclick="putToonColor(5);">Re</span></td>
+        <td>일<span class="refreshBtn" onclick="putToonColor(6);">Re</span></td>
+      </tr>
+      <tr valign="top">
+  HTML
 
   count = 0
 
   resp.search('//div[@class="area_toonlist area_bg"]').each do |r|
     day = 0
     r.search('./div/div[@class="bg_line"]').each do |v|
-      str << "<td id=\"day#{day}\">"
+      str << <<-HTML
+        <td id="day#{day}">
+      HTML
       v.search('./ul/li/a').each do |v1|
         _titleId = $1 if v1.attr("href") =~ /\/webtoon\/view\/(.+)$/
         _title = v1.attr("title")
@@ -234,7 +252,9 @@ elsif site == "daum"
 
         reqList[_titleId] = true unless tmpList.include? _titleId
 
-        str << "<div name=\"#{_titleId}\" class=\"current_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon('#{_titleId}');\">#{_title}</div>"
+        str << <<-HTML
+          <div name="#{_titleId}" class="current_toon" style="background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;" title="#{_title}" onclick="viewToon('#{_titleId}');">#{_title}</div>
+        HTML
         count += 1
       end
       count = 0
@@ -263,7 +283,9 @@ elsif site == "daum"
       reqList[_titleId] = (tmpList.include? _titleId) ? false : true
     end
 
-    str_td[count % 7] << "<div name=\"#{_titleId}\" class=\"finished_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon('#{_titleId}');\">#{_title}</div>"
+    str_td[count % 7] << <<-HTML
+      <div name="#{_titleId}" class="finished_toon" style="background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;" title="#{_title}" onclick="viewToon('#{_titleId}');">#{_title}</div>
+    HTML
     count += 1
   end
 
@@ -305,11 +327,13 @@ elsif site == "daum"
   str << 'resizeWidth();'
 
   # 웹툰 정보 입력
-  str << "numList={#{numList.keys.map {|v| "'#{v}':[#{numList[v].join(",")}]"}.join(",")}};"
-  str << "dateList={#{dateList.keys.map {|v| "'#{v}':['#{dateList[v].join("','")}']"}.join(",")}};"
-  str << "toonInfo={#{toonInfo.keys.map {|v| "'#{v}':['#{toonInfo[v].join("','")}']"}.join(",")}};"
-  str << "lastNum={#{lastNum.keys.map {|v| "'#{v}':#{lastNum[v]}"}.join(",")}};"
-  str << "finishToon=[#{finishToon.map {|v| "'#{v}'"}.join(",")}];"
+  str << <<-HTML
+    numList={#{numList.keys.map {|v| "'#{v}':[#{numList[v].join(",")}]"}.join(",")}};
+    dateList={#{dateList.keys.map {|v| "'#{v}':['#{dateList[v].join("','")}']"}.join(",")}};
+    toonInfo={#{toonInfo.keys.map {|v| "'#{v}':['#{toonInfo[v].join("','")}']"}.join(",")}};
+    lastNum={#{lastNum.keys.map {|v| "'#{v}':#{lastNum[v]}"}.join(",")}};
+    finishToon=[#{finishToon.map {|v| "'#{v}'"}.join(",")}];
+  HTML
 
   # toon background-color 처리
   if session["user_id"] != nil and session["user_id"] != ""
@@ -321,12 +345,14 @@ elsif site == "daum"
       toonBM[_toon_id] = _toon_num
     end
 
-    str << "toonBM={#{toonBM.keys.map {|v| "'#{v}':#{toonBM[v]}"}.join(",")}};"
+    str << <<-HTML
+      toonBM={#{toonBM.keys.map {|v| "'#{v}':#{toonBM[v]}"}.join(",")}};
 
-    str << '$("#loading").html(" Loading");'
-    str << '$("#loading").css("display", "inline");'
-    str << 'loading(10);'
-    str << "putToonColor();"
+      $("#loading").html(" Loading");
+      $("#loading").css("display", "inline");
+      loading(10);
+      putToonColor();
+    HTML
   end
 
   str << '</script>'
@@ -371,21 +397,23 @@ elsif site == "yahoo"
   # 연재
   resp = a.get "http://kr.news.yahoo.com/service/cartoon/shelllist.htm?linkid=webtoon&kind=cont"
 
-  str = '<span class="table_toggle_button" id="table_toggle_button1" style="display: none;" onclick="show_table(1);">연재 웹툰</span>'
-  str << '<span class="table_toggle_button" id="table_toggle_button2" onclick="show_table(2);">완결 웹툰</span>'
-  str << '<span class="table_toggle_button" id="table_toggle_button3" onclick="show_table(3);">특집 웹툰</span>'
-  str << site_button(site)
-  str << '<table id="current_toonlist" class="toonlist">'
-  str << '<tr style="font-weight: bold;">'
-  str << '<td><span class="refreshBtn" onclick="putToonColor(0);">Re</span></td>'
-  str << '<td><span class="refreshBtn" onclick="putToonColor(1);">Re</span></td>'
-  str << '<td><span class="refreshBtn" onclick="putToonColor(2);">Re</span></td>'
-  str << '<td><span class="refreshBtn" onclick="putToonColor(3);">Re</span></td>'
-  str << '<td><span class="refreshBtn" onclick="putToonColor(4);">Re</span></td>'
-  str << '<td><span class="refreshBtn" onclick="putToonColor(5);">Re</span></td>'
-  str << '<td><span class="refreshBtn" onclick="putToonColor(6);">Re</span></td>'
-  str << '</tr>'
-  str << '<tr valign="top">'
+  str = <<-HTML
+    <span class="table_toggle_button" id="table_toggle_button1" style="display: none;" onclick="show_table(1);">연재 웹툰</span>
+    <span class="table_toggle_button" id="table_toggle_button2" onclick="show_table(2);">완결 웹툰</span>
+    <span class="table_toggle_button" id="table_toggle_button3" onclick="show_table(3);">특집 웹툰</span>
+    #{site_button(site)}
+    <table id="current_toonlist" class="toonlist">
+      <tr style="font-weight: bold;">
+        <td><span class="refreshBtn" onclick="putToonColor(0);">Re</span></td>
+        <td><span class="refreshBtn" onclick="putToonColor(1);">Re</span></td>
+        <td><span class="refreshBtn" onclick="putToonColor(2);">Re</span></td>
+        <td><span class="refreshBtn" onclick="putToonColor(3);">Re</span></td>
+        <td><span class="refreshBtn" onclick="putToonColor(4);">Re</span></td>
+        <td><span class="refreshBtn" onclick="putToonColor(5);">Re</span></td>
+        <td><span class="refreshBtn" onclick="putToonColor(6);">Re</span></td>
+      </tr>
+      <tr valign="top">
+  HTML
   str_td = ['<td id="day0">', '<td id="day1">', '<td id="day2">', '<td id="day3">', '<td id="day4">', '<td id="day5">', '<td id="day6">']
 
   count = [0, 0, 0, 0, 0, 0, 0]
@@ -404,7 +432,9 @@ elsif site == "yahoo"
         toonInfo[_titleId][0] = _title
       end
 
-      str_td[day] << "<div name=\"#{_titleId}\" class=\"current_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon(#{_titleId});\">#{_title}</div>"
+      str_td[day] << <<-HTML
+        <div name="#{_titleId}" class="current_toon" style="background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;" title="#{_title}" onclick="viewToon(#{_titleId});">#{_title}</div>
+      HTML
       count[day] += 1
       day = (day + 1) % 7
     end
@@ -446,7 +476,9 @@ elsif site == "yahoo"
         toonInfo[_titleId][0] = _title
       end
 
-      str_td[count % 7] << "<div name=\"#{_titleId}\" class=\"finished_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon(#{_titleId});\">#{_title}</div>"
+      str_td[count % 7] << <<-HTML
+        <div name="#{_titleId}" class="finished_toon" style="background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;" title="#{_title}" onclick="viewToon(#{_titleId});">#{_title}</div>
+      HTML
       count += 1
     end
 
@@ -466,17 +498,19 @@ elsif site == "yahoo"
   # 특집
   resp = a.get "http://kr.news.yahoo.com/service/cartoon/shelllist.htm?linkid=webtoon&kind=special"
 
-  str << '<table id="special_toonlist" class="toonlist" style="display: none;">'
-  str << '<tr style="font-weight: bold;">'
-  str << '<td><span class="refreshBtn" onclick="putToonColor(7);">Re</span></td>'
-  str << '<td><span class="refreshBtn" onclick="putToonColor(8);">Re</span></td>'
-  str << '<td><span class="refreshBtn" onclick="putToonColor(9);">Re</span></td>'
-  str << '<td><span class="refreshBtn" onclick="putToonColor(10);">Re</span></td>'
-  str << '<td><span class="refreshBtn" onclick="putToonColor(11);">Re</span></td>'
-  str << '<td><span class="refreshBtn" onclick="putToonColor(12);">Re</span></td>'
-  str << '<td><span class="refreshBtn" onclick="putToonColor(13);">Re</span></td>'
-  str << '</tr>'
-  str << '<tr valign="top">'
+  str << <<-HTML
+    <table id="special_toonlist" class="toonlist" style="display: none;">
+      <tr style="font-weight: bold;">
+        <td><span class="refreshBtn" onclick="putToonColor(7);">Re</span></td>
+        <td><span class="refreshBtn" onclick="putToonColor(8);">Re</span></td>
+        <td><span class="refreshBtn" onclick="putToonColor(9);">Re</span></td>
+        <td><span class="refreshBtn" onclick="putToonColor(10);">Re</span></td>
+        <td><span class="refreshBtn" onclick="putToonColor(11);">Re</span></td>
+        <td><span class="refreshBtn" onclick="putToonColor(12);">Re</span></td>
+        <td><span class="refreshBtn" onclick="putToonColor(13);">Re</span></td>
+      </tr>
+      <tr valign="top">
+  HTML
   str_td = ['<td id="day7">', '<td id="day8">', '<td id="day9">', '<td id="day10">', '<td id="day11">', '<td id="day12">', '<td id="day13">']
 
   count = [0, 0, 0, 0, 0, 0, 0]
@@ -495,7 +529,9 @@ elsif site == "yahoo"
         toonInfo[_titleId][0] = _title
       end
 
-      str_td[day] << "<div name=\"#{_titleId}\" class=\"current_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon(#{_titleId});\">#{_title}</div>"
+      str_td[day] << <<-HTML
+        <div name="#{_titleId}" class="current_toon" style="background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;" title="#{_title}" onclick="viewToon(#{_titleId});">#{_title}</div>
+      HTML
       count[day] += 1
       day = (day + 1) % 7
     end
@@ -536,10 +572,12 @@ elsif site == "yahoo"
   str << 'resizeWidth();'
 
   # 웹툰 정보 입력
-  str << "numList={#{numList.keys.map {|v| "#{v}:[#{numList[v].join(",")}]"}.join(",")}};"
-  str << "toonInfo={#{toonInfo.keys.map {|v| "#{v}:['#{toonInfo[v].join("','")}']"}.join(",")}};"
-  str << "lastNum={#{lastNum.keys.map {|v| "#{v}:#{lastNum[v]}"}.join(",")}};"
-  str << "finishToon=[#{finishToon.join(",")}];"
+  str << <<-HTML
+    numList={#{numList.keys.map {|v| "#{v}:[#{numList[v].join(",")}]"}.join(",")}};
+    toonInfo={#{toonInfo.keys.map {|v| "#{v}:['#{toonInfo[v].join("','")}']"}.join(",")}};
+    lastNum={#{lastNum.keys.map {|v| "#{v}:#{lastNum[v]}"}.join(",")}};
+    finishToon=[#{finishToon.join(",")}];
+  HTML
 
   # toon background-color 처리
   if session["user_id"] != nil and session["user_id"] != ""
@@ -551,12 +589,14 @@ elsif site == "yahoo"
       toonBM[_toon_id] = _toon_num
     end
 
-    str << "toonBM={#{toonBM.keys.map {|v| "#{v}:#{toonBM[v]}"}.join(",")}};"
+    str << <<-HTML
+      toonBM={#{toonBM.keys.map {|v| "#{v}:#{toonBM[v]}"}.join(",")}};
 
-    str << '$("#loading").html(" Loading");'
-    str << '$("#loading").css("display", "inline");'
-    str << 'loading(10);'
-    str << "putToonColor();"
+      $("#loading").html(" Loading");
+      $("#loading").css("display", "inline");
+      loading(10);
+      putToonColor();
+    HTML
   end
 
   str << '</script>'
@@ -601,19 +641,21 @@ elsif site == "stoo"
   resp = a.get "http://stoo.asiae.co.kr/cartoon/"
 
   # 연재
-  str = '<span class="table_toggle_button" onclick="show_table();">완결 웹툰</span>'
-  str << site_button(site)
-  str << '<table id="current_toonlist" class="toonlist">'
-  str << '<tr style="font-weight: bold;">'
-  str << '<td><span class="refreshBtn" onclick="putToonColor(0);">Re</span></td>'
-  str << '<td><span class="refreshBtn" onclick="putToonColor(1);">Re</span></td>'
-  str << '<td><span class="refreshBtn" onclick="putToonColor(2);">Re</span></td>'
-  str << '<td><span class="refreshBtn" onclick="putToonColor(3);">Re</span></td>'
-  str << '<td><span class="refreshBtn" onclick="putToonColor(4);">Re</span></td>'
-  str << '<td><span class="refreshBtn" onclick="putToonColor(5);">Re</span></td>'
-  str << '<td><span class="refreshBtn" onclick="putToonColor(6);">Re</span></td>'
-  str << '</tr>'
-  str << '<tr valign="top">'
+  str = <<-HTML
+    <span class="table_toggle_button" onclick="show_table();">완결 웹툰</span>
+    #{site_button(site)}
+    <table id="current_toonlist" class="toonlist">
+      <tr style="font-weight: bold;">
+        <td><span class="refreshBtn" onclick="putToonColor(0);">Re</span></td>
+        <td><span class="refreshBtn" onclick="putToonColor(1);">Re</span></td>
+        <td><span class="refreshBtn" onclick="putToonColor(2);">Re</span></td>
+        <td><span class="refreshBtn" onclick="putToonColor(3);">Re</span></td>
+        <td><span class="refreshBtn" onclick="putToonColor(4);">Re</span></td>
+        <td><span class="refreshBtn" onclick="putToonColor(5);">Re</span></td>
+        <td><span class="refreshBtn" onclick="putToonColor(6);">Re</span></td>
+      </tr>
+      <tr valign="top">
+  HTML
   str_td = ['<td id="day0">', '<td id="day1">', '<td id="day2">', '<td id="day3">', '<td id="day4">', '<td id="day5">', '<td id="day6">']
 
   count = [0, 0, 0, 0, 0, 0, 0]
@@ -627,7 +669,9 @@ elsif site == "stoo"
 
     reqList[_titleId] = true unless tmpList.include? _titleId
 
-    str_td[day] << "<div name=\"#{_titleId}\" class=\"current_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon(#{_titleId});\">#{_title}</div>"
+    str_td[day] << <<-HTML
+      <div name="#{_titleId}" class="current_toon" style="background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;" title="#{_title}" onclick="viewToon(#{_titleId});">#{_title}</div>
+    HTML
     count[day] += 1
     day = (day + 1) % 7
   end
@@ -654,7 +698,9 @@ elsif site == "stoo"
       reqList[_titleId] = (tmpList.include? _titleId) ? false : true
     end
 
-    str_td[count % 7] << "<div name=\"#{_titleId}\" class=\"finished_toon\" style=\"background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;\" title=\"#{_title}\" onclick=\"viewToon(#{_titleId});\">#{_title}</div>"
+    str_td[count % 7] << <<-HTML
+      <div name="#{_titleId}" class="finished_toon" style="background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;" title="#{_title}" onclick="viewToon(#{_titleId});">#{_title}</div>
+    HTML
     count += 1
   end
 
@@ -686,10 +732,12 @@ elsif site == "stoo"
   str << 'resizeWidth();'
 
   # 웹툰 정보 입력
-  str << "numList={#{numList.keys.map {|v| "#{v}:['#{numList[v].join("','")}']"}.join(",")}};"
-  str << "toonInfo={#{toonInfo.keys.map {|v| "#{v}:['#{toonInfo[v].join("','")}']"}.join(",")}};"
-  str << "lastNum={#{lastNum.keys.map {|v| "#{v}:'#{lastNum[v]}'"}.join(",")}};"
-  str << "finishToon=[#{finishToon.join(",")}];"
+  str << <<-HTML
+    numList={#{numList.keys.map {|v| "#{v}:['#{numList[v].join("','")}']"}.join(",")}};
+    toonInfo={#{toonInfo.keys.map {|v| "#{v}:['#{toonInfo[v].join("','")}']"}.join(",")}};
+    lastNum={#{lastNum.keys.map {|v| "#{v}:'#{lastNum[v]}'"}.join(",")}};
+    finishToon=[#{finishToon.join(",")}];
+  HTML
 
   # toonlist background-color 처리
   if session["user_id"] != nil and session["user_id"] != ""
@@ -701,12 +749,14 @@ elsif site == "stoo"
       toonBM[_toon_id] = _toon_num
     end
 
-    str << "toonBM={#{toonBM.keys.map {|v| "#{v}:'#{toonBM[v]}'"}.join(",")}};"
+    str << <<-HTML
+      toonBM={#{toonBM.keys.map {|v| "#{v}:'#{toonBM[v]}'"}.join(",")}};
 
-    str << '$("#loading").html(" Loading");'
-    str << '$("#loading").css("display", "inline");'
-    str << 'loading(10);'
-    str << "putToonColor();"
+      $("#loading").html(" Loading");
+      $("#loading").css("display", "inline");
+      loading(10);
+      putToonColor();
+    HTML
   end
 
   str << '</script>'

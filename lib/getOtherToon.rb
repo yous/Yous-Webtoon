@@ -39,7 +39,9 @@ class GetOtherToon < WEBrick::HTTPServlet::AbstractServlet
           _a = r.at('./h4[@class="title"]/a')
           titleId = $1 if _a.attr("href").to_s =~ /\/webtoon\/detail\.nhn\?titleId=(\d+)/
           title = _a.inner_html.force_encoding("UTF-8")
-          str << "<div id=\"#{titleId}\" style=\"background-color: #{btnColor["buttonB"]}; cursor: default; margin: 3px 0px 3px 0px;\" onclick=\"viewToon('#{titleId}');\">#{title}</div>"
+          str << <<-HTML
+            <div id="#{titleId}" style="background-color: #{btnColor["buttonB"]}; cursor: default; margin: 3px 0px 3px 0px;" onclick="viewToon('#{titleId}');">#{title}</div>
+          HTML
         end
         page += 1
       end while (resp.search('//div[@class="pagenavigation"]/a[@class="next"]').length > 0)
@@ -55,7 +57,9 @@ class GetOtherToon < WEBrick::HTTPServlet::AbstractServlet
             {"title" => $1, "url" => $2} if v =~ /data2\.push\(\s*\{\s*img\s*:\s*".*"\s*,\s*title\s*:\s*"(.*)"\s*,\s*shortTitle\s*:\s*".*"\s*,\s*url\s*:\s*"\/webtoon\/view\/(.*)"\s*,\s*isAdult\s*:\s*.*\}\s*\)/
           }.
           each do |v|
-            str << "<div id=\"#{v["url"]}\" style=\"background-color: #{btnColor["buttonB"]}; cursor: default; margin: 3px 0px 3px 0px;\" onclick=\"viewToon('#{v["url"]}');\">#{v["title"]}</div>"
+            str << <<-HTML
+              <div id="#{v["url"]}" style="background-color: #{btnColor["buttonB"]}; cursor: default; margin: 3px 0px 3px 0px;" onclick="viewToon('#{v["url"]}');">#{v["title"]}</div>
+            HTML
           end
         if str == ""
           str << "<span>관련 웹툰이 없습니다.</span>"

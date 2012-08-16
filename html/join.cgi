@@ -32,16 +32,19 @@ else
 end
 
 if not check
-  str << "$('#user_id').val('');"
-  str << "$('#user_pw').val('');"
-  str << "$('#user_id').focus();"
-  str << "</script>"
+  str << <<-HTML
+      $('#user_id').val('');
+      $('#user_pw').val('');
+      $('#user_id').focus();
+    </script>
+  HTML
   puts str
 else
   db.exec("INSERT INTO usr (usr_id, usr_pw) VALUES ($1::VARCHAR, $2::VARCHAR);", [user_id, Digest::SHA1.hexdigest("YoUs" + user_pw + "wEbt00N").force_encoding("UTF-8")])
-  str = "<script>"
-  str << "alert('Hello, #{user_id}!');"
-  str << "toggle_login(false);"
-  str << "</script>"
-  puts str
+  puts <<-HTML
+    <script>
+      alert('Hello, #{user_id}!');
+      toggle_login(false);
+    </script>
+  HTML
 end
