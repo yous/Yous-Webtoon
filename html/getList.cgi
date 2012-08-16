@@ -131,7 +131,7 @@ if site == "naver"
   str_div.each do |v|
     str << v + "</div>"
   end
-  str << '</div><div class="clear">&nbsp;</div>'
+  str << '</div>'
 
   # reqList 처리
   str << '<script>'
@@ -282,7 +282,7 @@ elsif site == "daum"
   str_div.each do |v|
     str << v + "</div>"
   end
-  str << '</div><div class="clear">&nbsp;</div>'
+  str << '</div>'
 
   # reqList 처리
   str << '<script>'
@@ -525,7 +525,7 @@ elsif site == "yahoo"
     str << v + "</div>"
   end
 
-  str << '</div><div class="clear">&nbsp;</div>'
+  str << '</div>'
 
   # reqList 처리
   str << '<script>'
@@ -678,7 +678,7 @@ elsif site == "stoo"
   str_div.each do |v|
     str << v + "</div>"
   end
-  str << '</div><div class="clear">&nbsp;</div>'
+  str << '</div>'
 
   # reqList 처리
   str << '<script>'
