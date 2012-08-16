@@ -816,7 +816,7 @@ function toggle_toonlist(_flash)
 {
   if (_flash || (_flash == undefined && $("#toonlist_area").css("overflow") != "scroll"))
   {
-    $("#toonlist_area").css("height", parseInt(document.getElementById("toonlist_area").clientHeight - (document.getElementById("content_area").offsetTop - 437)) + "px");
+    $("#toonlist_area").css("height", $("#toonlist_area").height() - ($("#content_area").position().top - 484) + "px");
     $("#toonlist_area").css("overflow", "scroll");
     $(document).unbind("keydown");
     $(document).bind("keydown", function(e) { bodyKeyDown(e, false); });
