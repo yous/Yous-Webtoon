@@ -793,17 +793,17 @@ function toonlist_area_init()
 // Flash 있을 때 toonlist_area height 설정 토글
 function toggle_toonlist(_flash)
 {
-  if (_flash || (_flash == undefined && $("#toonlist_area").css("overflow") != "scroll"))
+  if (_flash || (_flash == undefined && $("#toonlist_area").css("overflow-y") != "scroll"))
   {
     $("#toonlist_area").css("height", $("#toonlist_area").height() - ($("#content_area").position().top - 484) + "px");
-    $("#toonlist_area").css("overflow", "scroll");
+    $("#toonlist_area").css("overflow-y", "scroll");
     $(document).unbind("keydown");
     $(document).bind("keydown", function(e) { bodyKeyDown(e, false); });
   }
   else
   {
     $("#toonlist_area").css("height", "");
-    $("#toonlist_area").css("overflow", "");
+    $("#toonlist_area").css("overflow-y", "");
     $(document).unbind("keydown");
     $(document).bind("keydown", function (e) { bodyKeyDown(e, true); });
     if (site == "naver")
