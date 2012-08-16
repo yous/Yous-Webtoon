@@ -21,11 +21,11 @@ end
 def generate_toon(toon_id, toon_class, color, title, options = {:quote => false})
   if options[:new].nil? and options[:up].nil?
     return <<-HTML
-      <div name="#{toon_id}" class="#{toon_class}" style="background-color: #{color};" title="#{title}" onclick="viewToon(#{if options[:quote] then "'#{toon_id}'" else toon_id end});">#{title}</div>
+      <div name="#{toon_id}" class="#{toon_class}" style="background-color: #{color};" title="#{title}" onclick="viewToon(#{options[:quote] ? "'#{toon_id}'" : toon_id});">#{title}</div>
     HTML
   else
     return <<-HTML
-      <div name="#{toon_id}" class="#{toon_class}" style="background-color: #{color};" title="#{title}#{options[:new]}#{options[:up]}" onclick="viewToon(#{if options[:quote] then "'#{toon_id}'" else toon_id end});">#{title}<small>#{options[:new]}#{options[:up]}</small></div>
+      <div name="#{toon_id}" class="#{toon_class}" style="background-color: #{color};" title="#{title}#{options[:new]}#{options[:up]}" onclick="viewToon(#{options[:quote] ? "'#{toon_id}'" : toon_id});">#{title}<small>#{options[:new]}#{options[:up]}</small></div>
     HTML
   end
 end
