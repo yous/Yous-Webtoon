@@ -18,6 +18,18 @@ def site_button(site)
   str << "<br/>"
 end
 
+def generate_toon(toon_id, toon_class, color, title, options = {:quote => false})
+  if options[:new].nil? and options[:up].nil?
+    return <<-HTML
+      <div name="#{toon_id}" class="#{toon_class}" style="background-color: #{color};" title="#{title}" onclick="viewToon(#{if options[:quote] then "'#{toon_id}'" else toon_id end});">#{title}</div>
+    HTML
+  else
+    return <<-HTML
+      <div name="#{toon_id}" class="#{toon_class}" style="background-color: #{color};" title="#{title}#{options[:new]}#{options[:up]}" onclick="viewToon(#{if options[:quote] then "'#{toon_id}'" else toon_id end});">#{title}<small>#{options[:new]}#{options[:up]}</small></div>
+    HTML
+  end
+end
+
 puts "Content-Type: text/html; charset=utf-8\n\n"
 
 cgi = CGI.new
@@ -93,9 +105,7 @@ if site == "naver"
 
         reqList.push(_titleId) unless tmpList.include? _titleId
 
-        str << <<-HTML
-          <div name="#{_titleId}" class="current_toon" style="background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;" title="#{_title}#{_new}#{_up}" onclick="viewToon(#{_titleId});">#{_title}<small>#{_new}#{_up}</small></div>
-        HTML
+        str << generate_toon(_titleId, "current_toon", _color, _title, :new => _new, :up => _up)
         count += 1
       end
       count = 0
@@ -121,9 +131,7 @@ if site == "naver"
 
     reqList.push(_titleId) unless tmpList.include? _titleId
 
-    str_td[count % 7] << <<-HTML
-      <div name="#{_titleId}" class="finished_toon" style="background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;" title="#{_title}" onclick="viewToon(#{_titleId});">#{_title}</div>
-    HTML
+    str_td[count % 7] << generate_toon(_titleId, "finished_toon", _color, _title)
     count += 1
   end
 
@@ -252,9 +260,7 @@ elsif site == "daum"
 
         reqList[_titleId] = true unless tmpList.include? _titleId
 
-        str << <<-HTML
-          <div name="#{_titleId}" class="current_toon" style="background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;" title="#{_title}" onclick="viewToon('#{_titleId}');">#{_title}</div>
-        HTML
+        str << generate_toon(_titleId, "current_toon", _color, _title, :quote => true)
         count += 1
       end
       count = 0
@@ -283,9 +289,7 @@ elsif site == "daum"
       reqList[_titleId] = (tmpList.include? _titleId) ? false : true
     end
 
-    str_td[count % 7] << <<-HTML
-      <div name="#{_titleId}" class="finished_toon" style="background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;" title="#{_title}" onclick="viewToon('#{_titleId}');">#{_title}</div>
-    HTML
+    str_td[count % 7] << generate_toon(_titleId, "finished_toon", _color, _title)
     count += 1
   end
 
@@ -432,9 +436,7 @@ elsif site == "yahoo"
         toonInfo[_titleId][0] = _title
       end
 
-      str_td[day] << <<-HTML
-        <div name="#{_titleId}" class="current_toon" style="background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;" title="#{_title}" onclick="viewToon(#{_titleId});">#{_title}</div>
-      HTML
+      str_td[day] << generate_toon(_titleId, "current_toon", _color, _title)
       count[day] += 1
       day = (day + 1) % 7
     end
@@ -476,9 +478,7 @@ elsif site == "yahoo"
         toonInfo[_titleId][0] = _title
       end
 
-      str_td[count % 7] << <<-HTML
-        <div name="#{_titleId}" class="finished_toon" style="background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;" title="#{_title}" onclick="viewToon(#{_titleId});">#{_title}</div>
-      HTML
+      str_td[count % 7] << generate_toon(_titleId, "finished_toon", _color, _title)
       count += 1
     end
 
@@ -529,9 +529,7 @@ elsif site == "yahoo"
         toonInfo[_titleId][0] = _title
       end
 
-      str_td[day] << <<-HTML
-        <div name="#{_titleId}" class="current_toon" style="background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;" title="#{_title}" onclick="viewToon(#{_titleId});">#{_title}</div>
-      HTML
+      str_td[day] << generate_toon(_titleId, "current_toon", _color, _title)
       count[day] += 1
       day = (day + 1) % 7
     end
@@ -669,9 +667,7 @@ elsif site == "stoo"
 
     reqList[_titleId] = true unless tmpList.include? _titleId
 
-    str_td[day] << <<-HTML
-      <div name="#{_titleId}" class="current_toon" style="background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;" title="#{_title}" onclick="viewToon(#{_titleId});">#{_title}</div>
-    HTML
+    str_td[day] << generate_toon(_titleId, "current_toon", _color, _title)
     count[day] += 1
     day = (day + 1) % 7
   end
@@ -698,9 +694,7 @@ elsif site == "stoo"
       reqList[_titleId] = (tmpList.include? _titleId) ? false : true
     end
 
-    str_td[count % 7] << <<-HTML
-      <div name="#{_titleId}" class="finished_toon" style="background-color: #{_color}; padding: 1px 0px 1px 0px; cursor: default;" title="#{_title}" onclick="viewToon(#{_titleId});">#{_title}</div>
-    HTML
+    str_td[count % 7] << generate_toon(_titleId, "finished_toon", _color, _title)
     count += 1
   end
 
