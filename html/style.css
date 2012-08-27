@@ -77,6 +77,11 @@ input::-moz-focus-inner {
 #music_player {
   display: none;
 }
+hr[id^=anchor_] {
+  width: 80%;
+  height: 1px;
+  border: 0px;
+}
 #login_area {
   display: inline;
   position: absolute;

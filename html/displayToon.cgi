@@ -269,17 +269,17 @@ if site != nil and id != nil and num != nil
               _data.save("images/#{url.gsub(/\//, "@")}") if not _data.body.nil?
             end
             if count % 2 == 0
-              if count <= 1
-                _content << "<hr id=\"anchor_0\" style=\"width: 80%; height: 1px; border: 0px;\"/>"
-              else
+              if count > 1
                 _content << <<-HTML
                     <input type="button" value="&uarr;" style="position: relative; top: 650px;" onclick="scrollAnchor(-1);">
                     <input type="button" value="&darr;" style="position: relative; top: 650px;" onclick="scrollAnchor(1);">
                   </div><br/><br/><br/>
-                  <hr id="anchor_#{count / 2}" style="width: 80%; height: 1px; border: 0px;"/>
                 HTML
               end
-              _content << "<div style=\"position: relative; margin: 0 auto; width: 900px; height: 650px;\">"
+              _content << <<-HTML
+                <hr id="anchor_#{count / 2}"/>
+                <div style="position: relative; margin: 0 auto; width: 900px; height: 650px;">
+              HTML
             end
             _content << <<-HTML
               <div style="position: absolute; width: 450px; height: 650px; left: #{(count % 2 == 0) ? 0 : 450}px;">
