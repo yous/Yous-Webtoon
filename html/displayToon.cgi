@@ -312,8 +312,8 @@ if site != nil and id != nil and num != nil
         HTML
         _blog = '<td><div id="artist_blog" style="display: none;">'
         _other = '<td><div id="artist_other" style="display: none;">'
-        if r.inner_html =~ /artistData\s*=\s*\[([\w\W]*)\];[\w\W]*var actionRunner;/
-          _info = $1.scan(/\{"artistId" : (\d+),[\s\n\r]*"nickname": '(.*)',[\s\n\r]*"blogUrl" : '(.*)'[\s\n\r]*\}/).collect {|artistId, nickname, blogUrl|
+        if r.inner_html =~ /artistData\s*=\s*\[([^\]]*)\]/
+          _info = $1.scan(/"artistId"\s*:\s*(\d+),[\s\n\r]*"nickname"\s*:\s*'([^']*)',[\s\n\r]*"blogUrl"\s*:\s*'([^']*)'/).collect {|artistId, nickname, blogUrl|
             { "artistId" => artistId, "nickname" => nickname, "blogUrl" => blogUrl }
           }
         end
