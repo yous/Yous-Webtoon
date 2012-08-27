@@ -49,14 +49,6 @@ a = Mechanize.new
 a.history.max_size = 0
 
 port = 8888
-btnColor = {
-  "buttonA" => "#FAFAFA",
-  "buttonB" => "#EAEAEA",
-  "saved" => "#88DD88",
-  "saved_up" => "#DD8888",
-  "saved_finish" => "#888888",
-  "link" => "#0066CC"
-}
 
 # Naver 웹툰
 if site == "naver"

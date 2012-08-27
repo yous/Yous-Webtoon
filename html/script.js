@@ -1339,13 +1339,6 @@ function loginKeyDown(e)
 site = null;
 id = null;
 num = null;
-btnColor = {
-  "buttonA" : "#FAFAFA",
-  "buttonB" : "#EAEAEA",
-  "saved" : "#88DD88",
-  "saved_up" : "#DD8888",
-  "saved_finish" : "#888888",
-  "link" : "#0066CC"};
 toonBM = new Object();
 numList = new Object();
 dateList = new Object();

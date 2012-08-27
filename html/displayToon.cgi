@@ -64,15 +64,6 @@ puts "Content-Type: text/html; charset=utf-8\n\n"
 if site != nil and id != nil and num != nil
   str = ""
 
-  btnColor = {
-    "buttonA" => "#FAFAFA",
-    "buttonB" => "#EAEAEA",
-    "saved" => "#88DD88",
-    "saved_up" => "#DD8888",
-    "saved_finish" => "#888888",
-    "link" => "#0066CC"
-  }
-
   a = Mechanize.new
   a.history.max_size = 0
 
