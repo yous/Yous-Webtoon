@@ -18,7 +18,7 @@ input::-moz-focus-inner {
   padding-top: 0px;
   padding-bottom: 0px;
 }
-.table_toggle_button, .site_button, .refreshBtn, #login, #join {
+.table_toggle_button, .site_button, .refreshBtn, #login, #join, #artist_other>span {
   color: #0066CC;
 }
 .table_toggle_button {
@@ -188,6 +188,10 @@ img {
 }
 #artist_other {
   text-align: center;
+}
+#artist_other>span {
+  cursor: pointer;
+  text-decoration: underline;
 }
 #artist_otherlist {
   text-align: center;

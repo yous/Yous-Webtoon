@@ -319,7 +319,7 @@ if site != nil and id != nil and num != nil
         end
         _info.each do |v|
           _blog << "<a href=\"#{v["blogUrl"]}\" target=\"_blank\">#{v["nickname"]}</a><br/>" if v["blogUrl"] != ""
-          _other << "<span style=\"cursor: pointer; color: #{btnColor["link"]}; text-decoration: underline;\" onclick=\"getOtherToon(#{v["artistId"]});\">#{v["nickname"]} &gt;&gt;</span><br/>"
+          _other << "<span onclick=\"getOtherToon(#{v["artistId"]});\">#{v["nickname"]} &gt;&gt;</span><br/>"
         end
         _blog << '</div></td>'
         _other << '</div></td>'
