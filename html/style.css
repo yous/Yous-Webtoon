@@ -137,12 +137,15 @@ img {
   display: block;
   margin: 0 auto;
 }
+.toonlist {
+  width: 100%;
+}
 .toonlist>div {
   float: left;
-  margin-right: 2px;
-  width: 14.1%;
+  width: 14.2%;
 }
 .current_toon, .finished_toon {
+  width: 99%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
