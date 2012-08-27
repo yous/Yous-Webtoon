@@ -64,9 +64,9 @@ if site == "naver"
       lastNum[v] = resp[1].to_i
       if toonBM[v] < lastNum[v]
         reqList[v] = [toonBM[v], toonBM[v] + 1]
-        col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
+        col_str << "$('div[name=#{v}]').addClass('saved_update');"
       else
-        col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved"]}');"
+        col_str << "$('div[name=#{v}]').addClass('saved_finish');"
       end
     end
   else
@@ -79,9 +79,9 @@ if site == "naver"
       end
       if toonBM[v] < lastNum[v]
         reqList[v] = [toonBM[v], toonBM[v] + 1]
-        col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
+        col_str << "$('div[name=#{v}]').addClass('saved_update');"
       else
-        col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_finish"]}');"
+        col_str << "$('div[name=#{v}]').addClass('saved_finish');"
       end
     end
   end
@@ -159,9 +159,9 @@ elsif site == "daum"
       HTML
       if toonBM[v] < lastNum[v]
         reqList[v] = [toonBM[v], numList[v][numList[v].index(toonBM[v]) + 1]]
-        col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
+        col_str << "$('div[name=#{v}]').addClass('saved_update');"
       else
-        col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved"]}');"
+        col_str << "$('div[name=#{v}]').addClass('saved_finish');"
       end
     end
   else
@@ -190,9 +190,9 @@ elsif site == "daum"
       end
       if toonBM[v] < lastNum[v]
         reqList[v] = [toonBM[v], numList[v][numList[v].index(toonBM[v]) + 1]]
-        col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
+        col_str << "$('div[name=#{v}]').addClass('saved_update');"
       else
-        col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_finish"]}');"
+        col_str << "$('div[name=#{v}]').addClass('saved_finish');"
       end
     end
   end
@@ -256,9 +256,9 @@ elsif site == "yahoo"
       HTML
       if toonBM[v] < lastNum[v]
         reqList[v] = [toonBM[v], numList[v][numList[v].index(toonBM[v]) + 1]]
-        col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
+        col_str << "$('div[name=#{v}]').addClass('saved_update');"
       else
-        col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved"]}');"
+        col_str << "$('div[name=#{v}]').addClass('saved_finish');"
       end
     end
   else
@@ -281,9 +281,9 @@ elsif site == "yahoo"
       end
       if toonBM[v] < lastNum[v]
         reqList[v] = [toonBM[v], numList[v][numList[v].index(toonBM[v]) + 1]]
-        col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
+        col_str << "$('div[name=#{v}]').addClass('saved_update');"
       else
-        col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_finish"]}');"
+        col_str << "$('div[name=#{v}]').addClass('saved_finish');"
       end
     end
   end
@@ -347,9 +347,9 @@ elsif site == "stoo"
       HTML
       if numList[v].index(toonBM[v]) < numList[v].index(lastNum[v])
         reqList[v] = [toonBM[v], numList[v][numList[v].index(toonBM[v]) + 1]]
-        col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
+        col_str << "$('div[name=#{v}]').addClass('saved_update');"
       else
-        col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved"]}');"
+        col_str << "$('div[name=#{v}]').addClass('saved_finish');"
       end
     end
   else
@@ -372,9 +372,9 @@ elsif site == "stoo"
       end
       if numList[v].index(toonBM[v]) < numList[v].index(lastNum[v])
         reqList[v] = [toonBM[v], numList[v][numList[v].index(toonBM[v]) + 1]]
-        col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_up"]}');"
+        col_str << "$('div[name=#{v}]').addClass('saved_update');"
       else
-        col_str << "$('div[name=#{v}]').css('background-color', '#{btnColor["saved_finish"]}');"
+        col_str << "$('div[name=#{v}]').addClass('saved_finish');"
       end
     end
   end

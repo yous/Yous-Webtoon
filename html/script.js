@@ -906,38 +906,22 @@ function add_bookmark(show_table)
       alert("북마크가 저장되었습니다!");
       $("#moveBM").attr("disabled", true);
 
-      var same_toon = document.getElementsByName(id);
-      for (i = 0; i < same_toon.length; i++)
-      {
-        if (same_toon[i].tagName.toLowerCase() != "div")
-          continue;
-        var same_td = same_toon[i].parentNode.childNodes;
-        for (j = 0; j < same_td.length; j++)
-        {
-          if (same_td[j] == same_toon[i])
-            same_td[j].style.backgroundColor = (j % 2) ? btnColor["buttonA"] : btnColor["buttonB"];
-        }
-      }
+      $(".toonlist div[name=" + id + "]").removeClass("saved_update").removeClass("saved_finish");
       if (show_table)
       {
-        if (site == "yahoo")
+        var toonlist_id = $(".toonlist div[name=" + id + "]").parent().parent().attr("id");
+        if ($("#" + toonlist_id).css("display") == "none")
         {
-          if (same_toon[0].className == "current_toon")
+          if (site == "yahoo")
           {
-            var _day = parseInt(same_toon[0].parentElement.id.substring(3));
-            if (0 <= _day && _day <= 6 && $("#current_toonlist").css("display") == "none")
+            if (toonlist_id == "current_toonlist")
               show_table(1);
-            else if (7 <= _day && _day <= 13 && $("#special_toonlist").css("display") == "none")
+            else if (toonlist_id == "finished_toonlist")
+              show_table(2);
+            else if (toonlist_id == "special_toonlist")
               show_table(3);
           }
-          else if (same_toon[0].className == "finished_toon" && $("#finished_toonlist").css("display") == "none")
-            show_table(2);
-        }
-        else
-        {
-          if (same_toon[0].className == "current_toon" && $("#current_toonlist").css("display") == "none")
-            show_table();
-          else if (same_toon[0].className == "finished_toon" && $("#finished_toonlist").css("display") == "none")
+          else
             show_table();
         }
       }
@@ -964,44 +948,24 @@ function add_bookmark(show_table)
       $("#saveBM").attr("disabled", true);
       $("#moveBM").attr("disabled", true);
 
-      var same_toon = document.getElementsByName(id);
-      for (i = 0; i < same_toon.length; i++)
+      if (toonBM[id] == lastNum[id])
+        $(".toonlist div[name=" + id + "]").removeClass("saved_update").removeClass("saved_finish").addClass("saved_finish");
+      else
+        $(".toonlist div[name=" + id + "]").removeClass("saved_update").removeClass("saved_finish").addClass("saved_update");
+
+      var toonlist_id = $(".toonlist div[name=" + id + "]").parent().parent().attr("id");
+      if ($("#" + toonlist_id).css("display") == "none")
       {
-        if (same_toon[i].tagName.toLowerCase() != "div")
-          continue;
-        var same_td = same_toon[i].parentNode.childNodes;
-        for (j = 0; j < same_td.length; j++)
+        if (site == "yahoo")
         {
-          if (same_td[j] == same_toon[i])
-          {
-            if (same_td[j].className == "current_toon")
-              same_td[j].style.backgroundColor = (toonBM[id] == lastNum[id]) ? btnColor["saved"] : btnColor["saved_up"];
-            else
-            {
-              finishToon.push(id);
-              same_td[j].style.backgroundColor = (toonBM[id] == lastNum[id]) ? btnColor["saved_finish"] : btnColor["saved_up"];
-            }
-          }
-        }
-      }
-      if (site == "yahoo")
-      {
-        if (same_toon[0].className == "current_toon")
-        {
-          var _day = parseInt(same_toon[0].parentElement.id.substring(3));
-          if (0 <= _day && _day <= 6 && $("#current_toonlist").css("display") == "none")
+          if (toonlist_id == "current_toonlist")
             show_table(1);
-          else if (7 <= _day && _day <= 13 && $("#special_toonlist").css("display") == "none")
+          else if (toonlist_id == "finished_toonlist")
+            show_table(2);
+          else if (toonlist_id == "special_toonlist")
             show_table(3);
         }
-        else if (same_toon[0].className == "finished_toon" && $("#finished_toonlist").css("display") == "none")
-          show_table(2);
-      }
-      else
-      {
-        if (same_toon[0].className == "current_toon" && $("#current_toonlist").css("display") == "none")
-          show_table();
-        else if (same_toon[0].className == "finished_toon" && $("#finished_toonlist").css("display") == "none")
+        else
           show_table();
       }
 

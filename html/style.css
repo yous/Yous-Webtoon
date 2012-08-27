@@ -156,6 +156,15 @@ img {
 .current_toon:nth-child(even), .finished_toon:nth-child(even) {
   background-color: #EAEAEA;
 }
+.current_toon.saved_update, .finished_toon.saved_update {
+  background-color: #DD8888;
+}
+.current_toon.saved_finish {
+  background-color: #88DD88;
+}
+.finished_toon.saved_finish {
+  background-color: #888888;
+}
 .current_toon:hover, .finished_toon:hover, #artist_otherlist div:hover {
   background-color: #ABC;
 }
