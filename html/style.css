@@ -188,3 +188,7 @@ img {
   clear: both;
   margin: 0 auto;
 }
+#writer_info>div {
+  padding: 2px 15px;
+  background-color: #EAEAEA;
+}

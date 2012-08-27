@@ -344,7 +344,7 @@ if site != nil and id != nil and num != nil
     _ratingPerson = resp.at('//span[@class="pointTotalPerson"]/em').inner_html
     _content << <<-HTML
       <div id="writer_info">
-        <div style="background-color: #{btnColor["buttonB"]}; padding: 2px 15px 2px 15px;">
+        <div>
           <b>작가의 말</b>
         </div>
         <p style="padding: 0px 20px 0px 20px;">#{_writerCmt}</p>
