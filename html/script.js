@@ -785,7 +785,13 @@ function toonlist_area_init()
   var str = "<br/>";
   for (key in sites)
     str += sites[key].toonlist_area_init();
-  str += "<script>id=null;num=null;site=null;change_remote();toggle_toonlist(false);</script>";
+
+  id = null;
+  num = null;
+  site = null;
+  change_remote();
+  toggle_toonlist(false);
+
   $("#toonlist_area").html(str);
   $("#display_area").html("");
 }
