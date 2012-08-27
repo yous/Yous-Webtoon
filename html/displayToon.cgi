@@ -305,8 +305,8 @@ if site != nil and id != nil and num != nil
           <div id="artist_area">
             <table id="artist_info" align="right">
               <tr>
-                <td><div style="text-align: center; width: 100px; margin: 0px 10px 0px 10px; cursor: pointer; background-color: #{btnColor["buttonB"]};" onclick="show_artist_table(0);">블로그</div></td>
-                <td><div style="text-align: center; width: 100px; margin: 0px 10px 0px 10px; cursor: pointer; background-color: #{btnColor["buttonB"]};" onclick="show_artist_table(1);">다른 작품</div></td>
+                <td><div onclick="show_artist_table(0);">블로그</div></td>
+                <td><div onclick="show_artist_table(1);">다른 작품</div></td>
               </tr>
               <tr style="font-size: 13px;">
         HTML
@@ -463,8 +463,8 @@ if site != nil and id != nil and num != nil
       <div id="artist_area">
         <table id="artist_info" align="right">
           <tr>
-            <td><div style="text-align: center; width: 100px; margin: 0px 10px 0px 10px; cursor: pointer; background-color: #{btnColor["buttonB"]};" onclick="show_artist_table(0);">관련 웹툰</div></td>
-            <td><div style="text-align: center; width: 100px; margin: 0px 10px 0px 10px; cursor: pointer; background-color: #{btnColor["buttonB"]};" onclick="show_artist_table(1);">작품 노트</div></td>
+            <td><div onclick="show_artist_table(0);">관련 웹툰</div></td>
+            <td><div onclick="show_artist_table(1);">작품 노트</div></td>
             </tr><tr>
             <td colspan="2"><div id="artist_otherlist"></div></td>
           </tr>

@@ -165,6 +165,13 @@ img {
   clear: both;
   margin: 0 auto;
 }
+#artist_info tr:first-child>td>div {
+  text-align: center;
+  width: 100px;
+  margin: 0px 10px;
+  cursor: pointer;
+  background-color: #EAEAEA;
+}
 #artist_blog {
   text-align: center;
 }
