@@ -282,8 +282,8 @@ if site != nil and id != nil and num != nil
               _content << "<div style=\"position: relative; margin: 0 auto; width: 900px; height: 650px;\">"
             end
             _content << <<-HTML
-              <div style="position: absolute; width: 450px; height: 650px; left: #{if count % 2 == 0 then 0 else 450 end}px;">
-                <img src="/images/#{url.gsub(/\//, "@")}"#{if count <= 1 then " onload=\"location.replace('#title_area');\"" else "" end}/>
+              <div style="position: absolute; width: 450px; height: 650px; left: #{(count % 2 == 0) ? 0 : 450}px;">
+                <img src="/images/#{url.gsub(/\//, "@")}"#{(count <= 1) ? " onload=\"location.replace('#title_area');\"" : ""}/>
               </div>
             HTML
             count += 1
