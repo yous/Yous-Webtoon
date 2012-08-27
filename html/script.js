@@ -22,7 +22,7 @@
     }
     this.src = function() { return "http://comic.naver.com/webtoon/detail.nhn?titleId=" + id + "&seq=" + num; };
     this.inputNum = function() { return num; };
-    this.toonlist_area_init = function() { return '<span style="color: ' + btnColor["link"] + '; cursor: pointer; margin: 10px;" onclick="site_change(\'naver\');"><u>N</u>aver</span>'; };
+    this.toonlist_area_init = function() { return '<span class="toonlist_site" onclick="site_change(\'naver\');"><u>N</u>aver</span>'; };
     this.saveBM = function(_add, _finish)
     {
       $.post("/saveBM.cgi", {site: site, add: _add, toon_id: id, toon_num: num, finish: _finish});
@@ -191,7 +191,7 @@
           return i + 1;
       }
     };
-    this.toonlist_area_init = function() { return '<span style="color: ' + btnColor["link"] + '; cursor: pointer; margin: 10px;" onclick="site_change(\'daum\');"><u>D</u>aum</span>'; };
+    this.toonlist_area_init = function() { return '<span class="toonlist_site" onclick="site_change(\'daum\');"><u>D</u>aum</span>'; };
     this.saveBM = function(_add, _finish)
     {
       var req_numList = numList[id].join(" ");
@@ -362,7 +362,7 @@
           return i + 1;
       }
     };
-    this.toonlist_area_init = function() { return '<span style="color: ' + btnColor["link"] + '; cursor: pointer; margin: 10px;" onclick="site_change(\'yahoo\');"><u>Y</u>ahoo</span>'; };
+    this.toonlist_area_init = function() { return '<span class="toonlist_site" onclick="site_change(\'yahoo\');"><u>Y</u>ahoo</span>'; };
     this.saveBM = function(_add, _finish)
     {
       var req_numList = numList[id].join(" ");
@@ -495,7 +495,7 @@
           return i + 1;
       }
     };
-    this.toonlist_area_init = function() { return '<span style="color: ' + btnColor["link"] + '; cursor: pointer; margin: 10px;" onclick="site_change(\'stoo\');"><u>S</u>too</span>'; };
+    this.toonlist_area_init = function() { return '<span class="toonlist_site" onclick="site_change(\'stoo\');"><u>S</u>too</span>'; };
     this.saveBM = function(_add, _finish)
     {
       var req_numList = numList[id].join(" ");

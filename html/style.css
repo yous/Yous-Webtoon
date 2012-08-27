@@ -18,7 +18,7 @@ input::-moz-focus-inner {
   padding-top: 0px;
   padding-bottom: 0px;
 }
-a, .table_toggle_button, .site_button, .refreshBtn, #login, #join, #artist_other>span {
+a, .table_toggle_button, .site_button, .toonlist_site, .refreshBtn, #login, #join, #artist_other>span {
   color: #0066CC;
 }
 .table_toggle_button {
@@ -43,6 +43,10 @@ a, .table_toggle_button, .site_button, .refreshBtn, #login, #join, #artist_other
 #loading {
   font-size: large;
   font-weight: bold;
+}
+.toonlist_site {
+  cursor: pointer;
+  margin: 10px;
 }
 .refreshBtn {
   float: right;
