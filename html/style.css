@@ -66,6 +66,17 @@ input::-moz-focus-inner {
 #toon_date {
   float: right;
 }
+#toonBGM {
+  float: left;
+  position: absolute;
+}
+#toonBGM>span {
+  color: gray;
+  cursor: pointer;
+}
+#music_player {
+  display: none;
+}
 #login_area {
   display: inline;
   position: absolute;

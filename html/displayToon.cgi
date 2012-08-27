@@ -144,17 +144,17 @@ if site != nil and id != nil and num != nil
         if ENV["HTTP_USER_AGENT"] =~ /MSIE/
           _content << <<-HTML
             <script>play_status = "play";</script>
-            <div id="toonBGM" style="float: left; position: absolute;">
-              <span style="color: gray; cursor: default;">BGM</span><br/>
-              <span id="BGM_play_pause" style="color: gray; cursor: pointer;" onclick="toggle_play_pause(0);">∥</span>
-              <span id="BGM_stop" style="color: gray; cursor: pointer;" onclick="toggle_play_pause(1);">■</span>
-              <div id="music_player" style="display: none;">
+            <div id="toonBGM">
+              <span style="cursor: default;">BGM</span><br/>
+              <span id="BGM_play_pause" onclick="toggle_play_pause(0);">∥</span>
+              <span id="BGM_stop" onclick="toggle_play_pause(1);">■</span>
+              <div id="music_player">
           HTML
         else
           _content << <<-HTML
-            <div id="toonBGM" style="float: left; position: absolute;">
-              <span style="color: gray; cursor: default;">BGM</span><br/>
-              <span id="BGM_play_pause" style="color: gray; cursor: pointer;" onclick="toggle_play_pause(2);">■</span>
+            <div id="toonBGM">
+              <span style="cursor: default;">BGM</span><br/>
+              <span id="BGM_play_pause" onclick="toggle_play_pause(2);">■</span>
               <div id="music_player">
           HTML
         end
