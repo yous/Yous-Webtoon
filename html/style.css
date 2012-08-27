@@ -133,6 +133,12 @@ img {
   padding: 1px 0px 1px 0px;
   cursor: default;
 }
+.current_toon:nth-child(odd), .finished_toon:nth-child(odd) {
+  background-color: #FAFAFA;
+}
+.current_toon:nth-child(even), .finished_toon:nth-child(even) {
+  background-color: #EAEAEA;
+}
 .current_toon:hover, .finished_toon:hover, #artist_otherlist div:hover {
   box-shadow: 0px 0px 2px 2px #3399FF;
   z-index: 1;

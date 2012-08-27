@@ -18,14 +18,14 @@ def site_button(site)
   str << "<br/>"
 end
 
-def generate_toon(toon_id, toon_class, color, title, options = {:quote => false})
+def generate_toon(toon_id, toon_class, title, options = {:quote => false})
   if options[:new].nil? and options[:up].nil?
     return <<-HTML
-      <div name="#{toon_id}" class="#{toon_class}" style="background-color: #{color};" title="#{title}" onclick="viewToon(#{options[:quote] ? "'#{toon_id}'" : toon_id});">#{title}</div>
+      <div name="#{toon_id}" class="#{toon_class}" title="#{title}" onclick="viewToon(#{options[:quote] ? "'#{toon_id}'" : toon_id});">#{title}</div>
     HTML
   else
     return <<-HTML
-      <div name="#{toon_id}" class="#{toon_class}" style="background-color: #{color};" title="#{title}#{options[:new]}#{options[:up]}" onclick="viewToon(#{options[:quote] ? "'#{toon_id}'" : toon_id});">#{title}<small>#{options[:new]}#{options[:up]}</small></div>
+      <div name="#{toon_id}" class="#{toon_class}" title="#{title}#{options[:new]}#{options[:up]}" onclick="viewToon(#{options[:quote] ? "'#{toon_id}'" : toon_id});">#{title}<small>#{options[:new]}#{options[:up]}</small></div>
     HTML
   end
 end
@@ -77,8 +77,6 @@ if site == "naver"
     <div id="current_toonlist" class="toonlist">
   HTML
 
-  count = 0
-
   resp.search('//div[@class="list_area daily_all"]').each do |r|
     str_div = []
     day = 0
@@ -94,14 +92,11 @@ if site == "naver"
         _title = _a.attr("title")
         _up = (_a.search('./em').length != 0) ? '(UP)' : ''
         _new = (_a.search('./img').length > 1) ? '(NEW)' : ''
-        _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
         reqList.push(_titleId) unless tmpList.include? _titleId
 
-        str_div[day] << generate_toon(_titleId, "current_toon", _color, _title, :new => _new, :up => _up)
-        count += 1
+        str_div[day] << generate_toon(_titleId, "current_toon", _title, :new => _new, :up => _up)
       end
-      count = 0
       str << str_div[day] + '</div>'
       day += 1
     end
@@ -120,11 +115,10 @@ if site == "naver"
     _a = r.at('./a')
     _titleId = $1.to_i if _a.attr("href") =~ /\/webtoon\/list\.nhn\?titleId=(\d+)/
     _title = _a.attr("title")
-    _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
     reqList.push(_titleId) unless tmpList.include? _titleId
 
-    str_div[count % 7] << generate_toon(_titleId, "finished_toon", _color, _title)
+    str_div[count % 7] << generate_toon(_titleId, "finished_toon", _title)
     count += 1
   end
 
@@ -228,8 +222,6 @@ elsif site == "daum"
     <div id="current_toonlist" class="toonlist">
   HTML
 
-  count = 0
-
   resp.search('//div[@class="area_toonlist area_bg"]').each do |r|
     str_div = []
     day = 0
@@ -242,14 +234,11 @@ elsif site == "daum"
       v.search('./ul/li/a').each do |v1|
         _titleId = $1 if v1.attr("href") =~ /\/webtoon\/view\/(.+)$/
         _title = v1.attr("title")
-        _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
         reqList[_titleId] = true unless tmpList.include? _titleId
 
-        str_div[day] << generate_toon(_titleId, "current_toon", _color, _title, :quote => true)
-        count += 1
+        str_div[day] << generate_toon(_titleId, "current_toon", _title, :quote => true)
       end
-      count = 0
       str << str_div[day] + '</div>'
       day += 1
     end
@@ -268,14 +257,13 @@ elsif site == "daum"
     next if r.attributes["class"].value == "line_dot"
     _titleId = $1 if r.at('./a').attr("href") =~ /\/webtoon\/view\/(.+)$/
     _title = r.at('./p').attr("title")
-    _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
     if not finishToon.include? _titleId
       finishToon.push(_titleId)
       reqList[_titleId] = (tmpList.include? _titleId) ? false : true
     end
 
-    str_div[count % 7] << generate_toon(_titleId, "finished_toon", _color, _title, :quote => true)
+    str_div[count % 7] << generate_toon(_titleId, "finished_toon", _title, :quote => true)
     count += 1
   end
 
@@ -403,14 +391,12 @@ elsif site == "yahoo"
     HTML
   end
 
-  count = [0, 0, 0, 0, 0, 0, 0]
   day = 0
 
   while true
     resp.search('//div[@id="cll"]/ol/li').each do |r|
       _title = r.at('./a').inner_html.encode("UTF-8").strip
       _titleId = $1.to_i if r.at('./a').attr("href") =~ /http:\/\/kr\.news\.yahoo\.com\/service\/cartoon\/shelllist.htm\?linkid=toon_series&work_idx=(\d+)/
-      _color = (count[day] % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
       reqList[_titleId] = true unless tmpList.include? _titleId
       if toonInfo[_titleId].nil?
@@ -419,8 +405,7 @@ elsif site == "yahoo"
         toonInfo[_titleId][0] = _title
       end
 
-      str_div[day] << generate_toon(_titleId, "current_toon", _color, _title)
-      count[day] += 1
+      str_div[day] << generate_toon(_titleId, "current_toon", _title)
       day = (day + 1) % 7
     end
 
@@ -449,7 +434,6 @@ elsif site == "yahoo"
     resp.search('//div[@id="cll"]/ol/li').each do |r|
       _title = r.at('./a').inner_html.encode("UTF-8").strip.force_encoding("UTF-8")
       _titleId = $1.to_i if r.at('./a').attr("href") =~ /http:\/\/kr\.news\.yahoo\.com\/service\/cartoon\/shelllist.htm\?linkid=toon_series&work_idx=(\d+)/
-      _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
       if not finishToon.include? _titleId
         finishToon.push(_titleId)
@@ -461,7 +445,7 @@ elsif site == "yahoo"
         toonInfo[_titleId][0] = _title
       end
 
-      str_div[count % 7] << generate_toon(_titleId, "finished_toon", _color, _title)
+      str_div[count % 7] << generate_toon(_titleId, "finished_toon", _title)
       count += 1
     end
 
@@ -493,14 +477,12 @@ elsif site == "yahoo"
     HTML
   end
 
-  count = [0, 0, 0, 0, 0, 0, 0]
   day = 0
 
   while true
     resp.search('//div[@id="cll"]/ol/li').each do |r|
       _title = r.at('./a').inner_html.encode("UTF-8").strip
       _titleId = $1.to_i if r.at('./a').attr("href") =~ /http:\/\/kr\.news\.yahoo\.com\/service\/cartoon\/shelllist.htm\?linkid=toon_series&work_idx=(\d+)/
-      _color = (count[day] % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
       reqList[_titleId] = true unless tmpList.include? _titleId
       if toonInfo[_titleId].nil?
@@ -509,8 +491,7 @@ elsif site == "yahoo"
         toonInfo[_titleId][0] = _title
       end
 
-      str_div[day] << generate_toon(_titleId, "current_toon", _color, _title)
-      count[day] += 1
+      str_div[day] << generate_toon(_titleId, "current_toon", _title)
       day = (day + 1) % 7
     end
 
@@ -633,19 +614,16 @@ elsif site == "stoo"
     HTML
   end
 
-  count = [0, 0, 0, 0, 0, 0, 0]
   day = 0
 
   resp.search('//ul[@id="serialcm"]/li').each do |r|
     _a = r.at('./dl/dt[@class="desc"]/a')
     _titleId = $1.to_i if _a.attr("href") =~ /\/cartoon\/ctlist\.htm\?sc1=cartoon&sc2=ing&sc3=(\d+)/
     _title = _a.attr("title").gsub(/<br\/?>/, " ")
-    _color = (count[day] % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
     reqList[_titleId] = true unless tmpList.include? _titleId
 
-    str_div[day] << generate_toon(_titleId, "current_toon", _color, _title)
-    count[day] += 1
+    str_div[day] << generate_toon(_titleId, "current_toon", _title)
     day = (day + 1) % 7
   end
 
@@ -664,14 +642,13 @@ elsif site == "stoo"
     _a = r.at('./dl/dt[@class="desc"]/a')
     _titleId = $1.to_i if _a.attr("href") =~ /\/cartoon\/ctlist\.htm\?sc1=cartoon&sc2=end&sc3=(\d+)/
     _title = _a.attr("title").gsub(/<br\/?>/, " ")
-    _color = (count % 2 == 1) ? btnColor["buttonA"] : btnColor["buttonB"]
 
     if not finishToon.include? _titleId
       finishToon.push(_titleId)
       reqList[_titleId] = (tmpList.include? _titleId) ? false : true
     end
 
-    str_div[count % 7] << generate_toon(_titleId, "finished_toon", _color, _title)
+    str_div[count % 7] << generate_toon(_titleId, "finished_toon", _title)
     count += 1
   end
 
