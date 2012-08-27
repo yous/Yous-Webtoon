@@ -181,6 +181,11 @@ img {
   text-align: center;
   display: none;
 }
+#artist_otherlist>div {
+  cursor: default;
+  margin: 3px 0px;
+  background-color: #EAEAEA;
+}
 #writer_info {
   width: 85%;
   text-align: left;

@@ -40,7 +40,7 @@ class GetOtherToon < WEBrick::HTTPServlet::AbstractServlet
           titleId = $1 if _a.attr("href").to_s =~ /\/webtoon\/detail\.nhn\?titleId=(\d+)/
           title = _a.inner_html.force_encoding("UTF-8")
           str << <<-HTML
-            <div id="#{titleId}" style="background-color: #{btnColor["buttonB"]}; cursor: default; margin: 3px 0px 3px 0px;" onclick="viewToon('#{titleId}');">#{title}</div>
+            <div id="#{titleId}" onclick="viewToon('#{titleId}');">#{title}</div>
           HTML
         end
         page += 1
@@ -58,7 +58,7 @@ class GetOtherToon < WEBrick::HTTPServlet::AbstractServlet
           }.
           each do |v|
             str << <<-HTML
-              <div id="#{v["url"]}" style="background-color: #{btnColor["buttonB"]}; cursor: default; margin: 3px 0px 3px 0px;" onclick="viewToon('#{v["url"]}');">#{v["title"]}</div>
+              <div id="#{v["url"]}" onclick="viewToon('#{v["url"]}');">#{v["title"]}</div>
             HTML
           end
         if str == ""
