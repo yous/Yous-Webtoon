@@ -58,6 +58,7 @@ input::-moz-focus-inner {
 }
 #title {
   padding: 15px 0px 15px 0px;
+  background-color: #EAEAEA;
 }
 #content_area {
   clear: both;

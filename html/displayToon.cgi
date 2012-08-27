@@ -123,7 +123,7 @@ if site != nil and id != nil and num != nil
       comic_title = comic_title.strip()
       writer = writer.strip().gsub(/^<span>\s*/i, "").gsub(/\s*<\/span>/i, "")
       _title << <<-HTML
-        <div id="title" style="background-color: #{btnColor["buttonB"]};">
+        <div id="title">
           #{comic_title} - #{writer}<br/>
           <small style="font-size: 12px;">#{comic_text}</small><br/><br/>
       HTML
@@ -375,7 +375,7 @@ if site != nil and id != nil and num != nil
     comic_title = ""
     resp.search('//div[@class="episode_info"]').each do |r|
       comic_title = r.at('./a[@class="title"]').inner_html.strip()
-      _title << "<div id=\"title\" style=\"background-color: #{btnColor["buttonB"]};\"></div>"
+      _title << '<div id="title"></div>'
     end
     # 웹툰 회, 날짜 출력
     title = resp.at('//div[@class="others"]/span/span[@class="episode_title"]').inner_html.gsub("<", "&lt;").gsub(">", "&gt;").gsub('"', "&quot;").gsub("'", "&#39;")
@@ -491,7 +491,7 @@ if site != nil and id != nil and num != nil
 
     # 웹툰 제목, 작가, 설명, 회 제목, 날짜 출력
     _title << <<-HTML
-      <div id="title" style="background-color: #{btnColor["buttonB"]};"></div>
+      <div id="title"></div>
       <small id="toon_date">#{resp["DATE"]}</small>
       <script>
         $('#title_area div').append(toonInfo[#{id}][0] + ' - #{resp["NAME"]}<br/><small style="font-size: 12px;">' + toonInfo[#{id}][1] + '</small><br/><br/><b>#{resp["TITLE"]}</b>');
@@ -536,7 +536,7 @@ if site != nil and id != nil and num != nil
 
     # 웹툰 제목 출력
     comic_title = resp.at('//div[@id="content"]/div[@class="location"]/strong/a').attr("title")
-    _title << "<div id=\"title\" style=\"background-color: #{btnColor["buttonB"]};\"></div>"
+    _title << '<div id="title"></div>'
 
     # 작가, 설명, 웹툰 회, 날짜 출력
     resp.search('//div[@id="content"]/div[@class="cttop"]').each do |r|
