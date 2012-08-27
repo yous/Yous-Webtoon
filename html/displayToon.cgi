@@ -34,13 +34,13 @@ def naverPutObj(mechanObj, id, _imageURL, _imageWidth, _imageHeight, _first_img 
     if _imageURL.downcase.index(".swf") != nil
       if not File::exists?("images/#{_imageURL.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}")
         _data = mechanObj.get("http://#{_imageURL.gsub(/\?[\w\W]*$/, "")}")
-        _data.save_as("images/#{_imageURL.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}") if not _data.body.nil?
+        _data.save("images/#{_imageURL.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}") if not _data.body.nil?
       end
       str << flashObj(_imageURL.gsub(/\//, "@"), id, _imageWidth, _imageHeight, "transparent", "", "", "")
     else
       if not File::exists?("images/#{_imageURL.gsub(/\//, "@")}")
         _data = mechanObj.get("http://flash.comic.naver.com/webtoon/flvPlayer.swf")
-        _data.save_as("images/#{"flash.comic.naver.com/webtoon/flvPlayer.swf".gsub(/\//, "@")}") if not _data.body.nil?
+        _data.save("images/#{"flash.comic.naver.com/webtoon/flvPlayer.swf".gsub(/\//, "@")}") if not _data.body.nil?
       end
       str << flashObj("flash.comic.naver.com/webtoon/flvPlayer.swf".gsub(/\//, "@"), "flvPlayer", "640", "395", "transparent", "flvURL=http://#{_imageURL}&imgURL=http://static.comic.naver.com/staticImages/COMICWEB/NAVER/images/flash/#{id}/flv.jpg&autoPlay=true&defaultVolume=0.5&flvWidth=640&flvHeight=360", "#FFFFFF", true)
     end
@@ -48,7 +48,7 @@ def naverPutObj(mechanObj, id, _imageURL, _imageWidth, _imageHeight, _first_img 
   else
     if not File::exists?("images/#{_imageURL.gsub(/\//, "@")}")
       _data = mechanObj.get("http://#{_imageURL}")
-      _data.save_as("images/#{_imageURL.gsub(/\//, "@")}") if not _data.body.nil?
+      _data.save("images/#{_imageURL.gsub(/\//, "@")}") if not _data.body.nil?
     end
     if _first_img
       str << "<img src=\"/images/#{_imageURL.gsub(/\//, "@")}\" onload=\"location.replace('#title_area');\">"
@@ -139,7 +139,7 @@ if site != nil and id != nil and num != nil
         bgmURL = $1 if e.inner_html =~ /showMusicPlayer\("http:\/\/(.*)"\);/
         if not File::exists?("images/#{bgmURL.gsub(/\//, "@")}")
           _data = a.get("http://#{bgmURL}")
-          _data.save_as("images/#{bgmURL.gsub(/\//, "@")}") if not _data.body.nil?
+          _data.save("images/#{bgmURL.gsub(/\//, "@")}") if not _data.body.nil?
         end
         if ENV["HTTP_USER_AGENT"] =~ /MSIE/
           _content << <<-HTML
@@ -231,7 +231,7 @@ if site != nil and id != nil and num != nil
           _content << "<a target=\"_blank\" href=\"#{link_url}\">"
           if not File::exists?("images/#{imageList[i].gsub(/\//, "@")}")
             _data = a.get("http://#{imageList[i]}")
-            _data.save_as("images/#{imageList[i].gsub(/\//, "@")}") if not _data.body.nil?
+            _data.save("images/#{imageList[i].gsub(/\//, "@")}") if not _data.body.nil?
           end
           _content << "<img src=\"/images/#{imageList[i].gsub(/\//, "@")}\"></a>"
           i += 1
@@ -248,7 +248,7 @@ if site != nil and id != nil and num != nil
           _content << "<a target=\"_blank\" href=\"#{link_url}\">"
           if not File::exists?("images/#{imageList[idx].gsub(/\//, "@")}")
             _data = a.get("http://#{imageList[idx]}")
-            _data.save_as("images/#{imageList[idx].gsub(/\//, "@")}") if not _data.body.nil?
+            _data.save("images/#{imageList[idx].gsub(/\//, "@")}") if not _data.body.nil?
           end
           _content << "<img src=\"/images/#{imageList[idx].gsub(/\//, "@")}\"></a>"
         else
@@ -266,7 +266,7 @@ if site != nil and id != nil and num != nil
             url = $1
             if not File::exists?("images/#{url.gsub(/\//, "@")}")
               _data = a.get("http://#{url}")
-              _data.save_as("images/#{url.gsub(/\//, "@")}") if not _data.body.nil?
+              _data.save("images/#{url.gsub(/\//, "@")}") if not _data.body.nil?
             end
             if count % 2 == 0
               if count <= 1
@@ -397,7 +397,7 @@ if site != nil and id != nil and num != nil
         if r["mediaType"] == "image"
           if not File::exists?("images/#{url.gsub(/\//, "@")}")
             _data = a.get("http://#{url}")
-            _data.save_as("images/#{url.gsub(/\//, "@")}") if not _data.body.nil?
+            _data.save("images/#{url.gsub(/\//, "@")}") if not _data.body.nil?
           end
           if count == 1
             _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\" width=\"#{r["width"]}\" onload=\"location.replace('#title_area');\"/>"
@@ -408,7 +408,7 @@ if site != nil and id != nil and num != nil
           daum_tvpot = (url =~ /flvs\.daum\.net\/flvPlayer\.swf/) ? true : false
           if not daum_tvpot and not File::exists?("images/#{url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}")
             _data = a.get("http://#{url.gsub(/\?[\w\W]*$/, "")}")
-            _data.save_as("images/#{url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}") if not _data.body.nil?
+            _data.save("images/#{url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}") if not _data.body.nil?
           end
           if r["mediaType"] == "flash"
             if daum_tvpot
@@ -439,7 +439,7 @@ if site != nil and id != nil and num != nil
         url = "photo-section.daum-img.net/-cartoon10/img/published.png"
         if not File::exists?("images/#{url.gsub(/\//, "@")}")
           _data = a.get("http://#{url}")
-          _data.save_as("images/#{url.gsub(/\//, "@")}") if not _data.body.nil?
+          _data.save("images/#{url.gsub(/\//, "@")}") if not _data.body.nil?
         end
         _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\"/>"
       end
@@ -451,7 +451,7 @@ if site != nil and id != nil and num != nil
       _url = "photo-section.daum-img.net/-cartoon10/swf/webtoon/GaroViewer2011.swf"
       if not File::exists?("images/#{_url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}")
         _data = a.get("http://#{_url.gsub(/\?[\w\W]*$/, "")}")
-        _data.save_as("images/#{_url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}") if not _data.body.nil?
+        _data.save("images/#{_url.gsub(/\//, "@").gsub(/\?[\w\W]*$/, "")}") if not _data.body.nil?
       end
       _content << flashObj(_url.gsub(/\//, "@") + "?v=21&episode_ids=#{_ids}&recent_id=#{_recentId}&img_cnt=&page_no=1", 'viewerFla', 940, 700, 'transparent');
 =end
@@ -504,7 +504,7 @@ if site != nil and id != nil and num != nil
 
       if not File::exists?("images/#{url.gsub(/\//, "@")}")
         _data = a.get("http://#{url}")
-        _data.save_as("images/#{url.gsub(/\//, "@")}") if not _data.body.nil?
+        _data.save("images/#{url.gsub(/\//, "@")}") if not _data.body.nil?
       end
 
       if idx == 0
@@ -557,7 +557,7 @@ if site != nil and id != nil and num != nil
 
         if not File::exists?("images/#{url.gsub(/\//, "@")}")
           _data = a.get("http://#{url}")
-          _data.save_as("images/#{url.gsub(/\//, "@")}") if not _data.body.nil?
+          _data.save("images/#{url.gsub(/\//, "@")}") if not _data.body.nil?
         end
 
         if idx == 0

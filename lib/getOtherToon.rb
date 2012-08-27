@@ -75,7 +75,7 @@ class GetOtherToon < WEBrick::HTTPServlet::AbstractServlet
           each {|v|
             if not File::exists?("images/#{v.gsub(/\//, "@")}")
               _data = a.get("http://#{v}")
-              _data.save_as("html/images/#{v.gsub(/\//, "@")}") if not _data.body.nil?
+              _data.save("html/images/#{v.gsub(/\//, "@")}") if not _data.body.nil?
             end
             str << "<img src=\"/images/#{v.gsub(/\//, "@")}\"/>"
             check_puts = true if not check_puts
