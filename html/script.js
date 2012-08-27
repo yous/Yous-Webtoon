@@ -951,7 +951,10 @@ function add_bookmark(show_table)
       for (i = 0; i < finishToon.length; i++)
       {
         if (finishToon[i] == id)
+        {
           check = i;
+          break;
+        }
       }
       var _finish = (check == -1) ? "no" : lastNum[id];
 
