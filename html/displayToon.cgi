@@ -73,12 +73,12 @@ if site != nil and id != nil and num != nil
 
     # 성인 인증 웹툰
     if resp.search('//div[@id="log_adult"]').length > 0
+      print_flag = false
       if cgi.cookies["SSID"] != nil
         begin
           session = CGI::Session.new(cgi, "session_id" => cgi.cookies["SSID"][0], "tmpdir" => File.join(File.dirname(__FILE__), "/../sess"), "new_session" => false)
         rescue
-          print "<script>window.open(\"auth.cgi?site=#{site}\");</script>"
-          exit
+          print_flag = true
         end
 
         if session[site] != nil and session[site]["cookie"] != nil
@@ -87,15 +87,15 @@ if site != nil and id != nil and num != nil
 
           resp = a.get "http://comic.naver.com/webtoon/detail.nhn?titleId=#{id}&seq=#{num}"
 
-          if resp.search('//div[@id="log_adult"]').length > 0
-            print "<script>window.open(\"auth.cgi?site=#{site}\");</script>"
-            exit
-          end
+          print_flag = true if resp.search('//div[@id="log_adult"]').length > 0
         else
-          print "<script>window.open(\"auth.cgi?site=#{site}\");</script>"
-          exit
+          print_flag = true
         end
       else
+        print_flag = true
+      end
+
+      if print_flag
         print "<script>window.open(\"auth.cgi?site=#{site}\");</script>"
         exit
       end
