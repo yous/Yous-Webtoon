@@ -11,6 +11,7 @@
       $(document).ready(function() {
         $(window).resize(function() { resizeWidth(); scrollControl(); });
         $(window).scroll(function() { scrollControl(); });
+        $(window).unload(function() { logout(); });
         resizeWidth();
         scrollControl();
         toonlist_area_init();
