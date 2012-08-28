@@ -122,7 +122,9 @@
           }
           else if (data == "auth")
           {
-            window.open("auth.cgi?site=" + site);
+            $("#display_area").html("<a href=\"#\" onclick=\"window.open('auth.cgi?site=" + site + "&id=" + id + "', 'auth', 'width=600, height=400');\">성인 인증이 필요합니다.</a>");
+            resizeWidth();
+            location.replace("#display_area");
             return;
           }
 

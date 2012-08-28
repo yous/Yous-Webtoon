@@ -96,7 +96,9 @@ if site != nil and id != nil and num != nil
       end
 
       if print_flag
-        print "<script>window.open(\"auth.cgi?site=#{site}\");</script>"
+        print <<-HTML
+          <a href="#" onclick="window.open('auth.cgi?site=#{site}&id=#{id}&num=#{num}', 'auth', 'width=600, height=400');">성인 인증이 필요합니다.</a>
+        HTML
         exit
       end
     end

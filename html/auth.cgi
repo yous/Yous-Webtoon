@@ -7,6 +7,8 @@ require 'cgi/session'
 
 cgi = CGI.new
 site = (cgi.has_key? "site") ? cgi.params["site"][0] : nil
+id = (cgi.has_key? "id") ? cgi.params["id"][0] : nil
+num = (cgi.has_key? "num") ? cgi.params["num"][0] : nil
 authid = (cgi.has_key? "authid") ? cgi.params["authid"][0] : nil
 authpw = (cgi.has_key? "authpw") ? cgi.params["authpw"][0] : nil
 
@@ -33,6 +35,18 @@ if site != nil
       <body>
         <form action="auth.cgi" method="post">
           <input type="hidden" name="site" value="#{site}"/>
+    HTML
+    if id != nil
+      print <<-HTML
+          <input type="hidden" name="id" value="#{id}"/>
+      HTML
+    end
+    if num != nil
+      print <<-HTML
+          <input type="hidden" name="num" value="#{num}"/>
+      HTML
+    end
+    print <<-HTML
           <input type="text" name="authid" placeholder="ID"/>
           <input type="password" name="authpw" placeholder="Password"/>
           <input type="submit" value="Login"/>
@@ -55,10 +69,17 @@ if site != nil
       cookie = CGI::Cookie.new("name" => "SSID", "value" => session.session_id)
       if resp.search('//div[@class="error"]').count > 0
         session[site] = nil
-        cgi.out("type" => "text/html; charset=utf-8") { "<script>document.location = \"auth.cgi?site=#{site}\";</script>" }
+        cgi.out("type" => "text/html; charset=utf-8") { "<script>document.location = \"auth.cgi?site=#{site}#{"&id=" + id if id != nil}#{"&num=" + num if num != nil}\";</script>" }
       else
         session[site]["cookie"] = a.cookie_jar
-        cgi.out("type" => "text/html; charset=utf-8") { "<script>window.close();</script>" }
+        if id.nil?
+          str = "<script>window.close();</script>"
+        elsif num.nil?
+          str = "<script>opener.viewToon(#{id});window.close();</script>"
+        else
+          str = "<script>opener.viewToon(#{id}, #{num});window.close();</script>"
+        end
+        cgi.out("type" => "text/html; charset=utf-8") { str }
       end
     elsif site == "daum"
     elsif site == "yahoo"
