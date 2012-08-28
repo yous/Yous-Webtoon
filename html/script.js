@@ -1338,7 +1338,10 @@ function loginKeyDown(e)
 
   if (event.keyCode == 13) { // Enter
     if (event.srcElement.id == "user_id")
+    {
+      $("#user_id").blur();
       $("#user_pw").focus();
+    }
     else if (event.srcElement.id == "user_pw")
       $("#login").trigger("click");
   }
