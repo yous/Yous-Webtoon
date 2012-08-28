@@ -28,7 +28,7 @@ if site != nil
   end
   if session[site].nil? or session[site]["authid"].nil? or session[site]["authpw"].nil?
     puts "Content-Type: text/html; charset=utf-8\n\n"
-    puts <<-HTML
+    print <<-HTML
     <html>
       <body>
         <form action="auth.cgi" method="post">
