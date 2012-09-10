@@ -53,27 +53,37 @@ if site == "naver"
   if finish == "n"
     day_BM.each do |v|
       resp = a.get("http://localhost:#{port}/getNum.cgi?site=naver&id=#{v}").body.split(" ")
-      lastNum[v] = resp[1].to_i
-      if toonBM[v] < lastNum[v]
-        reqList[v] = [toonBM[v], toonBM[v] + 1]
+      if resp[0] == "auth"
         col_str << "$('div[name=#{v}]').addClass('saved_update');"
       else
-        col_str << "$('div[name=#{v}]').addClass('saved_finish');"
+        lastNum[v] = resp[1].to_i
+        if toonBM[v] < lastNum[v]
+          reqList[v] = [toonBM[v], toonBM[v] + 1]
+          col_str << "$('div[name=#{v}]').addClass('saved_update');"
+        else
+          col_str << "$('div[name=#{v}]').addClass('saved_finish');"
+        end
       end
     end
   else
     day_BM.each do |v|
       unless finishToon.include?(v)
         resp = a.get("http://localhost:#{port}/getNum.cgi?site=naver&id=#{v}").body.split(" ")
-        lastNum[v] = resp[1].to_i
-        db.exec("INSERT INTO naver_lastnum (toon_id, toon_num) VALUES ($1, $2);", [v, lastNum[v]])
-        finishToon.push(v)
+        if not resp[0] == "auth"
+          lastNum[v] = resp[1].to_i
+          db.exec("INSERT INTO naver_lastnum (toon_id, toon_num) VALUES ($1, $2);", [v, lastNum[v]])
+          finishToon.push(v)
+        end
       end
-      if toonBM[v] < lastNum[v]
-        reqList[v] = [toonBM[v], toonBM[v] + 1]
+      if lastNum[v].nil?
         col_str << "$('div[name=#{v}]').addClass('saved_update');"
       else
-        col_str << "$('div[name=#{v}]').addClass('saved_finish');"
+        if toonBM[v] < lastNum[v]
+          reqList[v] = [toonBM[v], toonBM[v] + 1]
+          col_str << "$('div[name=#{v}]').addClass('saved_update');"
+        else
+          col_str << "$('div[name=#{v}]').addClass('saved_finish');"
+        end
       end
     end
   end
