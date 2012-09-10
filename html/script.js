@@ -135,7 +135,6 @@
             {site: site, id: id, num: num},
             function(data) {
               $("#display_area").html(data);
-              resizeWidth();
               change_remote();
             }
           );
@@ -306,7 +305,6 @@
                 return;
               }
               $("#display_area").html(data);
-              resizeWidth();
               change_remote();
             }
           );
@@ -439,7 +437,6 @@
                 return;
               }
               $("#display_area").html(data);
-              resizeWidth();
               change_remote();
             }
           );
@@ -570,7 +567,6 @@
                 return;
               }
               $("#display_area").html(data);
-              resizeWidth();
               change_remote();
             }
           );

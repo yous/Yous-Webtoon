@@ -51,7 +51,7 @@ def naverPutObj(mechanObj, id, _imageURL, _imageWidth, _imageHeight, _first_img 
       _data.save("images/#{_imageURL.gsub(/\//, "@")}") if not _data.body.nil?
     end
     if _first_img
-      str << "<img src=\"/images/#{_imageURL.gsub(/\//, "@")}\" onload=\"location.replace('#title_area');\">"
+      str << "<img src=\"/images/#{_imageURL.gsub(/\//, "@")}\" onload=\"resizeWidth();location.replace('#title_area');\">"
     else
       str << "<img src=\"/images/#{_imageURL.gsub(/\//, "@")}\">"
     end
@@ -209,6 +209,7 @@ if site != nil and id != nil and num != nil
               <script>
                 $("#title_area").append("<small style='float: left;'>Flash Exist <span style='cursor: pointer;' onclick='toggle_toonlist();'>목록 접기/펼치기</span></small>");
                 toggle_toonlist(true);
+                resizeWidth();
                 location.replace("#title_area");
               </script>
             HTML
@@ -277,7 +278,7 @@ if site != nil and id != nil and num != nil
             end
             _content << <<-HTML
               <div style="position: absolute; width: 450px; height: 650px; left: #{(count % 2 == 0) ? 0 : 450}px;">
-                <img src="/images/#{url.gsub(/\//, "@")}"#{(count <= 1) ? " onload=\"location.replace('#title_area');\"" : ""}/>
+                <img src="/images/#{url.gsub(/\//, "@")}"#{(count <= 1) ? " onload=\"resizeWidth();location.replace('#title_area');\"" : ""}/>
               </div>
             HTML
             count += 1
@@ -394,7 +395,7 @@ if site != nil and id != nil and num != nil
             _data.save("images/#{url.gsub(/\//, "@")}") if not _data.body.nil?
           end
           if count == 1
-            _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\" width=\"#{r["width"]}\" onload=\"location.replace('#title_area');\"/>"
+            _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\" width=\"#{r["width"]}\" onload=\"resizeWidth();location.replace('#title_area');\"/>"
           else
             _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\" width=\"#{r["width"]}\"/>"
           end
@@ -439,7 +440,7 @@ if site != nil and id != nil and num != nil
       end
     # 만화책 형식의 웹툰
     else
-      _content << "<iframe width=\"95%\" height=\"3600\" src=\"http://cartoon.media.daum.net/webtoon/viewer/#{num}\" onload=\"location.replace('#title_area');\"></iframe>"
+      _content << "<iframe width=\"95%\" height=\"3600\" src=\"http://cartoon.media.daum.net/webtoon/viewer/#{num}\" onload=\"resizeWidth();location.replace('#title_area');\"></iframe>"
 =begin
       _ids, _recentId, _nick = $1, $2, $3 if resp.at('//div[@class="img_list"]/script').inner_html =~ /Webtoon\.EmbedViewer\.init\('([\d,]*)','(\d+)','(.*)'\);/
       _url = "photo-section.daum-img.net/-cartoon10/swf/webtoon/GaroViewer2011.swf"
@@ -502,7 +503,7 @@ if site != nil and id != nil and num != nil
       end
 
       if idx == 0
-        _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\" onload=\"location.replace('#title_area');\"/>"
+        _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\" onload=\"resizeWidth();location.replace('#title_area');\"/>"
       else
         _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\"/>"
       end
@@ -555,7 +556,7 @@ if site != nil and id != nil and num != nil
         end
 
         if idx == 0
-          _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\" onload=\"location.replace('#title_area');\"/>"
+          _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\" onload=\"resizeWidth();location.replace('#title_area');\"/>"
         else
           _content << "<img src=\"/images/#{url.gsub(/\//, "@")}\"/>"
         end
