@@ -107,6 +107,7 @@ if site != nil and id != nil and num != nil
     _content = '<div id="content_area">'
 
     # 웹툰 제목, 작가, 설명 출력
+    writer = nil
     resp.search('//div[@class="dsc"]').each do |r|
       comic_title, writer = $1, $2 if r.at('./h2').inner_html =~ /([\w\W]*)<em>([\w\W]*)<\/em>/
       if resp.body =~ /<p class="txt">([\w\W]*)<\/p>[\w\W]*<ul class="btn_group">[\w\W]*<div class="tit_area">/
@@ -332,13 +333,13 @@ if site != nil and id != nil and num != nil
     end
 
     # 작가의 말, 별점 출력
-    _writerCmt = $1.gsub("<", "&lt;").gsub(">", "&gt;").gsub(/&lt;br&gt;/i, "<br>").force_encoding("UTF-8") if resp.body =~ /<div\s+class="writer_info">[\w\W]*<p>([\w\W]*)<\/p>\s*<ul\s+class="btn_group">[\w\W]*<\/div>/
+    _writerCmt = $1.gsub("<", "&lt;").gsub(">", "&gt;").gsub(/&lt;br&gt;/i, "<br>").force_encoding("UTF-8") if resp.body =~ /<div\s+class="writer_info">[\w\W]*?<p>([\w\W]*?)<\/p>/
     _rating = resp.at('//span[@id="bottomPointTotalNumber"]/strong').inner_html
     _ratingPerson = resp.at('//span[@class="pointTotalPerson"]/em').inner_html
     _content << <<-HTML
       <div id="writer_info">
         <div>
-          <b>작가의 말</b>
+          <b>작가의 말 (#{writer})</b>
         </div>
         <p style="padding: 0px 20px 0px 20px;">#{_writerCmt}</p>
         <p style="padding: 0px 20px 0px 20px; text-align: right;">별점 #{_rating} (#{_ratingPerson}명)</p>
