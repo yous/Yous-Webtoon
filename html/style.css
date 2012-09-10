@@ -10,14 +10,6 @@ input {
   text-align: center;
   overflow: visible;
 }
-input::-moz-focus-inner {
-  border: 0px;
-  padding: 0px;
-}
-.ie input {
-  padding-top: 0px;
-  padding-bottom: 0px;
-}
 a, .table_toggle_button, .site_button, .toonlist_site, .refreshBtn, #login, #join, #artist_other>span {
   color: #0066CC;
 }
@@ -106,21 +98,15 @@ hr[id^=anchor_] {
   font-size: 14px;
 }
 #remote input {
-  padding: 0px;
   width: 55px;
-  height: 20px;
   font-size: 12px;
-}
-.ie #remote input {
-  height: 22px;
 }
 #remote input[type=text] {
   width: 30px;
-  height: 15px;
-  font-size: 13px;
 }
 #remote .arrowBtn {
   width: 25px;
+  padding: 0px;
 }
 #remote small {
   font-size: 12px;
