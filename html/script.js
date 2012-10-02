@@ -832,8 +832,6 @@ function bodyKeyDown(e, lr_arrow)
     switch (event.keyCode) {
       case 37: $("#firstBtn").trigger("click"); break; // ^←
       case 39: $("#lastBtn").trigger("click"); break; // ^→
-      case 38: location.replace("#title_area"); break; // ^↑
-      case 40: location.replace("#bottom"); break; // ^↓
     }
   }
   else if (event.shiftKey)
@@ -879,13 +877,6 @@ function bodyKeyDown(e, lr_arrow)
         for (i = 0; i < 10; i++)
           window.scrollBy('0', '9');
         break;
-      case 81: // Q
-        if (document.getElementById("title_area"))
-          location.replace("#title_area");
-        else
-          location.replace("#");
-        break;
-      case 90: location.replace("#bottom"); break; // Z
       case 72: $("#shortcutBtn").trigger("click"); break; // H
     }
   }
