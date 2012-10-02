@@ -69,26 +69,17 @@ elsif site == "daum"
   # 로그인 필요한 웹툰
   exit if resp.search('//div[@id="wrap"]/div[@id="content"]/form[@id="loginForm"]').length > 0
 
-  resp.search('//div[@id="daumContent"]/div[@id="cMain"]/div[@id="mCenter"]').each do |r|
-    r.search('./div[@class="area_toon_info"]').each do |v|
-      v.search('./div[@class="wrap_cont"]/dl[1]/dd/a').each do |_writer|
-        str_writer.push(_writer.inner_html.strip)
+  str = resp.at('//div[@id="daumContent"]/div[@id="cMain"]/div[@id="mCenter"]/script[2]').inner_html.strip.split(";").map(&:strip)
+  str = str.find_all {|v| v =~ /data1\.push\([\w\W]*\)/}.map {|v|
+    if v =~ /data1\.push\(\s*\{\s*img\s*:\s*"[\w\W]*"\s*,\s*title\s*:\s*"[\w\W]*"\s*,\s*shortTitle\s*:\s*"[\w\W]*"\s*,\s*url\s*:\s*"\/webtoon\/viewer\/(\d+)"\s*,\s*date\s*:\s*"([\w\W]*)"\s*,\s*price\s*:\s*"[\w\W]*"\s*,\s*finishYn\s*:\s*"([\w\W]*)"\s*,\s*payYn\s*:\s*"[\w\W]*"\s*\}\s*\)/
+      if $3 == "Y" and str_finish == ""
+        str_finish = "y "
       end
-      str_toonInfo = v.at('./div[@class="wrap_more"]/dl[@class="list_intro"]/dd').inner_html.strip
+      $1.to_i
     end
-    r.at('./script[2]').inner_html.strip.split(";").map(&:strip).
-      find_all {|v| v =~ /data1\.push\([\w\W]*\)/}.
-      map {|v|
-        if v =~ /data1\.push\(\s*\{\s*img\s*:\s*"[\w\W]*"\s*,\s*title\s*:\s*"[\w\W]*"\s*,\s*shortTitle\s*:\s*"[\w\W]*"\s*,\s*url\s*:\s*"\/webtoon\/viewer\/(\d+)"\s*,\s*date\s*:\s*"([\w\W]*)"\s*,\s*price\s*:\s*"[\w\W]*"\s*,\s*finishYn\s*:\s*"([\w\W]*)"\s*,\s*payYn\s*:\s*"[\w\W]*"\s*\}\s*\)/
-          str_finish = "y " if $3 == "Y" and str_finish == ""
-          {"num" => $1, "date" => $2, "finish" => $3}
-        end
-      }.
-      reverse.
-      each {|v| str << "#{v["num"]},#{v["date"]} " }
-  end
+  }.reverse.join(" ")
 
-  print ((str_finish == "") ? "n " : str_finish) + str[0...-1] + "\n" + str_writer.join(" / ") + "\n" + str_toonInfo
+  print ((str_finish == "") ? "n " : str_finish) + str
 
 # Yahoo 웹툰
 elsif site == "yahoo"
@@ -98,7 +89,6 @@ elsif site == "yahoo"
   a.force_default_encoding = true
 
   str_finish = ""
-  str_intro = ""
   numList = []
   tmp_numList = []
 
@@ -114,8 +104,6 @@ elsif site == "yahoo"
   _lastNum = (_lastNum.nil?) ? 0 : _lastNum
 
   resp = a.get "http://kr.news.yahoo.com/service/cartoon/shelllist.htm?linkid=toon_series&work_idx=#{id}"
-
-  str_intro = resp.at('//div[@id="ctg"]/span[@class="dsc"]/dl/dd').inner_html.encode("UTF-8").strip.gsub("\r", "").gsub("\n", "")
 
   check = true
   while check
@@ -138,15 +126,13 @@ elsif site == "yahoo"
 
   numList += tmp_numList.reverse
 
-  print ((str_finish == "") ? "n " : str_finish) + numList.join(" ") + "\n" + str_intro
+  print ((str_finish == "") ? "n " : str_finish) + numList.join(" ")
 
 # Stoo 웹툰
 elsif site == "stoo"
   db = PGconn.open(:dbname => "webtoon")
 
   str_finish = ""
-  str_writer = ""
-  str_intro = ""
   numList = []
   tmp_numList = []
 
@@ -164,11 +150,6 @@ elsif site == "stoo"
   resp = a.get "http://stoo.asiae.co.kr/cartoon/ctlist.htm?sc2=#{(str_finish == "y ") ? "end" : "ing"}&sc3=#{id}"
   if resp.at('//div[@id="content"]/div[@class="ct_topdesc"]/div[@class="rt"]/dl[2]/dd').inner_html == "" or resp.at('//div[@id="content"]/div[@class="ct_topdesc"]/div[@class="rt"]/dl[4]/dd').inner_html == ""
     resp = a.get "http://stoo.asiae.co.kr/cartoon/ctlist.htm?sc2=end&sc3=#{id}"
-  end
-
-  resp.search('//div[@id="content"]/div[@class="ct_topdesc"]/div[@class="rt"]').each do |r|
-    str_writer = r.at('./dl[1]/dd').inner_html.encode("UTF-8").strip
-    str_intro = r.at('./dl[3]/dd').inner_html.encode("UTF-8").strip.gsub("\r", "").gsub("\n", "")
   end
 
   page = 1
@@ -200,5 +181,5 @@ elsif site == "stoo"
 
   numList += tmp_numList.reverse
 
-  print ((str_finish == "") ? "n " : str_finish) + numList.join(" ") + "\n" + str_writer + "\n" + str_intro
+  print ((str_finish == "") ? "n " : str_finish) + numList.join(" ")
 end

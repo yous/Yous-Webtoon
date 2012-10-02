@@ -27,86 +27,6 @@
     {
       $.post("/saveBM.cgi", {site: site, add: _add, toon_id: id, toon_num: num, finish: _finish});
     };
-    this.show_artist_table = function(opt)
-    {
-      $("#artist_otherlist").attr("name", "");
-      $("#artist_otherlist").html("");
-      $("#artist_otherlist").css("display", "none");
-
-      if (opt == 0)
-      {
-        $("#artist_other").css("display", "none");
-        if ($("#artist_blog").css("display") == "none")
-        {
-          $("#artist_blog").css("display", "block");
-          location.replace("#artist_info");
-        }
-        else
-          $("#artist_blog").css("display", "none");
-      }
-      else
-      {
-        $("#artist_blog").css("display", "none");
-        if ($("#artist_other").css("display") == "none")
-        {
-          $("#artist_other").css("display", "block");
-          location.replace("#artist_info");
-        }
-        else
-          $("#artist_other").css("display", "none");
-      }
-    };
-    this.getOtherToon = function(_id)
-    {
-      if ($("#artist_otherlist").attr("name") != _id)
-      {
-        $("#artist_otherlist").attr("name", _id);
-        $("#artist_otherlist").css("display", "block");
-        $.get(
-          "/getOtherToon",
-          {site: site, id: _id},
-          function(data) {
-            $("#artist_otherlist").html(data + "<br/>");
-            location.replace("#artist_otherlist");
-          }
-        );
-      }
-      else
-      {
-        $("#artist_otherlist").attr("name", "");
-        $("#artist_otherlist").html("");
-        $("#artist_otherlist").css("display", "none");
-      }
-    };
-    var cache = new Object();
-    this.cache_get = function(_id, _num)
-    {
-      if (cache[_id] == undefined)
-        return undefined;
-
-      return cache[_id][_num];
-    };
-    this.cache_set = function(_id, _num, _data)
-    {
-      if (cache[_id] == undefined)
-        cache[_id] = new Object();
-
-      cache[_id][_num] = _data;
-    };
-    this.getNextToon = function()
-    {
-      var _id = id;
-      var _num = num + 1;
-      var _cache = Naver.cache_get(_id, _num);
-      if (_cache == undefined || _cache == null)
-        $.get(
-          "/displayToon.cgi",
-          {site: site, id: _id, num: _num},
-          function(data) {
-            Naver.cache_set(_id, _num, data);
-          }
-        );
-    };
     this.getNumAndDisplay = function(prev_id, prev_num)
     {
       $.get(
@@ -121,26 +41,13 @@
             return;
           }
           else if (data == "auth")
-          {
-            $("#display_area").html("<a href=\"#\" onclick=\"window.open('auth.cgi?site=" + site + "&id=" + id + "', 'auth', 'width=600, height=400');\">성인 인증이 필요합니다.</a>");
-            resizeWidth();
-            location.replace("#display_area");
             return;
-          }
 
           lastNum[id] = parseInt(data.split(" ")[1]);
 
-          $.get(
-            "/displayToon.cgi",
-            {site: site, id: id, num: num},
-            function(data) {
-              $("#display_area").html(data);
-              change_remote();
-            }
-          );
-
-          if (num < lastNum[id])
-            Naver.getNextToon();
+          $("#display_iframe").attr("src", sites[site].src());
+          location.replace("#display_iframe");
+          change_remote();
         }
       );
     };
@@ -199,76 +106,6 @@
       var req_dateList = dateList[id].join(" ");
       $.post("/saveBM.cgi", {site: site, add: _add, toon_id: id, toon_num: num, numList: req_numList, dateList: req_dateList, finish: _finish});
     };
-    this.show_artist_table = function(opt)
-    {
-      if (opt == 0)
-        getOtherToon(id);
-      else
-        getOtherToon(id, false);
-    };
-    this.getOtherToon = function(_id, check_other)
-    {
-      if (check_other)
-        var _name = "other";
-      else
-        var _name = "note";
-      check_other = (check_other) ? "y" : "n";
-
-      if ($("#artist_otherlist").attr("name") != _name)
-      {
-        $("#artist_otherlist").attr("name", _name);
-        $("#artist_otherlist").css("display", "block");
-        $.get(
-          "/getOtherToon",
-          {site: site, id: _id, other: check_other},
-          function(data) {
-            $("#artist_otherlist").html(data + "<br/>");
-            location.replace("#artist_otherlist");
-          }
-        );
-      }
-      else
-      {
-        $("#artist_otherlist").attr("name", "");
-        $("#artist_otherlist").html("");
-        $("#artist_otherlist").css("display", "none");
-      }
-    };
-    var cache = new Object();
-    this.cache_get = function(_id, _num)
-    {
-      if (cache[_id] == undefined)
-        return undefined;
-
-      return cache[_id][_num];
-    };
-    this.cache_set = function(_id, _num, _data)
-    {
-      if (cache[_id] == undefined)
-        cache[_id] = new Object();
-
-      cache[_id][_num] = _data;
-    };
-    this.getNextToon = function()
-    {
-      for (i = 0; i < numList[id].length; i++)
-      {
-        if (numList[id][i] == num)
-        {
-          var _id = id;
-          var _num = numList[id][i + 1];
-          var _cache = Daum.cache_get(_id, _num);
-          if (_cache == undefined || _cache == null)
-            $.get(
-              "/displayToon.cgi",
-              {site: site, id: _id, num: _num},
-              function(data) {
-                Daum.cache_set(_id, _num, data);
-              }
-            );
-        }
-      }
-    };
     this.getNumAndDisplay = function(prev_id, prev_num)
     {
       $.get(
@@ -282,35 +119,15 @@
             num = prev_num;
             return;
           }
-          var tmp = data.split("\n")[0].split(" ").slice(1);
-          numList[id] = [];
-          dateList[id] = [];
-          for (i = 0; i < tmp.length; i++) {
-            numList[id].push(parseInt(tmp[i].split(",")[0]));
-            dateList[id].push(tmp[i].split(",")[1]);
-          }
-          writer[id] = data.split("\n")[1];
+          else if (data == "auth")
+            return;
+          numList[id] = data.split(" ").slice(1);
           lastNum[id] = numList[id][numList[id].length - 1];
           num = numList[id][0];
 
-          $.get(
-            "/displayToon.cgi",
-            {site: site, id: id, num: num},
-            function(data) {
-              if (data == "")
-              {
-                alert("접속할 수 없습니다!");
-                id = prev_id;
-                num = prev_num;
-                return;
-              }
-              $("#display_area").html(data);
-              change_remote();
-            }
-          );
-
-          if (num < lastNum[id])
-            Daum.getNextToon();
+          $("#display_iframe").attr("src", sites[site].src());
+          location.replace("#display_iframe");
+          change_remote();
         }
       );
     };
@@ -368,42 +185,6 @@
       var req_numList = numList[id].join(" ");
       $.post("/saveBM.cgi", {site: site, add: _add, toon_id: id, toon_num: num, numList: req_numList, finish: _finish});
     };
-    this.show_artist_table = function(opt) { return; };
-    this.getOtherToon = function(_id) { return; };
-    var cache = new Object();
-    this.cache_get = function(_id, _num) {
-      if (cache[_id] == undefined)
-        return undefined;
-
-      return cache[_id][_num];
-    };
-    this.cache_set = function(_id, _num, _data)
-    {
-      if (cache[_id] == undefined)
-        cache[_id] = new Object();
-
-      cache[_id][_num] = _data;
-    };
-    this.getNextToon = function()
-    {
-      for (i = 0; i < numList[id].length; i++)
-      {
-        if (numList[id][i] == num)
-        {
-          var _id = id;
-          var _num = numList[id][i + 1];
-          var _cache = Yahoo.cache_get(_id, _num);
-          if (_cache == undefined || _cache == null)
-            $.get(
-              "/displayToon.cgi",
-              {site: site, id: _id, num: _num},
-              function(data) {
-                Yahoo.cache_set(_id, _num, data);
-              }
-            );
-        }
-      }
-    };
     this.getNumAndDisplay = function(prev_id, prev_num)
     {
       $.get(
@@ -417,32 +198,13 @@
             num = prev_num;
             return;
           }
-          tmp = data.split("\n")[0].split(" ").slice(1);
-          numList[id] = [];
-          for (i = 0; i < tmp.length; i++)
-            numList[id].push(parseInt(tmp[i]));
-
+          numList[id] = data.split(" ").slice(1);
           lastNum[id] = numList[id][numList[id].length - 1];
           num = numList[id][0];
 
-          $.get(
-            "/displayToon.cgi",
-            {site: site, id: id, num: num},
-            function(data) {
-              if (data == "")
-              {
-                alert("접속할 수 없습니다!");
-                id = prev_id;
-                num = prev_num;
-                return;
-              }
-              $("#display_area").html(data);
-              change_remote();
-            }
-          );
-
-          if (num < lastNum[id])
-            Yahoo.getNextToon();
+          $("#display_iframe").attr("src", sites[site].src());
+          location.replace("#display_iframe");
+          change_remote();
         }
       );
     };
@@ -500,43 +262,6 @@
       var req_numList = numList[id].join(" ");
       $.post("/saveBM.cgi", {site: site, add: _add, toon_id: id, toon_num: num, numList: req_numList, finish: _finish});
     };
-    this.show_artist_table = function(opt) { return; };
-    this.getOtherToon = function(_id) { return; };
-    var cache = new Object();
-    this.cache_get = function(_id, _num)
-    {
-      if (cache[_id] == undefined)
-        return undefined;
-
-      return cache[_id][_num];
-    };
-    this.cache_set = function(_id, _num, _data)
-    {
-      if (cache[_id] == undefined)
-        cache[_id] = new Object();
-
-      cache[_id][_num] = _data;
-    };
-    this.getNextToon = function()
-    {
-      for (i = 0; i < numList[id].length; i++)
-      {
-        if (numList[id][i] == num)
-        {
-          var _id = id;
-          var _num = numList[id][i + 1];
-          var _cache = Stoo.cache_get(_id, _num);
-          if (_cache == undefined || _cache == null)
-            $.get(
-              "/displayToon.cgi",
-              {site: site, id: _id, num: _num},
-              function(data) {
-                Stoo.cache_set(_id, _num, data);
-              }
-            );
-        }
-      }
-    };
     this.getNumAndDisplay = function(prev_id, prev_num)
     {
       $.get(
@@ -550,29 +275,13 @@
             num = prev_num;
             return;
           }
-          numList[id] = data.split("\n")[0].split(" ").slice(1);
-          writer[id] = data.split("\n")[1];
+          numList[id] = data.split(" ").slice(1);
           lastNum[id] = numList[id][numList[id].length - 1];
           num = numList[id][0];
 
-          $.get(
-            "/displayToon.cgi",
-            {site: site, id: id, num: num},
-            function(data) {
-              if (data == "")
-              {
-                alert("접속할 수 없습니다!");
-                id = prev_id;
-                num = prev_num;
-                return;
-              }
-              $("#display_area").html(data);
-              change_remote();
-            }
-          );
-
-          if (num < lastNum[id])
-            Stoo.getNextToon();
+          $("#display_iframe").attr("src", sites[site].src());
+          location.replace("#display_iframe");
+          change_remote();
         }
       );
     };
@@ -594,6 +303,7 @@ var sites = {
 function resizeWidth()
 {
   $("#main_area").css("width", $(window).width() - $("#remote").width() - 21 + "px");
+  $("#display_iframe").css("height", $(window).height() + "px");
 }
 
 // remote scroll 자동 조절
@@ -765,6 +475,7 @@ function site_change(_site)
   change_remote();
 
   $("#display_area").html("");
+  $("#display_iframe").attr("src", "");
   $("#inputNum").val("");
   $("#url").removeAttr("href");
   $.get(
@@ -788,31 +499,10 @@ function toonlist_area_init()
   num = null;
   site = null;
   change_remote();
-  toggle_toonlist(false);
 
   $("#toonlist_area").html(str);
   $("#display_area").html("");
-}
-
-// Flash 있을 때 toonlist_area height 설정 토글
-function toggle_toonlist(_flash)
-{
-  if (_flash || (_flash == undefined && $("#toonlist_area").css("overflow-y") != "scroll"))
-  {
-    $("#toonlist_area").css("height", $("#toonlist_area").height() - ($("#content_area").position().top - 484) + "px");
-    $("#toonlist_area").css("overflow-y", "scroll");
-    $(document).unbind("keydown");
-    $(document).bind("keydown", function(e) { bodyKeyDown(e, false); });
-  }
-  else
-  {
-    $("#toonlist_area").css("height", "");
-    $("#toonlist_area").css("overflow-y", "");
-    $(document).unbind("keydown");
-    $(document).bind("keydown", function (e) { bodyKeyDown(e, true); });
-    if (site == "naver")
-      $("#largeFlashDiv").remove();
-  }
+  $("#display_iframe").attr("src", "");
 }
 
 // Login, Join 토글
@@ -874,7 +564,10 @@ function login(check)
     $.post(
       "/login.cgi",
       {user_id: $("#user_id").val(), user_pw: $("#user_pw").val()},
-      function (data) { $("#display_area").html(data); }
+      function (data) {
+        $("#display_area").html(data);
+        $("#display_iframe").attr("src", "");
+      }
     );
   else if (check)
     $.post(
@@ -890,7 +583,10 @@ function logout()
   add_bookmark(false);
   $.get(
     "/logout.cgi",
-    function (data) { $("#display_area").html(data); }
+    function (data) {
+      $("#display_area").html(data);
+      $("#display_iframe").attr("src", "");
+    }
   );
 }
 
@@ -978,45 +674,6 @@ function add_bookmark(show_table)
   }
 }
 
-// BGM Control
-function toggle_play_pause(opt)
-{
-  var music_player_obj = document.getElementById("music_player_obj");
-
-  if (opt == 0)
-    if (play_status == "play")
-    {
-      music_player_obj.controls.pause();
-      play_status = "pause";
-      $("#BGM_play_pause").html("▶");
-    }
-    else
-    {
-      music_player_obj.controls.play();
-      play_status = "play";
-      $("#BGM_play_pause").html("∥");
-    }
-  else if (opt == 1)
-  {
-    music_player_obj.controls.stop();
-    play_status = "stop";
-    $("#BGM_play_pause").html("▶");
-  }
-  else
-  {
-    if ($("#music_player").css("display") == "none")
-    {
-      $("#music_player").css("display", "block");
-      $("#BGM_play_pause").html("■");
-    }
-    else
-    {
-      $("#music_player").css("display", "none");
-      $("#BGM_play_pause").html("▶");
-    }
-  }
-}
-
 // table display 토글
 function show_table(opt /* only for Yahoo 웹툰 */)
 {
@@ -1066,24 +723,6 @@ function show_table(opt /* only for Yahoo 웹툰 */)
   }
 }
 
-// 작가 정보 table 토글
-function show_artist_table(opt)
-{
-  sites[site].show_artist_table(opt);
-}
-
-// 작가의 다른 작품 출력
-function getOtherToon(_id, /* Daum 웹툰용 */ check_other)
-{
-  if (check_other == null)
-    check_other = true;
-
-  if (site == "daum")
-    sites[site].getOtherToon(_id, check_other);
-  else
-    sites[site].getOtherToon(_id);
-}
-
 // 웹툰 출력
 function viewToon(_id, _num)
 {
@@ -1095,8 +734,6 @@ function viewToon(_id, _num)
     alert("웹툰을 선택해 주세요!");
     return;
   }
-
-  toggle_toonlist(false);
 
   if (_id != id)
     add_bookmark(false);
@@ -1119,34 +756,9 @@ function viewToon(_id, _num)
     sites[site].getNumAndDisplay(prev_id, prev_num);
   else
   {
-    if (num < lastNum[id])
-      sites[site].getNextToon();
-
-    var cache = sites[site].cache_get(id, num);
-    if (cache == undefined || cache == null)
-      $.get(
-        "/displayToon.cgi",
-        {site: site, id: id, num: num},
-        function (data) {
-          if (data == "")
-          {
-            alert("접속할 수 없습니다!");
-            id = prev_id;
-            num = prev_num;
-            return;
-          }
-          $("#display_area").html(data);
-          resizeWidth();
-          change_remote();
-        }
-      );
-    else
-    {
-      $("#display_area").html(cache);
-      resizeWidth();
-      change_remote();
-      sites[site].cache_set(id, num, null);
-    }
+    $("#display_iframe").attr("src", sites[site].src());
+    location.replace("#display_iframe");
+    change_remote();
   }
 }
 
@@ -1196,43 +808,6 @@ function go_to(opt)
       else
         alert("저장된 북마크가 없습니다!");
       break;
-  }
-}
-
-// 만화책 형식의 웹툰 스크롤
-function scrollAnchor(opt)
-{
-  if (opt == 1) // Down
-  {
-    var hrs = $("#display_area hr");
-    switch (location.hash) {
-      case "":
-        location.replace("#title_area"); break;
-      case "#title_area":
-        location.replace("#anchor_0"); break;
-      case "#anchor_" + String(hrs.length - 1):
-        location.replace("#bottom"); break;
-      default:
-        if (location.hash.substring(0, 8) == "#anchor_")
-          location.replace("#anchor_" + String(parseInt(location.hash.substring(8)) + 1));
-        break;
-    }
-  }
-  else if (opt == -1) // Up
-  {
-    var hrs = $("#display_area hr");
-    switch (location.hash) {
-      case "#bottom":
-        location.replace("#anchor_" + String(hrs.length - 1)); break;
-      case "#anchor_0":
-        location.replace("#title_area"); break;
-      case "#title_area":
-        location.replace("#"); break;
-      default:
-        if (location.hash.substring(0, 8) == "#anchor_")
-          location.replace("#anchor_" + String(parseInt(location.hash.substring(8)) - 1));
-        break;
-    }
   }
 }
 
@@ -1295,24 +870,14 @@ function bodyKeyDown(e, lr_arrow)
       case 38: // ↑
         event.preventDefault();
       case 87: // W
-        if ($("#display_area hr").length == 0)
-        {
-          for (i = 0; i < 10; i++)
-            window.scrollBy('0', '-9');
-        }
-        else
-          scrollAnchor(-1);
+        for (i = 0; i < 10; i++)
+          window.scrollBy('0', '-9');
         break;
       case 40: // ↓
         event.preventDefault();
       case 83: // S
-        if ($("#display_area hr").length == 0)
-        {
-          for (i = 0; i < 10; i++)
-            window.scrollBy('0', '9');
-        }
-        else
-          scrollAnchor(1);
+        for (i = 0; i < 10; i++)
+          window.scrollBy('0', '9');
         break;
       case 81: // Q
         if (document.getElementById("title_area"))
@@ -1348,7 +913,5 @@ id = null;
 num = null;
 toonBM = new Object();
 numList = new Object();
-dateList = new Object();
-writer = new Object();
 lastNum = new Object();
 finishToon = [];

@@ -3,6 +3,8 @@ body {
   font-size: 15px;
   text-align: center;
   cursor: default;
+  margin: 0;
+  padding: 0;
 }
 input {
   font-family: "맑은 고딕", "Dotum", sans-serif;
@@ -26,7 +28,7 @@ a, .table_toggle_button, .site_button, .toonlist_site, .refreshBtn, #login, #joi
   margin-right: 5px;
 }
 #main_area {
-  margin: 5px;
+  margin: 10px 10px 0px 10px;
 }
 #main_title {
   font-size: large;
@@ -49,34 +51,9 @@ a, .table_toggle_button, .site_button, .toonlist_site, .refreshBtn, #login, #joi
   clear: both;
   height: 40px;
 }
-#title_area {
-  font-size: 17px;
-}
-#title {
-  padding: 15px 0px 15px 0px;
-  background-color: #EAEAEA;
-}
-#content_area {
-  clear: both;
-}
-#toon_date {
-  float: right;
-}
-#toonBGM {
-  float: left;
-  position: absolute;
-}
-#toonBGM>span {
-  color: gray;
-  cursor: pointer;
-}
-#music_player {
-  display: none;
-}
-hr[id^=anchor_] {
-  width: 80%;
-  height: 1px;
-  border: 0px;
+#display_iframe {
+  width: 100%;
+  border: 0;
 }
 #login_area {
   display: inline;
@@ -160,45 +137,4 @@ img {
 }
 .current_toon:hover, .finished_toon:hover, #artist_otherlist div:hover {
   background-color: #ABC;
-}
-#artist_area {
-  width: 85%;
-  clear: both;
-  margin: 0 auto;
-}
-#artist_info tr:first-child>td>div {
-  text-align: center;
-  width: 100px;
-  margin: 0px 10px;
-  cursor: pointer;
-  background-color: #EAEAEA;
-}
-#artist_blog {
-  text-align: center;
-}
-#artist_other {
-  text-align: center;
-}
-#artist_other>span {
-  cursor: pointer;
-  text-decoration: underline;
-}
-#artist_otherlist {
-  text-align: center;
-  display: none;
-}
-#artist_otherlist>div {
-  cursor: default;
-  margin: 3px 0px;
-  background-color: #EAEAEA;
-}
-#writer_info {
-  width: 85%;
-  text-align: left;
-  clear: both;
-  margin: 0 auto;
-}
-#writer_info>div {
-  padding: 2px 15px;
-  background-color: #EAEAEA;
 }
