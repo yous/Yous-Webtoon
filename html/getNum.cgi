@@ -19,10 +19,7 @@ puts "Content-Type: text/html; charset=utf-8\n\n"
 # Naver 웹툰
 if site == "naver"
   str = ""
-  resp = a.get "http://comic.naver.com/webtoon/list.nhn?titleId=#{id}"
-
-  last_no = $1.to_i if resp.at('//div[@id="content"]/table[@class="viewList"]/tr[3]/td[@class="title"]/a').attr("href") =~ /\/webtoon\/detail\.nhn\?titleId=#{id}&no=(\d+)/
-  resp = a.get "http://comic.naver.com/webtoon/detail.nhn?titleId=#{id}&no=#{last_no}"
+  resp = a.get "http://comic.naver.com/webtoon/detail.nhn?titleId=#{id}"
 
   # 성인 인증 필요한 웹툰
   if resp.search('//div[@id="log_adult"]').length > 0
@@ -37,7 +34,7 @@ if site == "naver"
         a = Mechanize.new
         a.cookie_jar = session[site]["cookie"]
 
-        resp = a.get "http://comic.naver.com/webtoon/detail.nhn?titleId=#{id}&no=#{last_no}"
+        resp = a.get "http://comic.naver.com/webtoon/detail.nhn?titleId=#{id}"
         if resp.search('//div[@id="log_adult"]').length > 0
           print "auth"
           exit
