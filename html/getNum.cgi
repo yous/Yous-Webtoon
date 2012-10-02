@@ -53,8 +53,8 @@ if site == "naver"
   end
 
   str << case resp.at('//div[@id="header"]/div[@id="submenu"]/ul[@class="submenu"]/li/a[@class="current"]').attr("href")
-  when "webtoon/weekday.nhn" then "n "
-  when "webtoon/finish.nhn" then "y "
+  when "/webtoon/weekday.nhn" then "n "
+  when "/webtoon/finish.nhn" then "y "
   else "x "
   end
   resp.search('//div[@class="btn_area"]').each do |v|
