@@ -57,13 +57,7 @@ if site == "naver"
   when "/webtoon/finish.nhn" then "y "
   else "x "
   end
-  resp.search('//div[@class="btn_area"]').each do |v|
-    if v.at('./span[@class="pre"]/a').nil?
-      str << "1"
-    elsif v.at('./span[@class="pre"]/a').attr("href") =~ /\/webtoon\/detail\.nhn\?titleId=\d+&seq=(\d+)/
-      str << "#{$1.to_i + 1}"
-    end
-  end
+  str << resp.at('//div[@id="comicRemocon"]/div[@class="remote_cont"]/div[@class="pg_area"]/span[@class="total"]').inner_text
 
   print str
 
