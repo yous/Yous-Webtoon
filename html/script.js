@@ -35,7 +35,7 @@
         function(data) {
           if (data == "")
           {
-            alert("접속할 수 없습니다!");
+            noty({text: "접속할 수 없습니다!"});
             id = prev_id;
             num = prev_num;
             return;
@@ -114,7 +114,7 @@
         function(data) {
           if (data == "")
           {
-            alert("접속할 수 없습니다!");
+            noty({text: "접속할 수 없습니다!"});
             id = prev_id;
             num = prev_num;
             return;
@@ -193,7 +193,7 @@
         function(data) {
           if (data == "")
           {
-            alert("접속할 수 없습니다!");
+            noty({text: "접속할 수 없습니다!"});
             id = prev_id;
             num = prev_num;
             return;
@@ -270,7 +270,7 @@
         function(data) {
           if (data == "")
           {
-            alert("접속할 수 없습니다!");
+            noty({text: "접속할 수 없습니다!"});
             id = prev_id;
             num = prev_num;
             return;
@@ -603,7 +603,7 @@ function add_bookmark(show_table)
 
       sites[site].saveBM("no", _finish);
 
-      alert("북마크가 저장되었습니다!");
+      noty({type: "success", text: "북마크가 저장되었습니다!"});
       $("#moveBM").attr("disabled", true);
 
       $(".toonlist div[name=" + id + "]").removeClass("saved_update").removeClass("saved_finish");
@@ -644,7 +644,7 @@ function add_bookmark(show_table)
 
       sites[site].saveBM("yes", _finish);
 
-      alert("북마크가 저장되었습니다!");
+      noty({type: "success", text: "북마크가 저장되었습니다!"});
       $("#saveBM").attr("disabled", true);
       $("#moveBM").attr("disabled", true);
 
@@ -731,7 +731,7 @@ function viewToon(_id, _num)
 
   if (typeof(_id) == "undefined")
   {
-    alert("웹툰을 선택해 주세요!");
+    noty({text: "웹툰을 선택해 주세요!"});
     return;
   }
 
@@ -766,7 +766,7 @@ function go_to(opt)
 {
   if (!id || !num)
   {
-    alert("웹툰을 선택해 주세요!");
+    noty({text: "웹툰을 선택해 주세요!"});
     return;
   }
   switch (opt) {
@@ -778,13 +778,13 @@ function go_to(opt)
       break;
     case -1: // 이전 화
       if (num == sites[site].first_num())
-        alert("첫 화입니다!");
+        noty({text: "첫 화입니다!"});
       else
         viewToon(id, sites[site].prev_num());
       break;
     case 1: // 다음 화
       if (num == lastNum[id])
-        alert("마지막 화입니다!");
+        noty({text: "마지막 화입니다!"});
       else
         viewToon(id, sites[site].next_num());
       break;
@@ -792,7 +792,7 @@ function go_to(opt)
       var inputNum = parseInt($("#inputNum").val());
       if (isNaN(inputNum))
       {
-        alert("잘못 입력하셨습니다!");
+        noty({text: "잘못 입력하셨습니다!"});
         return;
       }
       if (inputNum < 1)
@@ -806,7 +806,7 @@ function go_to(opt)
       if (toonBM[id])
         viewToon(id, toonBM[id]);
       else
-        alert("저장된 북마크가 없습니다!");
+        noty({text: "지정된 북마크가 없습니다!"});
       break;
   }
 }
