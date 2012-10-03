@@ -52,6 +52,17 @@ port = 8888
 
 # Naver 웹툰
 if site == "naver"
+  lastNum = Hash.new
+  finishToon = []
+  reqList = []
+
+  db.exec("SELECT toon_id, toon_num FROM naver_lastnum;").each do |row|
+    _toon_id = row["toon_id"].to_i
+    _toon_num = row["toon_num"].to_i
+    lastNum[_toon_id] = _toon_num
+    finishToon.push(_toon_id)
+  end
+
   # 연재
   resp = a.get "http://comic.naver.com/webtoon/weekday.nhn"
 
@@ -77,6 +88,11 @@ if site == "naver"
         _up = (_a.search('./em').length != 0) ? '(UP)' : ''
         _new = (_a.search('./img').length > 1) ? '(NEW)' : ''
 
+        if finishToon.include? _titleId
+          finishToon.delete _titleId
+          db.exec("DELETE FROM naver_lastnum WHERE toon_id=$1;", [_titleId])
+        end
+
         str_div[day] << generate_toon(_titleId, "current_toon", _title, :new => _new, :up => _up)
       end
       str << str_div[day] + '</div>'
@@ -98,6 +114,11 @@ if site == "naver"
     _titleId = $1.to_i if _a.attr("href") =~ /\/webtoon\/list\.nhn\?titleId=(\d+)/
     _title = _a.attr("title")
 
+    unless finishToon.include? _titleId
+      finishToon.push(_titleId)
+      reqList.push(_titleId)
+    end
+
     str_div[count % 7] << generate_toon(_titleId, "finished_toon", _title)
     count += 1
   end
@@ -106,6 +127,18 @@ if site == "naver"
     str << v + "</div>"
   end
   str << '</div>'
+
+  # reqList 처리
+  reqList.each do |v|
+    num_resp = a.get("http://localhost:#{port}/getNum.cgi?site=naver&id=#{v}").body.split()
+
+    # 로그인 필요한 웹툰
+    next if num_resp == "auth"
+
+    lastNum[v] = num_resp[1].to_i
+    db.exec("UPDATE naver_lastnum SET toon_num=$1 WHERE toon_id=$2;", [lastNum[v], v])
+    db.exec("INSERT INTO naver_lastnum (toon_id, toon_num) SELECT $1, $2 WHERE NOT EXISTS (SELECT 1 FROM naver_lastnum WHERE toon_id=$1);", [v, lastNum[v]])
+  end
 
   # toonlist background-color 처리
   if session["user_id"] != nil and session["user_id"] != ""
