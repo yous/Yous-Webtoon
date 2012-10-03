@@ -484,6 +484,7 @@ function site_change(_site)
     function (data) {
       site = _site;
       $("#toonlist_area").html(data);
+      resizeWidth();
     }
   );
 }
