@@ -102,9 +102,7 @@
     this.toonlist_area_init = function() { return '<span class="toonlist_site" onclick="site_change(\'daum\');"><u>D</u>aum</span>'; };
     this.saveBM = function(_add, _finish)
     {
-      var req_numList = numList[id].join(" ");
-      var req_dateList = dateList[id].join(" ");
-      $.post("/saveBM.cgi", {site: site, add: _add, toon_id: id, toon_num: num, numList: req_numList, dateList: req_dateList, finish: _finish});
+      $.post("/saveBM.cgi", {site: site, add: _add, toon_id: id, toon_num: num, numList: numList[id].join(" "), finish: _finish});
     };
     this.getNumAndDisplay = function(prev_id, prev_num)
     {
