@@ -40,7 +40,7 @@ elsif user_id != nil and user_pw != nil
     _id = row["id"].to_i
     session["user_id"] = _id
     cookie = CGI::Cookie.new("name" => "SSID", "value" => session.session_id)
-    cgi.out("type" => "text/html; charset=utf-8") { "<script>toggle_login(true);toonlist_area_init();</script>" }
+    cgi.out("type" => "text/html; charset=utf-8") { "<script>toggle_login(true);sitelist_init();</script>" }
     session.close
     check = false
   end

@@ -2,6 +2,8 @@
 
 favicon.ico
 Log
+getListLog
 
-images
+*.json
+
 sess

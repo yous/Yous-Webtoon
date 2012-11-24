@@ -9,48 +9,7 @@
   var _Naver = null;
   var classNaver = function()
   {
-    this.id = function(_id) { return parseInt(_id); };
-    this.first_num = function() { return 1; };
-    this.prev_num = function() { return num - 1; };
-    this.next_num = function() { return num + 1; };
-    this.idx_to_num = function(_inputNum)
-    {
-      if (_inputNum > lastNum[id])
-        return lastNum[id];
-      else
-        return _inputNum;
-    }
-    this.src = function() { return "http://comic.naver.com/webtoon/detail.nhn?titleId=" + id + "&seq=" + num; };
-    this.inputNum = function() { return num; };
-    this.toonlist_area_init = function() { return '<span class="toonlist_site" onclick="site_change(\'naver\');"><u>N</u>aver</span>'; };
-    this.saveBM = function(_add, _finish)
-    {
-      $.post("/saveBM.cgi", {site: site, add: _add, toon_id: id, toon_num: num, finish: _finish});
-    };
-    this.getNumAndDisplay = function(prev_id, prev_num)
-    {
-      $.get(
-        "/getNum.cgi",
-        {site: site, id: id},
-        function(data) {
-          if (data == "")
-          {
-            noty({text: "접속할 수 없습니다!"});
-            id = prev_id;
-            num = prev_num;
-            return;
-          }
-          else if (data == "auth")
-            return;
-
-          lastNum[id] = parseInt(data.split(" ")[1]);
-
-          $("#display_iframe").attr("src", sites[site].src());
-          location.replace("#display_iframe");
-          change_remote();
-        }
-      );
-    };
+    this.src = function() { return "http://comic.naver.com/webtoon/detail.nhn?titleId=" + id + "&no=" + numList[id][num - 1]; }
   }
 })();
 
@@ -65,70 +24,7 @@
   var _Daum = null;
   var classDaum = function()
   {
-    this.id = function(_id) { return _id; };
-    this.first_num = function() { return (numList[id]) ? numList[id][0] : 0; };
-    this.prev_num = function()
-    {
-      for (i = 0; i < numList[id].length; i++)
-      {
-        if (numList[id][i] == num)
-          return numList[id][i - 1];
-      }
-    };
-    this.next_num = function()
-    {
-      for (i = 0; i < numList[id].length; i++)
-      {
-        if (numList[id][i] == num)
-          return numList[id][i + 1];
-      }
-    };
-    this.idx_to_num = function(_inputNum)
-    {
-      _inputNum -= 1;
-      if (_inputNum >= numList[id].length)
-        _inputNum = numList[id].length - 1;
-      return numList[id][_inputNum];
-    }
-    this.src = function() { return "http://cartoon.media.daum.net/webtoon/viewer/" + num; };
-    this.inputNum = function()
-    {
-      for (i = 0; i < numList[id].length; i++)
-      {
-        if (numList[id][i] == num)
-          return i + 1;
-      }
-    };
-    this.toonlist_area_init = function() { return '<span class="toonlist_site" onclick="site_change(\'daum\');"><u>D</u>aum</span>'; };
-    this.saveBM = function(_add, _finish)
-    {
-      $.post("/saveBM.cgi", {site: site, add: _add, toon_id: id, toon_num: num, numList: numList[id].join(" "), finish: _finish});
-    };
-    this.getNumAndDisplay = function(prev_id, prev_num)
-    {
-      $.get(
-        "/getNum.cgi",
-        {site: site, id: id},
-        function(data) {
-          if (data == "")
-          {
-            noty({text: "접속할 수 없습니다!"});
-            id = prev_id;
-            num = prev_num;
-            return;
-          }
-          else if (data == "auth")
-            return;
-          numList[id] = data.split(" ").slice(1);
-          lastNum[id] = numList[id][numList[id].length - 1];
-          num = numList[id][0];
-
-          $("#display_iframe").attr("src", sites[site].src());
-          location.replace("#display_iframe");
-          change_remote();
-        }
-      );
-    };
+    this.src = function() { return "http://cartoon.media.daum.net/webtoon/viewer/" + numList[id][num - 1]; }
   }
 })();
 
@@ -143,69 +39,7 @@
   var _Yahoo = null;
   var classYahoo = function()
   {
-    this.id = function(_id) { return parseInt(_id); };
-    this.first_num = function() { return (numList[id]) ? numList[id][0] : 0; };
-    this.prev_num = function()
-    {
-      for (i = 0; i < numList[id].length; i++)
-      {
-        if (numList[id][i] == num)
-          return numList[id][i - 1];
-      }
-    }
-    this.next_num = function()
-    {
-      for (i = 0; i < numList[id].length; i++)
-      {
-        if (numList[id][i] == num)
-          return numList[id][i + 1];
-      }
-    }
-    this.idx_to_num = function(_inputNum)
-    {
-      _inputNum -= 1;
-      if (_inputNum >= numList[id].length)
-        _inputNum = numList[id].length - 1;
-      return numList[id][_inputNum];
-    }
-    this.src = function() { return "http://kr.news.yahoo.com/service/cartoon/shellview2.htm?linkid=series_cartoon&sidx=" + num + "&widx=" + id; };
-    this.inputNum = function()
-    {
-      for (i = 0; i < numList[id].length; i++)
-      {
-        if (numList[id][i] == num)
-          return i + 1;
-      }
-    };
-    this.toonlist_area_init = function() { return '<span class="toonlist_site" onclick="site_change(\'yahoo\');"><u>Y</u>ahoo</span>'; };
-    this.saveBM = function(_add, _finish)
-    {
-      var req_numList = numList[id].join(" ");
-      $.post("/saveBM.cgi", {site: site, add: _add, toon_id: id, toon_num: num, numList: req_numList, finish: _finish});
-    };
-    this.getNumAndDisplay = function(prev_id, prev_num)
-    {
-      $.get(
-        "/getNum.cgi",
-        {site: site, id: id},
-        function(data) {
-          if (data == "")
-          {
-            noty({text: "접속할 수 없습니다!"});
-            id = prev_id;
-            num = prev_num;
-            return;
-          }
-          numList[id] = data.split(" ").slice(1);
-          lastNum[id] = numList[id][numList[id].length - 1];
-          num = numList[id][0];
-
-          $("#display_iframe").attr("src", sites[site].src());
-          location.replace("#display_iframe");
-          change_remote();
-        }
-      );
-    };
+    this.src = function() { return "http://kr.news.yahoo.com/service/cartoon/shellview2.htm?linkid=series_cartoon&sidx=" + numList[id][num - 1] + "&widx=" + id; }
   }
 })();
 
@@ -220,69 +54,7 @@
   var _Stoo = null;
   var classStoo = function()
   {
-    this.id = function(_id) { return parseInt(_id); };
-    this.first_num = function() { return (numList[id]) ? numList[id][0] : 0; };
-    this.prev_num = function()
-    {
-      for (i = 0; i < numList[id].length; i++)
-      {
-        if (numList[id][i] == num)
-          return numList[id][i - 1];
-      }
-    };
-    this.next_num = function()
-    {
-      for (i = 0; i < numList[id].length; i++)
-      {
-        if (numList[id][i] == num)
-          return numList[id][i + 1];
-      }
-    };
-    this.idx_to_num = function(_inputNum)
-    {
-      _inputNum -= 1;
-      if (_inputNum >= numList[id].length)
-        _inputNum = numList[id].length - 1;
-      return numList[id][_inputNum];
-    }
-    this.src = function() { return "http://stoo.asiae.co.kr/cartoon/ctview.htm?sc3=" + id + "&id=" + num; };
-    this.inputNum = function()
-    {
-      for (i = 0; i < numList[id].length; i++)
-      {
-        if (numList[id][i] == num)
-          return i + 1;
-      }
-    };
-    this.toonlist_area_init = function() { return '<span class="toonlist_site" onclick="site_change(\'stoo\');"><u>S</u>too</span>'; };
-    this.saveBM = function(_add, _finish)
-    {
-      var req_numList = numList[id].join(" ");
-      $.post("/saveBM.cgi", {site: site, add: _add, toon_id: id, toon_num: num, numList: req_numList, finish: _finish});
-    };
-    this.getNumAndDisplay = function(prev_id, prev_num)
-    {
-      $.get(
-        "/getNum.cgi",
-        {site: site, id: id},
-        function(data) {
-          if (data == "")
-          {
-            noty({text: "접속할 수 없습니다!"});
-            id = prev_id;
-            num = prev_num;
-            return;
-          }
-          numList[id] = data.split(" ").slice(1);
-          lastNum[id] = numList[id][numList[id].length - 1];
-          num = numList[id][0];
-
-          $("#display_iframe").attr("src", sites[site].src());
-          location.replace("#display_iframe");
-          change_remote();
-        }
-      );
-    };
+    this.src = function() { return "http://stoo.asiae.co.kr/cartoon/ctview.htm?sc3=" + id + "&id=" + numList[id][num - 1]; }
   }
 })();
 
@@ -321,141 +93,27 @@ function scrollControl()
   }
 }
 
-// Loading 메시지 출력
-function loading(n)
-{
-  if (n <= 0)
-    return;
-  if ($("#loading").css("display") == "none")
-    return;
-  setTimeout('$("#loading").append(".");', 1000);
-  setTimeout("loading(" + (n - 1) + ");", 1000);
-}
-
 // remote 버튼 정리
 function change_remote()
 {
-  $("#saveBM").attr("disabled", (!id || (site && num == sites[site].first_num()) || num == toonBM[id]) ? true : false);
+  $("#saveBM").attr("disabled", (!id || num == 1 || num == toonBM[id]) ? true : false);
   $("#moveBM").attr("disabled", (!id || !toonBM[id] || num == toonBM[id]) ? true : false);
-  $("#firstBtn").attr("disabled", (!id || (site && num == sites[site].first_num())) ? true : false);
-  $("#lastBtn").attr("disabled", (!id || num == lastNum[id]) ? true : false);
-  $("#prevBtn").attr("disabled", (!id || (site && num == sites[site].first_num())) ? true : false);
-  $("#nextBtn").attr("disabled", (!id || num == lastNum[id]) ? true : false);
+  $("#firstBtn").attr("disabled", (!id || num == 1) ? true : false);
+  $("#lastBtn").attr("disabled", (!id || num == numList[id].length) ? true : false);
+  $("#prevBtn").attr("disabled", (!id || num == 1) ? true : false);
+  $("#nextBtn").attr("disabled", (!id || num == numList[id].length) ? true : false);
   $("#dirBtn").attr("disabled", (!id) ? true : false);
 
   var src = "";
   if (site)
   {
     src = sites[site].src();
-    $("#inputNum").val(sites[site].inputNum());
+    $("#inputNum").val(num);
   }
 
   $("#url").removeAttr("href");
   if (src != "")
     $("#url").attr("href", src);
-}
-
-// toon div background color 변경
-function putToonColor(day)
-{
-  if (day == null)
-  {
-    if (site == "yahoo") // special_toonlist
-    {
-      var day = 0;
-      var day_BM = new Object();
-      for (i = 0; i < 14; i++)
-      {
-        var day_toon = $("#day" + String(day + i) + " div");
-        day_BM[i] = [];
-        for (j = 0; j < day_toon.length; j++)
-        {
-          if (day_toon[j].attributes["name"] && toonBM[day_toon[j].attributes["name"].value] != undefined)
-            day_BM[i].push(day_toon[j].attributes["name"].value);
-        }
-      }
-
-      var count = 0;
-      for (i = 0; i < 14; i++)
-      {
-        $.post(
-          "/putToonColor.cgi",
-          {site: site, finish: "n", day_BM: day_BM[i].join(",")},
-          function (data) { count += 1; if (count == 15) { $("#loading").css("display", "none"); } $("#display_area").append(data); }
-        );
-      }
-
-      var finish_BM = [];
-      for (_id in toonBM)
-      {
-        if ($("div[name=" + String(_id) + "]").attr("class") == "finished_toon")
-          finish_BM.push(_id);
-      }
-      $.post(
-        "/putToonColor.cgi",
-        {site: site, finish: "y", day_BM: finish_BM.join(",")},
-        function (data) { count += 1; if (count == 15) { $("#loading").css("display", "none"); } $("#display_area").append(data); }
-      );
-    }
-    else
-    {
-      var day = ((new Date()).getDay() + 6) % 7;
-      // getDay() -> 0 : 일, 1 : 월, 2 : 화, ... , 6 : 토
-      // HTML td -> 0 : 월, 1 : 화, 2 : 수, ... , 6 : 일
-      var day_BM = new Object();
-      for (i = 1; i <= 7; i++)
-      {
-        var day_toon = $("#day" + String((day + i) % 7) + " div");
-        day_BM[i] = [];
-        for (j = 0; j < day_toon.length; j++)
-        {
-          if (day_toon[j].attributes["name"] && toonBM[day_toon[j].attributes["name"].value] != undefined)
-            day_BM[i].push(day_toon[j].attributes["name"].value);
-        }
-      }
-
-      var count = 0;
-      for (i = 7; i >= 1; i--)
-      {
-        $.post(
-          "/putToonColor.cgi",
-          {site: site, finish: "n", day_BM: day_BM[i].join(",")},
-          function (data) { count += 1; if (count == 8) { $("#loading").css("display", "none"); } $("#display_area").append(data); }
-        );
-      }
-
-      var finish_BM = [];
-      for (_id in toonBM)
-      {
-        if ($("div[name=" + String(_id) + "]").attr("class") == "finished_toon")
-          finish_BM.push(_id);
-      }
-      $.post(
-        "/putToonColor.cgi",
-        {site: site, finish: "y", day_BM: finish_BM.join(",")},
-        function (data) { count += 1; if (count == 8) { $("#loading").css("display", "none"); } $("#display_area").append(data); }
-      );
-    }
-  }
-  else
-  {
-    $("#loading").html(" Loading");
-    $("#loading").css("display", "inline");
-    loading(5);
-    var day_toon = $("#day" + String(day) + " div");
-    var day_BM = [];
-    for (i = 0; i < day_toon.length; i++)
-    {
-      if (day_toon[i].attributes["name"] && toonBM[day_toon[i].attributes["name"].value] != undefined)
-        day_BM.push(day_toon[i].attributes["name"].value);
-    }
-
-    $.post(
-      "/putToonColor.cgi",
-      {site: site, finish: "n", day_BM: day_BM.join(",")},
-      function (data) { $("#loading").css("display", "none"); $("#display_area").append(data); }
-    );
-  }
 }
 
 // 웹툰 사이트 변경
@@ -464,42 +122,110 @@ function site_change(_site)
   site = null;
   id = null;
   num = null;
-  toonBM = new Object();
-  numList = new Object();
-  dateList = new Object();
+  daysToon = new Object();
   toonInfo = new Object();
-  lastNum = new Object();
-  finishToon = [];
+  numList = new Object();
+  toonBM = new Object();
   change_remote();
 
+  $("#toonlist_area").html("");
   $("#display_area").html("");
   $("#display_iframe").attr("src", "");
   $("#inputNum").val("");
   $("#url").removeAttr("href");
   $.get(
-    "/getList.cgi",
-    {site: _site},
-    function (data) {
+    "/" + _site + ".json",
+    function (json) {
       site = _site;
-      $("#toonlist_area").html(data);
+      daysToon = json["daysToon"];
+      toonInfo = json["toonInfo"];
+      numList = json["numList"];
+      $("<span>")
+        .addClass("table_toggle_button")
+        .click(function() { show_table(); })
+        .html("완결 웹툰")
+        .appendTo("#toonlist_area");
+      $("<br/>").appendTo("#toonlist_area");
+      $("<div>")
+        .attr("id", "current_toonlist")
+        .addClass("toonlist")
+        .appendTo("#toonlist_area");
+      var days = ["월", "화", "수", "목", "금", "토", "일"];
+      for (var i = 0; i < 7; i++)
+      {
+        var dayDiv = $("<div>");
+        $("<div>")
+          .css("font-weight", "bold")
+          .html(days[i])
+          .appendTo(dayDiv);
+        for (var j = 0; j < daysToon[i].length; j++)
+        {
+          $("<div>")
+            .attr("name", daysToon[i][j])
+            .addClass("current_toon")
+            .attr("title", toonInfo[daysToon[i][j]]["title"])
+            .click(function() { viewToon($(this).attr("name")); })
+            .html(toonInfo[daysToon[i][j]]["title"] + (toonInfo[daysToon[i][j]]["new"] ? "<small>(NEW)</small>" : "") + (toonInfo[daysToon[i][j]]["up"] ? "<small>(UP)</small>" : ""))
+            .appendTo(dayDiv);
+        }
+        dayDiv.appendTo("#current_toonlist");
+      }
+      $("<div>")
+        .attr("id", "finished_toonlist")
+        .addClass("toonlist")
+        .css("display", "none")
+        .appendTo("#toonlist_area");
+      var dayDiv = [];
+      for (var i = 0; i < 7; i++)
+        dayDiv.push($("<div>"));
+      for (var i = 0; i < daysToon[7].length; i++)
+      {
+        $("<div>")
+          .attr("name", daysToon[7][i])
+          .addClass("finished_toon")
+          .attr("title", toonInfo[daysToon[7][i]]["title"])
+          .click(function() { viewToon($(this).attr("name")); })
+          .html(toonInfo[daysToon[7][i]]["title"])
+          .appendTo(dayDiv[i % 7]);
+      }
+      for (var i = 0; i < 7; i++)
+        dayDiv[i].appendTo("#finished_toonlist");
       resizeWidth();
+      $.get(
+        "/putToonColor.cgi",
+        {site: site},
+        function (data) {
+          toonBM = data;
+          for (var key in toonBM)
+          {
+            if (toonBM[key] < numList[key].length)
+              $("div[name=" + key + "]").addClass("saved_update");
+            else if (toonBM[key] == numList[key].length)
+              $("div[name=" + key + "]").addClass("saved_finish");
+          }
+        }
+      );
     }
   );
 }
 
-// toonlist_area 초기화
-function toonlist_area_init()
+// sitelist_area 초기화
+function sitelist_init()
 {
-  var str = "<br/>";
-  for (key in sites)
-    str += sites[key].toonlist_area_init();
-
   id = null;
   num = null;
   site = null;
   change_remote();
 
-  $("#toonlist_area").html(str);
+  $("#sitelist_area").html("<br/>");
+  for (key in sites)
+    $("<span>")
+      .addClass("sitelist")
+      .attr("name", key)
+      .click(function() { site_change($(this).attr("name")); })
+      .html("<u>" + key.charAt(0).toUpperCase() + "</u>" + key.slice(1))
+      .appendTo("#sitelist_area");
+  $("#toonlist_area").html("");
   $("#display_area").html("");
   $("#display_iframe").attr("src", "");
 }
@@ -594,13 +320,10 @@ function add_bookmark(show_table)
 {
   if (id && num)
   {
-    if (toonBM[id] && num == sites[site].first_num())
+    if (toonBM[id] && num == 1)
     {
       delete toonBM[id];
-      var check = finishToon.indexOf(id);
-      var _finish = (check == -1) ? "no" : lastNum[id];
-
-      sites[site].saveBM("no", _finish);
+      $.post("/saveBM.cgi", {site: site, toon_id: id, toon_num: num});
 
       noty({type: "success", text: "북마크가 저장되었습니다!"});
       $("#moveBM").attr("disabled", true);
@@ -627,27 +350,16 @@ function add_bookmark(show_table)
 
       location.replace("#");
     }
-    else if (!toonBM[id] && num != sites[site].first_num() || toonBM[id] && toonBM[id] != num)
+    else if (!toonBM[id] && num != 1 || toonBM[id] && toonBM[id] != num)
     {
       toonBM[id] = num;
-      var check = -1;
-      for (i = 0; i < finishToon.length; i++)
-      {
-        if (finishToon[i] == id)
-        {
-          check = i;
-          break;
-        }
-      }
-      var _finish = (check == -1) ? "no" : lastNum[id];
-
-      sites[site].saveBM("yes", _finish);
+      $.post("/saveBM.cgi", {site: site, toon_id: id, toon_num: num});
 
       noty({type: "success", text: "북마크가 저장되었습니다!"});
       $("#saveBM").attr("disabled", true);
       $("#moveBM").attr("disabled", true);
 
-      if (toonBM[id] == lastNum[id])
+      if (toonBM[id] == numList[id].length)
         $(".toonlist div[name=" + id + "]").removeClass("saved_update").removeClass("saved_finish").addClass("saved_finish");
       else
         $(".toonlist div[name=" + id + "]").removeClass("saved_update").removeClass("saved_finish").addClass("saved_update");
@@ -736,29 +448,20 @@ function viewToon(_id, _num)
 
   if (_id != id)
     add_bookmark(false);
-
-  id = sites[site].id(_id);
+  id = _id;
 
   if (typeof(_num) == "undefined")
   {
     if (toonBM[id])
       _num = toonBM[id];
     else
-      _num = sites[site].first_num();
+      _num = 1;
   }
-  if (site == "stoo")
-    num = _num;
-  else
-    num = parseInt(_num);
+  num = _num;
 
-  if (typeof(lastNum[id]) == "undefined")
-    sites[site].getNumAndDisplay(prev_id, prev_num);
-  else
-  {
-    $("#display_iframe").attr("src", sites[site].src());
-    location.replace("#display_iframe");
-    change_remote();
-  }
+  $("#display_iframe").attr("src", sites[site].src());
+  location.replace("#display_iframe");
+  change_remote();
 }
 
 function go_to(opt)
@@ -770,22 +473,22 @@ function go_to(opt)
   }
   switch (opt) {
     case -2: // 첫 화
-      viewToon(id, sites[site].first_num());
+      viewToon(id, 1);
       break;
     case 2: // 마지막 화
-      viewToon(id, lastNum[id]);
+      viewToon(id, numList[id].length);
       break;
     case -1: // 이전 화
-      if (num == sites[site].first_num())
+      if (num == 1)
         noty({text: "첫 화입니다!"});
       else
-        viewToon(id, sites[site].prev_num());
+        viewToon(id, num - 1);
       break;
     case 1: // 다음 화
-      if (num == lastNum[id])
+      if (num == numList[id].length)
         noty({text: "마지막 화입니다!"});
       else
-        viewToon(id, sites[site].next_num());
+        viewToon(id, num + 1);
       break;
     case 0: // 직접 이동
       var inputNum = parseInt($("#inputNum").val());
@@ -796,9 +499,8 @@ function go_to(opt)
       }
       if (inputNum < 1)
         inputNum = 1;
-
-      inputNum = sites[site].idx_to_num(inputNum);
-
+      else if (inputNum > numList[id].length)
+        inputNum = numList[id].length;
       viewToon(id, inputNum);
       break;
     case 3: // 북마크 이동
@@ -901,7 +603,7 @@ function loginKeyDown(e)
 site = null;
 id = null;
 num = null;
-toonBM = new Object();
+daysToon = new Object();
+toonInfo = new Object();
 numList = new Object();
-lastNum = new Object();
-finishToon = [];
+toonBM = new Object();

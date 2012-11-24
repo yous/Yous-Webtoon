@@ -27,37 +27,25 @@ end
 
 db = PGconn.open(:dbname => "webtoon")
 
-if session["user_id"] != nil and session["user_id"] != "" and add != nil and toon_id != nil and toon_num != nil and finish != nil
+if session["user_id"] != nil and toon_id != nil and toon_num != nil
   # Naver 웹툰
   if site == "naver"
     toon_id = toon_id.to_i
     toon_num = toon_num.to_i
-    if add == "yes"
+    if toon_num == 1
+      db.exec("DELETE FROM naver_bm WHERE id=$1 AND toon_id=$2;", [session["user_id"], toon_id])
+    else
       db.exec("UPDATE naver_bm SET toon_num=$1 WHERE id=$2 AND toon_id=$3;", [toon_num, session["user_id"], toon_id])
       db.exec("INSERT INTO naver_bm (id, toon_id, toon_num) SELECT $1, $2, $3 WHERE NOT EXISTS (SELECT 1 FROM naver_bm WHERE id=$1 AND toon_id=$2);", [session["user_id"], toon_id, toon_num])
-    else
-      db.exec("DELETE FROM naver_bm WHERE id=$1 AND toon_id=$2;", [session["user_id"], toon_id])
-    end
-    if finish != "no"
-      db.exec("UPDATE naver_lastnum SET toon_num=$1 WHERE toon_id=$2;", [finish.to_i, toon_id])
-      db.exec("INSERT INTO naver_lastnum (toon_id, toon_num) SELECT $1, $2 WHERE NOT EXISTS (SELECT 1 FROM naver_lastnum WHERE toon_id=$1);", [toon_id, finish.to_i])
     end
   # Daum 웹툰
-  elsif site == "daum" and numList != nil
+  elsif site == "daum"
     toon_num = toon_num.to_i
-    numList.map(&:to_i).each_with_index do |num, idx|
-      db.exec("UPDATE daum_numlist SET toon_num=$1 WHERE toon_id=$2::VARCHAR AND toon_num_idx=$3;", [num, toon_id, idx])
-      db.exec("INSERT INTO daum_numlist (toon_id, toon_num_idx, toon_num) SELECT $1::VARCHAR, $2, $3 WHERE NOT EXISTS (SELECT 1 FROM daum_numlist WHERE toon_id=$1 AND toon_num_idx=$2);", [toon_id, idx, num])
-    end
-    if add == "yes"
-      db.exec("UPDATE daum_bm SET toon_num=$1 WHERE id=$2 AND toon_id=$3::VARCHAR;", [toon_num, session["user_id"], toon_id])
-      db.exec("INSERT INTO daum_bm (id, toon_id, toon_num) SELECT $1, $2::VARCHAR, $3 WHERE NOT EXISTS (SELECT 1 FROM daum_bm WHERE id=$1 AND toon_id=$2);", [session["user_id"], toon_id, toon_num])
-    else
+    if toon_num == 1
       db.exec("DELETE FROM daum_bm WHERE id=$1 AND toon_id=$2::VARCHAR;", [session["user_id"], toon_id])
-    end
-    if finish != "no"
-      db.exec("UPDATE daum_lastnum SET toon_num=$1 WHERE toon_id=$2::VARCHAR;", [finish.to_i, toon_id])
-      db.exec("INSERT INTO daum_lastnum (toon_id, toon_num) SELECT $1::VARCHAR, $2 WHERE NOT EXISTS (SELECT 1 FROM daum_lastnum WHERE toon_id=$1);", [toon_id, finish.to_i])
+    else
+      db.exec("UPDATE daum_bm SET toon_num=$1 WHERE id=$2 AND toon_id=$3::VARCHAR;", [toon_num, session["user_id"], toon_id])
+      db.exec("INSERT INTO daum_bm (id, toon_id, toon_num) SELECT $1, $2::VARCHAR, $3 WHERE NOT EXISTS (SELECT 1 FROM daum_bm WHERE id=$1 AND toon_id=$2::VARCHAR;", [session["user_id"], toon_id, toon_num])
     end
   # Yahoo 웹툰
   elsif site == "yahoo" and numList != nil

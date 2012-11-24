@@ -15,7 +15,7 @@ if not cgi.cookies["SSID"].nil?
     puts <<-HTML
       <script>
         toggle_login(false);
-        toonlist_area_init();
+        sitelist_init();
       </script>
     HTML
   rescue
