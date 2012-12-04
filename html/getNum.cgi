@@ -1,4 +1,4 @@
-#!/usr/local/rvm/wrappers/ruby-1.9.3-p125@webtoon/ruby
+#!/usr/local/rvm/wrappers/ruby-1.9.3-p327@webtoon/ruby
 # encoding: utf-8
 require "rubygems"
 require "mechanize"
