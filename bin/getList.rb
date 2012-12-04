@@ -19,7 +19,7 @@ while true
         site.getList :all => true
         logger.info "#{site.site} ALL"
       rescue Exception => e
-        logger.error "#{site.site} ALL #{e.message}\n#{e.backtrace.inspect}"
+        logger.error "#{site.site} ALL\n#{e.backtrace[0]}: #{e.message} (#{e.class})\n#{e.backtrace.drop(1).map {|msg| "\tfrom #{msg}"}}"
       end
     end
   else
@@ -28,7 +28,7 @@ while true
         site.getList :all => false
         logger.info site.site
       rescue Exception => e
-        logger.error "#{site.site} #{e.message}\n#{e.backtrace.inspect}"
+        logger.error "#{site.site}\n#{e.backtrace[0]}: #{e.message} (#{e.class})\n#{e.backtrace.drop(1).map {|msg| "\tfrom #{msg}"}}"
       end
     end
   end
