@@ -45,7 +45,7 @@ if session["user_id"] != nil and toon_id != nil and toon_num != nil
       db.exec("DELETE FROM daum_bm WHERE id=$1 AND toon_id=$2::VARCHAR;", [session["user_id"], toon_id])
     else
       db.exec("UPDATE daum_bm SET toon_num=$1 WHERE id=$2 AND toon_id=$3::VARCHAR;", [toon_num, session["user_id"], toon_id])
-      db.exec("INSERT INTO daum_bm (id, toon_id, toon_num) SELECT $1, $2::VARCHAR, $3 WHERE NOT EXISTS (SELECT 1 FROM daum_bm WHERE id=$1 AND toon_id=$2::VARCHAR;", [session["user_id"], toon_id, toon_num])
+      db.exec("INSERT INTO daum_bm (id, toon_id, toon_num) SELECT $1, $2::VARCHAR, $3 WHERE NOT EXISTS (SELECT 1 FROM daum_bm WHERE id=$1 AND toon_id=$2::VARCHAR);", [session["user_id"], toon_id, toon_num])
     end
   # Yahoo 웹툰
   elsif site == "yahoo" and numList != nil
